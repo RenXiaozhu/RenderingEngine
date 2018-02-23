@@ -27,7 +27,7 @@ namespace RenderingEngine
         /// 
         /// 
         /// <returns></returns>
-        public VETransform2D GetViewPortFromWindow(Rectangle window, Rectangle viewport, double degree)
+        public static VETransform2D GetViewPortFromWindow(Rectangle window, Rectangle viewport, double degree)
         {
             VETransform2D trans = new VETransform2D();
 
@@ -57,7 +57,7 @@ namespace RenderingEngine
         /// 新坐标原点
         /// <param name="O"></param>
         /// <returns></returns>
-        public VETransform3D CoordinateToOther(Vector4 u, Vector4 v, Vector4 n, Vector4 O)
+        public static VETransform3D CoordinateToOther(Vector4 u, Vector4 v, Vector4 n, Vector4 O)
         {
             VETransform3D trans = new VETransform3D();
             trans.d11 = u.x;

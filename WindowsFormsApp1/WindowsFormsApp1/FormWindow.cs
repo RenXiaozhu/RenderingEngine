@@ -5,7 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 using MyBrush;
 using System.Drawing.Imaging;
@@ -17,12 +17,12 @@ namespace RenderingEngine
         public Bitmap bitmap;
         public Graphics g;
         private Device device;
-        private Scene scene;
-        private Rectangle rect;
-        private PixelFormat pixelFormat;
+        public Scene scene;
+        public Rectangle rect;
+        public PixelFormat pixelFormat;
       
         public FormWindow()
-        {
+        { 
             InitializeComponent();
             InitGraphics();
             InitScene();
@@ -37,6 +37,7 @@ namespace RenderingEngine
         {
             this.bitmap = new Bitmap(this.ClientSize.Width, this.ClientSize.Height, PixelFormat.Format24bppRgb);
             this.device = new Device(bitmap);
+            this.scene = new Scene(this.ClientSize.Width, this.ClientSize.Height);
             this.rect = new Rectangle(0, 0, this.ClientSize.Width, this.ClientSize.Height);
             this.pixelFormat = bitmap.PixelFormat;
         }
@@ -61,12 +62,27 @@ namespace RenderingEngine
         }
 
         private void 三角形ToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Triangle angle = new Triangle(new Vector4(50, 50, 0, 0), new Vector4(300, 150, 0, 0), new Vector4( 100, 300, 0, 0));
-            this.device.scanline.addTriangle(angle);
-            this.device.StartDisplay(this);
+        {/*
+            System.Timers.Timer  t = new System.Timers.Timer(1000); //实例化timer 设置时间间隔1000毫秒
+            t.Elapsed += new System.Timers.ElapsedEventHandler(Start);//到达时间的执行事件
+            t.AutoReset = true; // 设置是执行一次还是一直执行
+            t.Enabled = true; // 是否执行System.Timers.Timer.Elapsed事件
+            t.Start();*/
+
+            device.StartDisplay(this);
         }
 
+        void Start(object source, System.Timers.ElapsedEventArgs e)
+        {
+            // BitmapData data = this.bitmap.LockBits(rect, ImageLockMode.ReadWrite, this.pixelFormat);
+
+            //this.bitmap.UnlockBits(data);
+            //device.StartDisplay(this.scene);
+            // g.DrawImage(this.bitmap, new Point(0, 0));
+            device.StartDisplay(this);
+        }
+
+      
         private void Form1_MouseMove(object sender, MouseEventArgs e)
         {           
             

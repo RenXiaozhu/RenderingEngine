@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RenderingEngine
 {
-    struct Color4
+    public struct Color4
     {
         public byte red;
         public byte blue;

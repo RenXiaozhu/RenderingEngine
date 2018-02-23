@@ -70,7 +70,9 @@
     <Compile Include="CoordinateTransform.cs" />
     <Compile Include="Device.cs" />
     <Compile Include="DirectionLight.cs" />
+    <Compile Include="Edge.cs" />
     <Compile Include="MatrixTransform.cs" />
+    <Compile Include="Mesh.cs" />
     <Compile Include="MyBrush.cs" />
     <Compile Include="FormWindow.cs">
       <SubType>Form</SubType>

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RenderingEngine
 {
-    class DirectionLight
+    public class DirectionLight
     {
 
         public DirectionLight(Vector4 pos, Color4 color)

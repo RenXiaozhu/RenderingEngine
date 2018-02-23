@@ -89,6 +89,13 @@ namespace RenderingEngine
             d44 = 1;
         }
 
+        public void SetZero()
+        {
+            d11 = d12 = d13 = d14 = 0;
+            d21 = d22 = d23 = d24 = 0;
+            d31 = d32 = d33 = d34 = 0;
+            d41 = d42 = d43 = d44 = 0;
+        }
         //单位矩阵
         public void VETransform3DIdentity()
         {
@@ -131,9 +138,9 @@ namespace RenderingEngine
             this.d22 = 1;
             this.d33 = 1;
             this.d44 = 1;
-            this.d41 = tx;
-            this.d42 = ty;
-            this.d43 = tz;
+            this.d14 = tx;
+            this.d24 = ty;
+            this.d34 = tz;
         }
         /*
          * 坐标原点的旋转
