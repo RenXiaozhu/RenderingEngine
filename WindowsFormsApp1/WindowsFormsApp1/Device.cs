@@ -14,8 +14,12 @@ namespace RenderingEngine
         public BitmapData bitmapData;
         public int width;
         public int height;
-        public Scanline scanline;
+		//扫描线
+		public Scanline scanline;
+		// 场景
         private Scene scene;
+		//深度缓存
+		private readonly double[] depthBuffer;
 
         public Device(Bitmap bmp)
         {
@@ -33,6 +37,30 @@ namespace RenderingEngine
             scanline.StartScan(this.scene);
             window.g.DrawImage(this.bitmap, new Point(0, 0));
         }
+
+		public void ClearBitmapData(BitmapData data)
+		{
+			for(int i = 0; i<depthBuffer.Length; i+=1)
+			{
+				depthBuffer[i] = float.MaxValue;
+			}
+			unsafe
+			{
+				//首地址
+				byte* ptr = (byte*)(data.Scan0);
+				for (int i = 0; i < data.Height; i++)
+				{
+					for (int j = 0; j < data.Width; j++)
+					{
+						*ptr = 128;
+						*(ptr + 1) = 128;
+						*(ptr + 3) = 128;
+						   ptr += 3;
+					}
+					ptr += data.Stride - data.Width * 3;
+				}
+			}
+		}
 
         public void DrawTriangles(TriangleModel triangleModel)
         {
@@ -211,12 +239,141 @@ namespace RenderingEngine
         public void PutPixel(int x,int y, Color4 finalColor)
         {
             Color color = Color.FromArgb(finalColor.red, finalColor.blue, finalColor.green);
-            if (x >= 0 && y >= 0 && x <= width && y <= height)
+            if (x >= 0 && y >= 0 && x <= scene.camera.ViewPlaneWidth && y <= scene.camera.ViewPlaneHeight)
             {
-
                 this.bitmap.SetPixel(x, y, color);
             }
-           
         }
-    }
+
+		public void PutPixel(int x, int y, float z,Color4 finalColor)
+		{
+			int index = (x + y * width);
+			if (depthBuffer[index] < z)
+				return;
+			depthBuffer[index] = z;
+			unsafe
+			{
+				byte* ptr = (byte*)(this.bitmapData.Scan0);
+				//stride 扫描宽度
+				byte* row = ptr + (y * this.bitmapData.Stride);
+				row[x * 3] = finalColor.blue;
+				row[x * 3 + 1] = finalColor.green;
+				row[x * 3 + 2] = finalColor.red;
+			}
+		}
+
+		private Vector4 Project(Vector4 coord, VETransform3D mvp)
+		{
+			Vector4 point = mvp.Maxtrix4x1(coord);
+			point.Normalize();
+			return point;
+		}
+
+		private Vector4 Normalization(Vector4 vt)
+		{
+			Vector4 vct = new Vector4();
+			double rhw = 1.0f / vt.h;
+			vct.x = (1.0f + vt.x * rhw) * width * 0.5f;
+			vct.y = (1.0f - vt.y * rhw) * height * 0.5f;
+			vct.z = vt.z * rhw;
+			vct.h = 1.0f;
+			return vct;
+		}
+
+		// 裁剪平面
+		public Vector4 ClipSpace(Vector4 x, VETransform3D mvp)
+		{
+			Vector4 val = mvp.Maxtrix4x1(x);
+			double rhw = 1.0f / val.h;
+			val.x = val.x * rhw;
+			val.y = val.y * rhw;
+			val.z = val.z * rhw;
+			val.h = 1.0f;
+			return val;
+		}
+
+		// 视平面
+		public Vector4 ViewPort(Vector4 x)
+		{
+			Vector4 val = new Vector4();
+			val.x = (1.0f + x.x) * width * 0.5f;
+			val.y = (1.0f - x.y) * height * 0.5f;
+			val.z = x.z;
+			val.h = 1.0f;
+			return val;
+		}
+
+		public void DrawPoint(Vector4 point, Color4 color)
+		{
+			if (point.x == width)
+				point.x = point.x - 1;
+			if (point.y == height)
+				point.y = point.y - 1;
+			PutPixel((int)point.x, (int)point.y, (float)point.z, color);
+		}
+
+
+		//public Color4 Text2D(double u, double v )
+
+		public void DrawLine(Vertex v1, Vertex v2, Vector4 point0, Vector4 point1, Scene scene)
+		{
+			int x0 = (int)point0.x;
+			int y0 = (int)point0.y;
+			int x1 = (int)point1.x;
+			int y1 = (int)point1.y;
+
+			double z1 = point0.z;
+			double z2 = point1.z;
+
+			int dx = x1 - x0;
+			int dy = y1 - y0;
+
+			// 步长 DDA算法 按像素逐步递增划线
+			int steps = Math.Max(Math.Abs(dx), Math.Abs(dy));
+
+			if (steps == 0) return;
+
+			double xInc = dx / steps;
+			double yInc = dy / steps;
+
+			double x = x0;
+			double y = y0;
+
+			//顶点位置和法线方向与 光线方向的点积  
+			// 顶点的实际颜色 = 光线方向 点积 法线方向 * 光的颜色* 本身颜色
+			double nDotL1 = scene.light.ComputeNDotL(v1.Position, v1.Normal);
+
+			double nDotL2 = scene.light.ComputeNDotL(v2.Position, v2.Normal);
+
+			for (int i = 1; i <= steps; i++)
+			{
+
+				float ratio = (float)i / (float)steps;
+
+				Color4 vertexColor = new Color4(0, 0, 0);
+
+				Color4 lightColor = new Color4(0, 0, 0);
+
+				if (scene.light.IsEnable)
+				{
+					Color4 c1 = scene.light.GetFinalLightColor((float)nDotL1);
+					Color4 c2 = scene.light.GetFinalLightColor((float)nDotL2);
+					lightColor = MathUtil.ColorInterp(c1, c2, ratio);
+				}
+				else
+				{
+					vertexColor = MathUtil.ColorInterp(v1.Color, v2.Color,ratio);
+				}
+
+				float z = (float)MathUtil.Interp(z1, z2, ratio);
+				if (float.IsNaN(z))
+				{
+					return;
+				}
+				DrawPoint(new Vector4((int)x, (int)y, z, 0), vertexColor + lightColor);
+				x += xInc;
+				y += yInc;
+			}
+		}
+	}
 }

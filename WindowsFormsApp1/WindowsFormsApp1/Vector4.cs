@@ -27,6 +27,13 @@ namespace RenderingEngine
         public double z;
         public double h;
 
+		public  void Vector3Nomal()
+		{
+			this.x = x / h;
+			this.y = y / h;
+			this.z = z / h;
+			this.h = 1;
+		}
         public Vector4 StandardIdentity
         {
             get

@@ -71,6 +71,7 @@
     <Compile Include="Device.cs" />
     <Compile Include="DirectionLight.cs" />
     <Compile Include="Edge.cs" />
+    <Compile Include="MathUtil.cs" />
     <Compile Include="MatrixTransform.cs" />
     <Compile Include="Mesh.cs" />
     <Compile Include="MyBrush.cs" />

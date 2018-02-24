@@ -12,7 +12,7 @@ namespace RenderingEngine
         public Vertex[] vertices;
         public Vertex[] TmpVertices;
         public Triangle[] triangles;
-        public Vector4 rotation;
+        public VETransform3D rotation;
 
         public Mesh()
         {

@@ -344,8 +344,8 @@ namespace RenderingEngine
         public Vector4 Maxtrix4x1(Vector4 vector)
         {
             double x = this.d11 * vector.x + this.d12 * vector.y + this.d13 * vector.z + this.d14 * vector.h;
-            double y = this.d21 * vector.x + this.d22 * vector.y + this.d23 * vector.z + this.d24 * vector.h;
             double z = this.d31 * vector.x + this.d32 * vector.y + this.d33 * vector.z + this.d34 * vector.h;
+            double y = this.d21 * vector.x + this.d22 * vector.y + this.d23 * vector.z + this.d24 * vector.h;
             double h = this.d41 * vector.x + this.d42 * vector.y + this.d43 * vector.z + this.d44 * vector.h;
             return new Vector4(x, y, z, h);
         }
