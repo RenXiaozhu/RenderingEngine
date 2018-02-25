@@ -74,7 +74,12 @@ namespace RenderingEngine
 
 		}
 
-        void Start(object source, System.Timers.ElapsedEventArgs e)
+		private void 二位图形裁剪ToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+
+		}
+
+		void Start(object source, System.Timers.ElapsedEventArgs e)
         {
             // BitmapData data = this.bitmap.LockBits(rect, ImageLockMode.ReadWrite, this.pixelFormat);
 

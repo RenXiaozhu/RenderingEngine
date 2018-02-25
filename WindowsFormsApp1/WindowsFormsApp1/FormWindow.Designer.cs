@@ -61,7 +61,8 @@
             this.Exit});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
-			this.menuStrip1.Size = new System.Drawing.Size(1407, 25);
+			this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
+			this.menuStrip1.Size = new System.Drawing.Size(1354, 25);
 			this.menuStrip1.TabIndex = 0;
 			this.menuStrip1.Text = "menuStrip1";
 			// 
@@ -79,64 +80,64 @@
             this.hermite曲线ToolStripMenuItem,
             this.三角形ToolStripMenuItem});
 			this.基本图形生成ToolStripMenuItem.Name = "基本图形生成ToolStripMenuItem";
-			this.基本图形生成ToolStripMenuItem.Size = new System.Drawing.Size(92, 21);
-			this.基本图形生成ToolStripMenuItem.Text = "基本图形生成";
+			this.基本图形生成ToolStripMenuItem.Size = new System.Drawing.Size(50, 21);
+			this.基本图形生成ToolStripMenuItem.Text = "Basic";
 			// 
 			// DDALine
 			// 
 			this.DDALine.Name = "DDALine";
-			this.DDALine.Size = new System.Drawing.Size(165, 22);
-			this.DDALine.Text = "DDA直线";
+			this.DDALine.Size = new System.Drawing.Size(177, 22);
+			this.DDALine.Text = "DDA Line";
 			this.DDALine.Click += new System.EventHandler(this.DDALine_Click);
 			// 
 			// 中点直线ToolStripMenuItem
 			// 
 			this.中点直线ToolStripMenuItem.Name = "中点直线ToolStripMenuItem";
-			this.中点直线ToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-			this.中点直线ToolStripMenuItem.Text = "中点直线";
+			this.中点直线ToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			this.中点直线ToolStripMenuItem.Text = "Mid Line";
 			// 
 			// bresenhamToolStripMenuItem
 			// 
 			this.bresenhamToolStripMenuItem.Name = "bresenhamToolStripMenuItem";
-			this.bresenhamToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-			this.bresenhamToolStripMenuItem.Text = "Bresenham直线";
+			this.bresenhamToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			this.bresenhamToolStripMenuItem.Text = "Bresenham Line";
 			// 
 			// 中点圆ToolStripMenuItem
 			// 
 			this.中点圆ToolStripMenuItem.Name = "中点圆ToolStripMenuItem";
-			this.中点圆ToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-			this.中点圆ToolStripMenuItem.Text = "中点圆";
+			this.中点圆ToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			this.中点圆ToolStripMenuItem.Text = "Mid Circle";
 			// 
 			// bresenhamToolStripMenuItem1
 			// 
 			this.bresenhamToolStripMenuItem1.Name = "bresenhamToolStripMenuItem1";
-			this.bresenhamToolStripMenuItem1.Size = new System.Drawing.Size(165, 22);
-			this.bresenhamToolStripMenuItem1.Text = "Bresenham圆";
+			this.bresenhamToolStripMenuItem1.Size = new System.Drawing.Size(177, 22);
+			this.bresenhamToolStripMenuItem1.Text = "Bresenham Circle";
 			this.bresenhamToolStripMenuItem1.Click += new System.EventHandler(this.bresenhamToolStripMenuItem1_Click);
 			// 
 			// 正负圆ToolStripMenuItem
 			// 
 			this.正负圆ToolStripMenuItem.Name = "正负圆ToolStripMenuItem";
-			this.正负圆ToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-			this.正负圆ToolStripMenuItem.Text = "正负圆";
+			this.正负圆ToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			this.正负圆ToolStripMenuItem.Text = "Sign Circle";
 			// 
 			// bezier曲线ToolStripMenuItem
 			// 
 			this.bezier曲线ToolStripMenuItem.Name = "bezier曲线ToolStripMenuItem";
-			this.bezier曲线ToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-			this.bezier曲线ToolStripMenuItem.Text = "Bezier曲线";
+			this.bezier曲线ToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			this.bezier曲线ToolStripMenuItem.Text = "Bezier Curve";
 			// 
 			// b样条曲线ToolStripMenuItem
 			// 
 			this.b样条曲线ToolStripMenuItem.Name = "b样条曲线ToolStripMenuItem";
-			this.b样条曲线ToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-			this.b样条曲线ToolStripMenuItem.Text = "B样条曲线";
+			this.b样条曲线ToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			this.b样条曲线ToolStripMenuItem.Text = "B-Spline Curve";
 			// 
 			// hermite曲线ToolStripMenuItem
 			// 
 			this.hermite曲线ToolStripMenuItem.Name = "hermite曲线ToolStripMenuItem";
-			this.hermite曲线ToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-			this.hermite曲线ToolStripMenuItem.Text = "Hermite曲线";
+			this.hermite曲线ToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			this.hermite曲线ToolStripMenuItem.Text = "Hermite Curve";
 			// 
 			// 三角形ToolStripMenuItem
 			// 
@@ -148,49 +149,53 @@
 			// 二维图形变换ToolStripMenuItem
 			// 
 			this.二维图形变换ToolStripMenuItem.Name = "二维图形变换ToolStripMenuItem";
-			this.二维图形变换ToolStripMenuItem.Size = new System.Drawing.Size(92, 21);
-			this.二维图形变换ToolStripMenuItem.Text = "二维图形变换";
+			this.二维图形变换ToolStripMenuItem.Size = new System.Drawing.Size(125, 21);
+			this.二维图形变换ToolStripMenuItem.Text = "Stereogram Trans";
 			// 
 			// 二位图形裁剪ToolStripMenuItem
 			// 
 			this.二位图形裁剪ToolStripMenuItem.Name = "二位图形裁剪ToolStripMenuItem";
-			this.二位图形裁剪ToolStripMenuItem.Size = new System.Drawing.Size(92, 21);
-			this.二位图形裁剪ToolStripMenuItem.Text = "二位图形裁剪";
+			this.二位图形裁剪ToolStripMenuItem.Size = new System.Drawing.Size(123, 21);
+			this.二位图形裁剪ToolStripMenuItem.Text = "Stereogram tailor";
+			this.二位图形裁剪ToolStripMenuItem.Click += new System.EventHandler(this.二位图形裁剪ToolStripMenuItem_Click);
 			// 
 			// 图形填充ToolStripMenuItem
 			// 
 			this.图形填充ToolStripMenuItem.Name = "图形填充ToolStripMenuItem";
-			this.图形填充ToolStripMenuItem.Size = new System.Drawing.Size(68, 21);
-			this.图形填充ToolStripMenuItem.Text = "图形填充";
+			this.图形填充ToolStripMenuItem.Size = new System.Drawing.Size(59, 21);
+			this.图形填充ToolStripMenuItem.Text = "Bhatch";
 			// 
 			// 投影ToolStripMenuItem
 			// 
 			this.投影ToolStripMenuItem.Name = "投影ToolStripMenuItem";
-			this.投影ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
-			this.投影ToolStripMenuItem.Text = "投影";
+			this.投影ToolStripMenuItem.Size = new System.Drawing.Size(78, 21);
+			this.投影ToolStripMenuItem.Text = "Projection";
 			// 
 			// 消隐ToolStripMenuItem
 			// 
 			this.消隐ToolStripMenuItem.Name = "消隐ToolStripMenuItem";
-			this.消隐ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
-			this.消隐ToolStripMenuItem.Text = "消隐";
+			this.消隐ToolStripMenuItem.Size = new System.Drawing.Size(52, 21);
+			this.消隐ToolStripMenuItem.Text = "Blank";
 			// 
 			// Exit
 			// 
 			this.Exit.Name = "Exit";
-			this.Exit.Size = new System.Drawing.Size(44, 21);
-			this.Exit.Text = "退出";
+			this.Exit.Size = new System.Drawing.Size(40, 21);
+			this.Exit.Text = "Exit";
 			this.Exit.Click += new System.EventHandler(this.Exit_Click);
 			// 
 			// FormWindow
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1407, 623);
+			this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+			this.ClientSize = new System.Drawing.Size(1354, 648);
 			this.Controls.Add(this.menuStrip1);
+			this.Font = new System.Drawing.Font("Adobe 黑体 Std R", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
 			this.MainMenuStrip = this.menuStrip1;
+			this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.Name = "FormWindow";
-			this.Text = " 计算机图形学联系平台";
+			this.Text = "Compute Plateform";
 			this.Load += new System.EventHandler(this.Form1_Load);
 			this.Layout += new System.Windows.Forms.LayoutEventHandler(this.FormWindow_Layout);
 			this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseClick);
