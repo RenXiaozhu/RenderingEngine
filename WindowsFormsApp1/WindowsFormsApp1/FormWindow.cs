@@ -62,15 +62,17 @@ namespace RenderingEngine
         }
 
         private void 三角形ToolStripMenuItem_Click(object sender, EventArgs e)
-        {/*
+        {
+			device.StartDisplay(this);
+			/*
             System.Timers.Timer  t = new System.Timers.Timer(1000); //实例化timer 设置时间间隔1000毫秒
             t.Elapsed += new System.Timers.ElapsedEventHandler(Start);//到达时间的执行事件
             t.AutoReset = true; // 设置是执行一次还是一直执行
             t.Enabled = true; // 是否执行System.Timers.Timer.Elapsed事件
             t.Start();*/
 
-            device.StartDisplay(this);
-        }
+
+		}
 
         void Start(object source, System.Timers.ElapsedEventArgs e)
         {

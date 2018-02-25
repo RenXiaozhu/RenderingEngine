@@ -8,3 +8,13 @@ C:\Users\Administrator\source\repos\WindowsFormsApp1\WindowsFormsApp1\bin\Debug\
 C:\Users\Administrator\source\repos\WindowsFormsApp1\WindowsFormsApp1\bin\Debug\RenderingEngine.pdb
 C:\Users\Administrator\source\repos\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\RenderingEngine.exe
 C:\Users\Administrator\source\repos\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\RenderingEngine.pdb
+C:\Users\xiaozhu\Desktop\workspace\RenderingEngine\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\RenderingEngine.csprojResolveAssemblyReference.cache
+C:\Users\xiaozhu\Desktop\workspace\RenderingEngine\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\RenderingEngine.FormWindow.resources
+C:\Users\xiaozhu\Desktop\workspace\RenderingEngine\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\RenderingEngine.Properties.Resources.resources
+C:\Users\xiaozhu\Desktop\workspace\RenderingEngine\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\RenderingEngine.csproj.GenerateResource.Cache
+C:\Users\xiaozhu\Desktop\workspace\RenderingEngine\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\RenderingEngine.csproj.CoreCompileInputs.cache
+C:\Users\xiaozhu\Desktop\workspace\RenderingEngine\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\RenderingEngine.exe
+C:\Users\xiaozhu\Desktop\workspace\RenderingEngine\WindowsFormsApp1\WindowsFormsApp1\obj\Debug\RenderingEngine.pdb
+C:\Users\xiaozhu\Desktop\workspace\RenderingEngine\WindowsFormsApp1\WindowsFormsApp1\bin\Debug\RenderingEngine.exe.config
+C:\Users\xiaozhu\Desktop\workspace\RenderingEngine\WindowsFormsApp1\WindowsFormsApp1\bin\Debug\RenderingEngine.exe
+C:\Users\xiaozhu\Desktop\workspace\RenderingEngine\WindowsFormsApp1\WindowsFormsApp1\bin\Debug\RenderingEngine.pdb
