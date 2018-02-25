@@ -79,6 +79,11 @@ namespace RenderingEngine
 
 		}
 
+		private void 基本图形生成ToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+
+		}
+
 		void Start(object source, System.Timers.ElapsedEventArgs e)
         {
             // BitmapData data = this.bitmap.LockBits(rect, ImageLockMode.ReadWrite, this.pixelFormat);

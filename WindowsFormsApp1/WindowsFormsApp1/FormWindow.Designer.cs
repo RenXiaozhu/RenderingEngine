@@ -82,6 +82,7 @@
 			this.基本图形生成ToolStripMenuItem.Name = "基本图形生成ToolStripMenuItem";
 			this.基本图形生成ToolStripMenuItem.Size = new System.Drawing.Size(50, 21);
 			this.基本图形生成ToolStripMenuItem.Text = "Basic";
+			this.基本图形生成ToolStripMenuItem.Click += new System.EventHandler(this.基本图形生成ToolStripMenuItem_Click);
 			// 
 			// DDALine
 			// 
