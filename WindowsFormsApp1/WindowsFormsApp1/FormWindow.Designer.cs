@@ -143,8 +143,8 @@
 			// 三角形ToolStripMenuItem
 			// 
 			this.三角形ToolStripMenuItem.Name = "三角形ToolStripMenuItem";
-			this.三角形ToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
-			this.三角形ToolStripMenuItem.Text = "三角形";
+			this.三角形ToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			this.三角形ToolStripMenuItem.Text = "Triangle";
 			this.三角形ToolStripMenuItem.Click += new System.EventHandler(this.三角形ToolStripMenuItem_Click);
 			// 
 			// 二维图形变换ToolStripMenuItem
