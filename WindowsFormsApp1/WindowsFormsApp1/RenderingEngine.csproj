@@ -72,6 +72,7 @@
     <Compile Include="Device.cs" />
     <Compile Include="DirectionLight.cs" />
     <Compile Include="Edge.cs" />
+    <Compile Include="HodgmanClip.cs" />
     <Compile Include="MathUtil.cs" />
     <Compile Include="MatrixTransform.cs" />
     <Compile Include="Mesh.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scanline.cs" />
     <Compile Include="Scene.cs" />
+    <Compile Include="Texture.cs" />
     <Compile Include="Triangle.cs" />
     <Compile Include="Vector4.cs" />
     <Compile Include="VectorBase.cs" />

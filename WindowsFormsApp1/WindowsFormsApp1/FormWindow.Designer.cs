@@ -189,7 +189,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+			this.BackColor = System.Drawing.SystemColors.Desktop;
 			this.ClientSize = new System.Drawing.Size(1354, 648);
 			this.Controls.Add(this.menuStrip1);
 			this.Font = new System.Drawing.Font("Adobe 黑体 Std R", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -198,9 +198,11 @@
 			this.Name = "FormWindow";
 			this.Text = "Compute Plateform";
 			this.Load += new System.EventHandler(this.Form1_Load);
+			this.Paint += new System.Windows.Forms.PaintEventHandler(this.FormWindow_Paint);
 			this.Layout += new System.Windows.Forms.LayoutEventHandler(this.FormWindow_Layout);
 			this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseClick);
 			this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseMove);
+			this.Move += new System.EventHandler(this.FormWindow_Move);
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
 			this.ResumeLayout(false);

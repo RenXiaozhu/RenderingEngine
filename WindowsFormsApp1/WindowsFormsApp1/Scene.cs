@@ -8,6 +8,13 @@ namespace RenderingEngine
 {
     public class Scene
     {
+		public enum RenderState
+		{
+			WireFrame = 0,
+			GouraduShading,
+			TextureMapping
+		}
+		public RenderState renderState;
         // 灯光
         public DirectionLight light;
         //相机
@@ -17,6 +24,7 @@ namespace RenderingEngine
 
         public Scene(int width, int height)
         {
+			this.renderState = RenderState.WireFrame;
             InitCamera(width, height);
             InitMesh();
         }
@@ -38,7 +46,7 @@ namespace RenderingEngine
 
         void InitMesh()
         {
-            this.mesh = new Mesh();
+            this.mesh = new Mesh("Cube");
 
             Vertex[] vertices = new Vertex[8]{
                 new Vertex(new Vector4(-1, -1, -1, 1), new Vector4(-1, 0, 0, 1), new Vector4(0, 0, 0, 0), new Color4(255, 0, 0) ),
@@ -81,6 +89,21 @@ namespace RenderingEngine
 		{
 			this.light = new DirectionLight(new Vector4(-5, 5, 5, 1), new Color4(255, 255, 255));
 			this.light.IsEnable = false;
+		}
+
+		public void UpdateCameraPos(Vector4 pos)
+		{
+			this.camera.self_position = pos;
+		}
+
+		public void UpdateCameraRotation(float degree)
+		{
+			this.camera.Yaw += degree;
+		}
+
+		public void UpdateModelRotationMatrix( float degreeY)
+		{
+			mesh.rotation.VETransform3DRotation( degreeY,SystemCross.SystemCross_Y,true);
 		}
 
 		public VETransform3D MvpMatrix()

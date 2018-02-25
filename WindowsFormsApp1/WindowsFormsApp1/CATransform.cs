@@ -32,6 +32,14 @@ namespace RenderingEngine
 
 				pos = trans.Maxtrix4x1(vt.Position);
 
+
+				// 放缩变换
+				VETransform3D scale = new VETransform3D();
+
+				scale.VETransform3DScale(50, 50, 50);
+
+				pos = scale.Maxtrix4x1(pos);
+
 				// 转换到相机坐标系
 				VETransform3D cameraTrans = scene.camera.TransformChange();
 
@@ -46,12 +54,7 @@ namespace RenderingEngine
 
 				//Vector4 newpos = new Vector4(pos.x / (1 - pos.z / scene.camera.ViewDistance), pos.y / (1 - pos.z / scene.camera.ViewDistance),0,1);
 
-				// 放缩变换
-				VETransform3D scale = new VETransform3D();
-
-				scale.VETransform3DScale(50, 50, 50);
-
-				pos = scale.Maxtrix4x1(pos);
+			
 
 				//屏幕变换
 				VETransform3D screenTrans = scene.camera.MatrixScreen;

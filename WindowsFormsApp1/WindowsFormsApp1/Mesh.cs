@@ -13,8 +13,9 @@ namespace RenderingEngine
         public Vertex[] TmpVertices;
         public Triangle[] triangles;
         public VETransform3D rotation;
+		public Texture texture;
 
-        public Mesh()
+		public Mesh(string name)
         {
             TmpVertices = new Vertex[8];
             CreatTriangles();

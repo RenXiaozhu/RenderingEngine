@@ -12,6 +12,11 @@ namespace RenderingEngine
     {
         public Bitmap bitmap;
         public BitmapData bitmapData;
+		public HodgmanClip clip;
+		private Vector4 clipMin; //裁剪空间 （-1,-1，-1）
+		private Vector4 clipMax;// 裁剪空间（1,1,1）
+
+		
         public int width;
         public int height;
 		//扫描线
@@ -69,6 +74,44 @@ namespace RenderingEngine
             DrawDDALine(new Vector2(vectex[1].Position.x, vectex[1].Position.y), new Vector2(vectex[2].Position.x, vectex[2].Position.y), vectex[1].Color);
             DrawDDALine(new Vector2(vectex[2].Position.x, vectex[2].Position.y), new Vector2(vectex[0].Position.x, vectex[0].Position.y), vectex[2].Color);
         }
+
+		// 判断三角形的三个点是否在一条线上
+		public bool IsOnSameLine(TriangleModel orivt)
+		{
+			Vector4 a = new Vector4(orivt.Vertices[0].ScreenSpacePosition);
+			Vector4 b = new Vector4(orivt.Vertices[1].ScreenSpacePosition);
+			Vector4 c = new Vector4(orivt.Vertices[2].ScreenSpacePosition);
+
+			a.z = b.z = c.z = 0;
+			Vector4 ab = b - a;
+			Vector4 ac = c - a;
+			return ab.CrossMultiply(ac).z > 0;
+		}
+
+		public Color4 Text2D(float u, float v, Texture texture)
+		{
+			int x = Math.Abs((int)(1f - u) * texture.GetWidth() % texture.GetWidth());
+			int y = Math.Abs((int)(1f - v) * texture.GetHeight() % texture.GetHeight());
+			byte r = 0;
+			byte g = 0;
+			byte b = 0;
+			unsafe
+			{
+				byte* ptr = (byte*)(texture.GetBmData().Scan0);
+				byte* row = ptr + (y * texture.GetBmData().Stride);
+				b = row[x * 3];
+				g = row[x * 3 + 1];
+				r = row[x * 3 + 2];
+			}
+			return new Color4((byte)r, (byte)g, (byte)b);
+		}
+		private void DrawTriangle(TriangleModel vt, TriangleModel orivt, Scene scene)
+		{
+			if (!IsOnSameLine(orivt))
+			{
+				this.scanline.ProcessScanLine(vt, orivt, scene);
+			}
+		}
 
         public void DrawDDALine(Vector2 point1, Vector2 point2, Color4 color)
         {
@@ -292,7 +335,7 @@ namespace RenderingEngine
 			return val;
 		}
 
-		// 视平面
+		// 视平面 将规范化视空间安比例还原到屏幕上
 		public Vector4 ViewPort(Vector4 x)
 		{
 			Vector4 val = new Vector4();
@@ -374,6 +417,79 @@ namespace RenderingEngine
 				x += xInc;
 				y += yInc;
 			}
+		}
+
+		public void Render(Scene scene, BitmapData bmData)
+		{
+			this.scene = scene;
+			this.bitmapData = bmData;
+			VETransform3D mvpMatrix = this.scene.MvpMatrix();
+			foreach (var triangle in scene.mesh.triangles)
+			{
+				Vertex vertexA = scene.mesh.vertices[triangle.a];
+				Vertex vertexB = scene.mesh.vertices[triangle.b];
+				Vertex vertexC = scene.mesh.vertices[triangle.c];
+
+				List<Vertex> pIn = new List<Vertex>();
+				//裁剪后的位置
+				vertexA.ClipSpacePosition = ClipSpace(vertexA.Position, mvpMatrix);
+				vertexB.ClipSpacePosition = ClipSpace(vertexB.Position, mvpMatrix);
+				vertexC.ClipSpacePosition = ClipSpace(vertexC.Position, mvpMatrix);
+				// 视区位置
+				vertexA.ScreenSpacePosition = ViewPort(vertexA.ClipSpacePosition);
+				vertexB.ScreenSpacePosition = ViewPort(vertexB.ClipSpacePosition);
+				vertexC.ScreenSpacePosition = ViewPort(vertexC.ClipSpacePosition);
+
+				pIn.Add(vertexA);
+				pIn.Add(vertexB);
+				pIn.Add(vertexC);
+
+				for (int i = 0; i < 6; i += 1)
+				{
+					if (pIn.Count == 0) break;
+					clip = new HodgmanClip(this);
+					clip.HodgmanPolygonClip((HodgmanClip.Boundary)i, clipMin, clipMax, pIn.ToArray());
+					pIn = clip.GetOutputList();
+				}
+
+				List<TriangleModel> vtList = MakeTriangle(pIn);
+				TriangleModel orivt = new TriangleModel(vertexA, vertexB, vertexC);
+				if (scene.renderState == Scene.RenderState.WireFrame)
+				{
+					//画线框 需要vertex的法向量normal， 位置 pos， 颜色 color
+					for (int i = 0; i < vtList.Count; i += 1)
+					{
+						int length = vtList[i].Vertices.Length;
+						Vertex start = vtList[i].Vertices[length - 1];
+						for (int j = 0; j < length; j += 1)
+						{
+							Vector4 viewPortA = this.ViewPort(start.ClipSpacePosition);
+							Vector4 viewPortB = this.ViewPort(vtList[i].Vertices[j].ClipSpacePosition);
+							DrawLine(start, vtList[i].Vertices[j], viewPortA, viewPortB, scene);
+							start = vtList[i].Vertices[j];
+						}
+					}
+				}
+				else
+				{
+					//填充三角形
+					for (int i = 0; i < vtList.Count; i += 1)
+					{
+						DrawTriangle(vtList[i], orivt, scene);
+					}
+				}
+			}
+		}
+
+		private List<TriangleModel> MakeTriangle(List<Vertex> input)
+		{
+			List<TriangleModel> temp = new List<TriangleModel>();
+			for (int i = 0; i < input.Count - 2; i += 1)
+			{
+				TriangleModel vt = new TriangleModel(input[0], input[i + 1], input[i + 2]);
+				temp.Add(vt);
+			}
+			return temp;
 		}
 	}
 }

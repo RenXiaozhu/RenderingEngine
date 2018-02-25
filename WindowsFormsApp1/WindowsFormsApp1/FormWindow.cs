@@ -84,6 +84,20 @@ namespace RenderingEngine
 
 		}
 
+		private void FormWindow_Paint(object sender, PaintEventArgs e)
+		{
+			BitmapData data = this.bitmap.LockBits(rect, ImageLockMode.ReadWrite, this.pixelFormat));
+			this.device.ClearBitmapData(data);
+			device.Render(scene, data);
+			this.bitmap.UnlockBits(data);
+			g.DrawImage(this.bitmap, new Rectangle(0, 0, bitmap.Width, bitmap.Height));
+		}
+
+		private void FormWindow_Move(object sender, EventArgs e)
+		{
+
+		}
+
 		void Start(object source, System.Timers.ElapsedEventArgs e)
         {
             // BitmapData data = this.bitmap.LockBits(rect, ImageLockMode.ReadWrite, this.pixelFormat);
@@ -104,6 +118,7 @@ namespace RenderingEngine
         {
             
         }
+
 
         private void Form1_Load(object sender, EventArgs e)
         {
