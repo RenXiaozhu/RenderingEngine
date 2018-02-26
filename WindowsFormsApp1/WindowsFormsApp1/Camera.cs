@@ -161,19 +161,20 @@ namespace RenderingEngine
 
 			VETransform3D view = new VETransform3D();
 			view.d11 = xaxis.x;
-			view.d12 = xaxis.y;
-			view.d12 = xaxis.z;
-			view.d14 = -xaxis.dot(self_position);
+			view.d21 = xaxis.y;
+			view.d31 = xaxis.z;
+			view.d41 = -xaxis.dot(self_position);
 
-			view.d21 = yaxis.x;
+			view.d12 = yaxis.x;
 			view.d22 = yaxis.y;
-			view.d23 = yaxis.z;
-			view.d24 = -yaxis.dot(self_position);
+			view.d32 = yaxis.z;
+			view.d42 = -yaxis.dot(self_position);
 
-			view.d31 = zaxis.x;
-			view.d32 = zaxis.y;
+			view.d13 = zaxis.x;
+			view.d23 = zaxis.y;
 			view.d33 = zaxis.z;
-			view.d34 = -zaxis.dot(self_position);
+			view.d43 = -zaxis.dot(self_position);
+			view.d44 = 1;
 			return view;
 		}
         
@@ -182,24 +183,9 @@ namespace RenderingEngine
         public VETransform3D Perspective()
         {
             VETransform3D trans = new VETransform3D();
-
 			double far = 1.0f / (float)Math.Tan(this.fov * 0.5f);
-			float top = (float)(zn * Math.Tan(this.fov * 0.5f));
-			float bottom = -top;
-			float right = (float)(top * aspect);
-			float left = -right;
-			float a =-(float) ((zf + zn) / (zf - zn));
-			float b = -(float)(2 * zn * zf / (zf - zn));
-
 
 			trans.SetZero();
-			//trans.d11 = 2 * ViewDistance / (right - left);
-			//trans.d22 = 2*ViewDistance/(top - bottom);
-			//trans.d13 = (right + left) / (right - left);
-			//trans.d23 = (top + bottom) / (top - bottom);
-			//trans.d33 = a;
-			//trans.d34 = b;
-			//trans.d43 = -1;
 
 			trans.d11 = far / aspect ;
 			trans.d22 = far;

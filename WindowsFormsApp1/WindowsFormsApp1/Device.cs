@@ -32,7 +32,7 @@ namespace RenderingEngine
             this.width = bmp.Width;
             this.height = bmp.Height;
             this.scanline = new Scanline(this);
-
+			this.depthBuffer = new double[bmp.Width * bmp.Height];
         }
 
         public void StartDisplay(FormWindow window)
@@ -43,26 +43,42 @@ namespace RenderingEngine
             window.g.DrawImage(this.bitmap, new Point(0, 0));
         }
 
+		public void ClearBitmap()
+		{
+			for (int i = 0; i < height; i += 1)
+			{
+				for (int j = 0; j < width; j += 1)
+				{
+					bitmap.SetPixel(j, i, Color.Black);
+				}
+			}
+		}
+
 		public void ClearBitmapData(BitmapData data)
 		{
+			if (this.bitmapData == null)
+			{
+				this.bitmapData = data;
+			}
 			for(int i = 0; i<depthBuffer.Length; i+=1)
 			{
 				depthBuffer[i] = float.MaxValue;
 			}
+			
 			unsafe
 			{
 				//首地址
-				byte* ptr = (byte*)(data.Scan0);
-				for (int i = 0; i < data.Height; i++)
+				byte* ptr = (byte*)(bitmapData.Scan0);
+				for (int i = 0; i < bitmapData.Height; i++)
 				{
-					for (int j = 0; j < data.Width; j++)
+					for (int j = 0; j < bitmapData.Width; j++)
 					{
-						*ptr = 128;
-						*(ptr + 1) = 128;
-						*(ptr + 3) = 128;
-						   ptr += 3;
+						*ptr = 0;
+						*(ptr + 1) = 0;
+						*(ptr + 3) = 0;
+						ptr += 3;
 					}
-					ptr += data.Stride - data.Width * 3;
+					ptr += bitmapData.Stride - bitmapData.Width * 3;
 				}
 			}
 		}
@@ -291,11 +307,14 @@ namespace RenderingEngine
 		public void PutPixel(int x, int y, float z,Color4 finalColor)
 		{
 			int index = (x + y * width);
+			if (index < 0 || index > depthBuffer.Length)
+				return;
 			if (depthBuffer[index] < z)
 				return;
 			depthBuffer[index] = z;
 			unsafe
 			{
+				//this.bitmap.SetPixel(x, y, Color.FromArgb(finalColor.red, finalColor.green, finalColor.blue));
 				byte* ptr = (byte*)(this.bitmapData.Scan0);
 				//stride 扫描宽度
 				byte* row = ptr + (y * this.bitmapData.Stride);
@@ -326,7 +345,7 @@ namespace RenderingEngine
 		// 裁剪平面
 		public Vector4 ClipSpace(Vector4 x, VETransform3D mvp)
 		{
-			Vector4 val = mvp.Maxtrix4x1(x);
+			Vector4 val = mvp.Maxtrix1x4(x);
 			double rhw = 1.0f / val.h;
 			val.x = val.x * rhw;
 			val.y = val.y * rhw;
@@ -355,8 +374,6 @@ namespace RenderingEngine
 			PutPixel((int)point.x, (int)point.y, (float)point.z, color);
 		}
 
-
-		//public Color4 Text2D(double u, double v )
 
 		public void DrawLine(Vertex v1, Vertex v2, Vector4 point0, Vector4 point1, Scene scene)
 		{
@@ -423,7 +440,7 @@ namespace RenderingEngine
 		{
 			this.scene = scene;
 			this.bitmapData = bmData;
-			VETransform3D mvpMatrix = this.scene.MvpMatrix();
+			VETransform3D mvpMatrix = CATransform.MVPMatrix;
 			foreach (var triangle in scene.mesh.triangles)
 			{
 				Vertex vertexA = scene.mesh.vertices[triangle.a];
@@ -444,13 +461,13 @@ namespace RenderingEngine
 				pIn.Add(vertexB);
 				pIn.Add(vertexC);
 
-				for (int i = 0; i < 6; i += 1)
-				{
-					if (pIn.Count == 0) break;
-					clip = new HodgmanClip(this);
-					clip.HodgmanPolygonClip((HodgmanClip.Boundary)i, clipMin, clipMax, pIn.ToArray());
-					pIn = clip.GetOutputList();
-				}
+				//for (int i = 0; i < 6; i += 1)
+				//{
+				//	if (pIn.Count == 0) break;
+				//	clip = new HodgmanClip(this);
+				//	clip.HodgmanPolygonClip((HodgmanClip.Boundary)i, clipMin, clipMax, pIn.ToArray());
+				//	pIn = clip.GetOutputList();
+				//}
 
 				List<TriangleModel> vtList = MakeTriangle(pIn);
 				TriangleModel orivt = new TriangleModel(vertexA, vertexB, vertexC);
@@ -463,7 +480,7 @@ namespace RenderingEngine
 						Vertex start = vtList[i].Vertices[length - 1];
 						for (int j = 0; j < length; j += 1)
 						{
-							Vector4 viewPortA = this.ViewPort(start.ClipSpacePosition);
+							Vector4 viewPortA =this.ViewPort( start.ClipSpacePosition);
 							Vector4 viewPortB = this.ViewPort(vtList[i].Vertices[j].ClipSpacePosition);
 							DrawLine(start, vtList[i].Vertices[j], viewPortA, viewPortB, scene);
 							start = vtList[i].Vertices[j];

@@ -213,17 +213,17 @@ namespace RenderingEngine
         //  n 表示任意旋转轴
         public void VETransform3DRotation(double angle, Vector4 n)
         {
-            this.d11 = n.x * n.x * (1 - Math.Cos(angle / 180)) + Math.Cos(angle / 180);
-            this.d21 = n.x * n.y * (1 - Math.Cos(angle / 180)) + n.z * Math.Sin(angle / 180);
-            this.d31 = n.x * n.z * (1 - Math.Cos(angle / 180)) - n.y * Math.Sin(angle / 180);
+            this.d11 = n.x * n.x * (1 - Math.Cos(angle )) + Math.Cos(angle);
+            this.d21 = n.x * n.y * (1 - Math.Cos(angle)) + n.z * Math.Sin(angle );
+            this.d31 = n.x * n.z * (1 - Math.Cos(angle)) - n.y * Math.Sin(angle);
 
-            this.d12 = n.x * n.y * (1 - Math.Cos(angle / 180)) - n.z * Math.Sin(angle / 180);
-            this.d22 = n.y * n.y * (1 - Math.Cos(angle / 180)) + Math.Cos(angle / 180);
-            this.d32 = n.y * n.z * (1 - Math.Cos(angle / 180)) + n.x * Math.Sin(angle / 180);
+            this.d12 = n.x * n.y * (1 - Math.Cos(angle)) - n.z * Math.Sin(angle);
+            this.d22 = n.y * n.y * (1 - Math.Cos(angle)) + Math.Cos(angle);
+            this.d32 = n.y * n.z * (1 - Math.Cos(angle)) + n.x * Math.Sin(angle);
 
-            this.d13 = n.x * n.z * (1 - Math.Cos(angle / 180)) + n.y * Math.Sin(angle / 180);
-            this.d23 = n.y * n.z * (1 - Math.Cos(angle / 180)) - n.x * Math.Sin(angle / 180);
-            this.d33 = n.z * n.z * (1 - Math.Cos(angle / 180)) + Math.Cos(angle / 180);
+            this.d13 = n.x * n.z * (1 - Math.Cos(angle)) + n.y * Math.Sin(angle);
+            this.d23 = n.y * n.z * (1 - Math.Cos(angle)) - n.x * Math.Sin(angle);
+            this.d33 = n.z * n.z * (1 - Math.Cos(angle)) + Math.Cos(angle);
         }
 
         /*
@@ -340,21 +340,31 @@ namespace RenderingEngine
             return vct;
         }
 
-        //右乘   4x4 *  4x1
-        public Vector4 Maxtrix4x1(Vector4 vector)
+        //左乘  4x1*4x4 
+        public Vector4 Maxtrix1x4(Vector4 vector)
         {
-            double x = this.d11 * vector.x + this.d12 * vector.y + this.d13 * vector.z + this.d14 * vector.h;
-            double z = this.d31 * vector.x + this.d32 * vector.y + this.d33 * vector.z + this.d34 * vector.h;
-            double y = this.d21 * vector.x + this.d22 * vector.y + this.d23 * vector.z + this.d24 * vector.h;
-            double h = this.d41 * vector.x + this.d42 * vector.y + this.d43 * vector.z + this.d44 * vector.h;
+            double x = this.d11 * vector.x + this.d21 * vector.y + this.d31 * vector.z + this.d41 * vector.h;
+            double y = this.d12 * vector.x + this.d22 * vector.y + this.d32 * vector.z + this.d42 * vector.h;
+            double z = this.d13 * vector.x + this.d23 * vector.y + this.d33 * vector.z + this.d43 * vector.h;
+            double h = this.d14 * vector.x + this.d24 * vector.y + this.d34 * vector.z + this.d44 * vector.h;
             return new Vector4(x, y, z, h);
         }
 
-        //右乘   4x4 *  4x4
-        public static VETransform3D operator*(VETransform3D m, VETransform3D n)
+		//右乘   4x4 *  4x1
+		public Vector4 Maxtrix4x1(Vector4 vector)
+		{
+			double x = this.d11 * vector.x + this.d12 * vector.y + this.d13 * vector.z + this.d14 * vector.h;
+			double z = this.d31 * vector.x + this.d32 * vector.y + this.d33 * vector.z + this.d34 * vector.h;
+			double y = this.d21 * vector.x + this.d22 * vector.y + this.d23 * vector.z + this.d24 * vector.h;
+			double h = this.d41 * vector.x + this.d42 * vector.y + this.d43 * vector.z + this.d44 * vector.h;
+			return new Vector4(x, y, z, h);
+		}
+
+		//右乘   4x4 *  4x4
+		public static VETransform3D operator*(VETransform3D m, VETransform3D n)
         {
             VETransform3D trans = new VETransform3D();
-            trans.d11 = m.d11 * n.d11+ m.d12 * n.d21+ m.d13 * n.d31+ m.d14 * n.d41;
+            trans.d11 = m.d11 * n.d11 + m.d12 * n.d21 + m.d13 * n.d31 + m.d14 * n.d41;
             trans.d12 = m.d11 * n.d12 + m.d12 * n.d22 + m.d13 * n.d32 + m.d14 * n.d42;
             trans.d13 = m.d11 * n.d13 + m.d12 * n.d23 + m.d13 * n.d33 + m.d14 * n.d43;
             trans.d14 = m.d11 * n.d14 + m.d12 * n.d24 + m.d13 * n.d34 + m.d14 * n.d44;
@@ -373,6 +383,7 @@ namespace RenderingEngine
             trans.d42 = m.d41 * n.d12 + m.d42 * n.d22 + m.d43 * n.d32 + m.d44 * n.d42;
             trans.d43 = m.d41 * n.d13 + m.d42 * n.d23 + m.d43 * n.d33 + m.d44 * n.d43;
             trans.d44 = m.d41 * n.d14 + m.d42 * n.d24 + m.d43 * n.d34 + m.d44 * n.d44;
+
             return trans;
         }
 
@@ -387,7 +398,7 @@ namespace RenderingEngine
             return trans;
         }
 
-        //右乘   4x4 *  4x4
+        //减法    4x4 *  4x4
         public static VETransform3D operator -(VETransform3D m, VETransform3D n)
         {
             VETransform3D trans = new VETransform3D();

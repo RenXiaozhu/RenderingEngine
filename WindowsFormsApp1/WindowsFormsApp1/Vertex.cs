@@ -14,7 +14,8 @@ namespace RenderingEngine
         public Vector4 Normal; // 法线
         public Vector4 UV;//贴图坐标
         public Color4 Color;
-        
+
+		public Vertex() { }
         public Vertex(Vector4 postion , Vector4 normal, Vector4 uv, Color4 color)
         {
             this.Position = postion;

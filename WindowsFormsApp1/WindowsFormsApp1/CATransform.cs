@@ -11,7 +11,29 @@ namespace RenderingEngine
     */ 
     class CATransform
     {
-        public static void ModelTransformToWindow(Scene scene)
+
+		public static VETransform3D MVPMatrix;
+
+		public static void InitMVPMatrix(Scene scene)
+		{
+			VETransform3D translate = new VETransform3D();
+			translate.VETransform3DTranslation(0, 0, 0);
+
+			VETransform3D scale = new VETransform3D();
+			scale.VETransform3DScale(1, 1, 1);
+
+			VETransform3D rotation = scene.mesh.rotation;
+			VETransform3D model = scale * rotation * translate;
+			VETransform3D view = scene.camera.FPSView();
+			VETransform3D projection = scene.camera.Perspective();
+			VETransform3D mvp = model * view;
+				mvp = mvp * projection;
+
+			MVPMatrix = mvp;
+
+		}
+
+		public static void ModelTransformToWindow(Scene scene)
         {
             scene.mesh.RefreshVectex();
 
@@ -38,7 +60,7 @@ namespace RenderingEngine
 
 				scale.VETransform3DScale(50, 50, 50);
 
-				pos = scale.Maxtrix4x1(pos);
+				//pos = scale.Maxtrix4x1(pos);
 
 				// 转换到相机坐标系
 				VETransform3D cameraTrans = scene.camera.TransformChange();
@@ -54,14 +76,10 @@ namespace RenderingEngine
 
 				//Vector4 newpos = new Vector4(pos.x / (1 - pos.z / scene.camera.ViewDistance), pos.y / (1 - pos.z / scene.camera.ViewDistance),0,1);
 
-			
-
 				//屏幕变换
 				VETransform3D screenTrans = scene.camera.MatrixScreen;
 
 				pos = screenTrans.Maxtrix4x1(pos);
-
-
 
 				// 平移变换
 				VETransform3D translate = new VETransform3D();

@@ -26,8 +26,9 @@ namespace RenderingEngine
             this.height = device.height;
             backgroundColor = new Color4(255, 255, 255);
             forwardColor = new Color4(255, 0, 0);
-            finalColor = new Color4(222, 128, 50);
-            this.angleList = new List<Triangle>();
+            //finalColor = new Color4(222, 128, 50);
+			finalColor = new Color4(255, 255, 255);
+			this.angleList = new List<Triangle>();
 
             this.ET = new Edge[this.height];
             for (int i = 0; i < this.height; i++)
@@ -36,15 +37,11 @@ namespace RenderingEngine
             }
         }
 
-
-
         void InsertEdge(ref Edge root, Edge e)
         {
             Edge newEdge = (Edge)e.Clone();
 
         }
-
-
 
         public void StartScan(Scene scene)
         {
@@ -59,8 +56,6 @@ namespace RenderingEngine
                 TriangleModel model = new TriangleModel(tmp[triangle.a], tmp[triangle.b], tmp[triangle.c]);
 
                 //this.device.PutPixel((int)vt.Position.x, (int)vt.Position.y, vt.Color);
-               
-
                     //this.device.DrawMidPointLine(new Vector2(vt.Position.x, vt.Position.y), new Vector2(next.Position.x, next.Position.y), vt.Color);
                     //this.device.DrawDDALine(new Vector2(vt.Position.x, vt.Position.y), new Vector2(next.Position.x, next.Position.y), vt.Color);
                     this.device.DrawTriangles(model);
@@ -118,7 +113,6 @@ namespace RenderingEngine
 						e.yvMin = a > b ? vertices[j] : vertices[i];
 						e.yvMax = a > b ? vertices[i] : vertices[j];
 						InsertEdge(ref ET[ymin].nextEdge, e);
-
 					}
 				}
 			}

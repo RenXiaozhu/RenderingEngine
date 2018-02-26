@@ -17,7 +17,10 @@ namespace RenderingEngine
 
 		public Mesh(string name)
         {
-            TmpVertices = new Vertex[8];
+            TmpVertices = new Vertex[24];
+			//texture = new Texture(@".........", 512, 512);
+			rotation = new VETransform3D();
+			rotation.VETransform3DIdentity();
             CreatTriangles();
         }
 
@@ -35,29 +38,28 @@ namespace RenderingEngine
              */
             triangles = new Triangle[] {
                 //正面
-                new Triangle(0,1,3),
-                new Triangle(3,2,1),
-/*
+                new Triangle(2,5,8),
+                new Triangle(2,8,11),
+				 // 右面
+                new Triangle(4,16, 7),
+				new Triangle(16, 19,7),
+
+				 // 左面
+                new Triangle(13 , 1, 10),
+				new Triangle(13, 10, 22),
+
+				 // 后面
+                new Triangle( 17, 14, 23),
+				new Triangle( 17, 23, 20),
+
                 // 上面
-                new Triangle(3, 7, 2),
-                new Triangle(2, 4, 7),
+                new Triangle(9, 6, 18),
+                new Triangle(9, 18, 21),
                 
                 // 下面
-                new Triangle(0, 6, 1),
-                new Triangle(1, 5, 6),
+                new Triangle(12, 15, 3),
+                new Triangle(12, 3, 0)
 
-                // 左面
-                new Triangle( 0 , 3, 5),
-                new Triangle(3, 7, 5),
-
-                // 右面
-                new Triangle(1,2, 5),
-                new Triangle(2, 4,5),
-
-                // 后面
-                new Triangle(6, 7, 5),
-                new Triangle(4, 5, 7)
-                */
             };
         }
 

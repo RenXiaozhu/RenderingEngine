@@ -26,7 +26,15 @@ namespace RenderingEngine
         public double y;
         public double z;
         public double h;
-
+		public Vector4 Normalized
+		{
+			get
+			{
+				Vector4 n = new Vector4(this.x, this.y, this.z, this.h);
+				n.Normalize();
+				return n;
+			}
+		}
 		public  void Vector3Nomal()
 		{
 			this.x = x / h;
