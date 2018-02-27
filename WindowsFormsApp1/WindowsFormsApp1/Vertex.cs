@@ -8,20 +8,21 @@ namespace RenderingEngine
 {
     public class Vertex:ICloneable
     {    
-        public Vector4 Position { get; set; } //位置
-        public Vector4 ClipSpacePosition;//裁剪空间
-        public Vector4 ScreenSpacePosition;//屏幕空间
-        public Vector4 Normal; // 法线
-        public Vector4 UV;//贴图坐标
-        public Color4 Color;
+        public Vector4 Position { get; set; }
+        public Vector4 ClipSpacePosition { get; set; }
+        public Vector4 ScreenSpacePosition { get; set; }
+        public Vector4 Normal { get; set; }
+        public Vector4 UV { get; set; }
+        public Color4 Color { get; set; }
 
-		public Vertex() { }
-        public Vertex(Vector4 postion , Vector4 normal, Vector4 uv, Color4 color)
+        public Vertex() { }
+
+        public Vertex(Vector4 pos, Vector4 normal, Vector4 uv, Color4 col)
         {
-            this.Position = postion;
+            this.Position = pos;
             this.Normal = normal;
             this.UV = uv;
-            this.Color = color;
+            this.Color = col;
         }
 
         public object Clone()

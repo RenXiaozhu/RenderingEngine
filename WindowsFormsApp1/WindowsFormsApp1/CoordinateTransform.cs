@@ -57,25 +57,25 @@ namespace RenderingEngine
         /// 新坐标原点
         /// <param name="O"></param>
         /// <returns></returns>
-        public static VETransform3D CoordinateToOther(Vector4 u, Vector4 v, Vector4 n, Vector4 O)
-        {
-            VETransform3D trans = new VETransform3D();
-            trans.d11 = u.x;
-            trans.d12 = u.y;
-            trans.d13 = u.z;
+        //public static VETransform3D CoordinateToOther(Vector4 u, Vector4 v, Vector4 n, Vector4 O)
+        //{
+        //    VETransform3D trans = new VETransform3D();
+        //    trans.d11 = u.X;
+        //    trans.d12 = u.Y;
+        //    trans.d13 = u.Z;
 
-            trans.d21 = v.x;
-            trans.d22 = v.y;
-            trans.d23 = v.z;
+        //    trans.d21 = v.X;
+        //    trans.d22 = v.Y;
+        //    trans.d23 = v.Z;
 
-            trans.d31 = n.x;
-            trans.d32 = n.y;
-            trans.d33 = n.z;
+        //    trans.d31 = n.X;
+        //    trans.d32 = n.Y;
+        //    trans.d33 = n.Z;
 
-            VETransform3D R = new VETransform3D();
-            R.VETransform3DTranslation(-O.x, -O.y, -O.z);
-            return R * trans;
-        }
+        //    VETransform3D R = new VETransform3D();
+        //    R.VETransform3DTranslation(-O.X, -O.Y, -O.Z);
+        //    return R * trans;
+        //}
 
     }
 }

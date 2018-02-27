@@ -8,192 +8,161 @@ namespace RenderingEngine
 {
 	class HodgmanClip
 	{
-		public enum Boundary
-		{
-			Left,
-			Right,
-			Bottom,
-			Top,
-			Behind,
-			Front
-		};
+        public enum Boundary { Left, Right, Bottom, Top, Behind, Front };
+        private Device device;
 
-		private Device device;
+        private List<Vertex> outputList;
 
-		//裁剪后的顶点数组
-		private List<Vertex> outputList;
+        public HodgmanClip(Device device)
+        {
+            this.outputList = new List<Vertex>();
+            this.device = device;
+        }
 
-		public HodgmanClip(Device device)
-		{
-			this.outputList = new List<Vertex>();
-			this.device = device;
-		}
+        public List<Vertex> GetOutputList()
+        {
+            return this.outputList;
+        }
 
-		public List<Vertex> GetOutputList()
-		{
-			return this.outputList;
-		}
+        // 求交点, 返回的pos是clip空间下坐标
+        Vertex Intersect(Vertex v1, Vertex v2, Boundary b, Vector4 wMin, Vector4 wMax)
+        {
+            Vertex iPt = new Vertex();
+            float m1 = 0, m2 = 0, m3 = 0, m4 = 0, m5 = 0, m6 = 0;
+            Vector4 p1 = v1.ClipSpacePosition;
+            Vector4 p2 = v2.ClipSpacePosition;
+            if (p1.X != p2.X) { m1 = (wMin.X - p1.X) / (p2.X - p1.X); m2 = (wMax.X - p1.X) / (p2.X - p1.X); }
+            if (p1.Y != p2.Y) { m3 = (wMin.Y - p1.Y) / (p2.Y - p1.Y); m4 = (wMax.Y - p1.Y) / (p2.Y - p1.Y); }
+            if (p1.Z != p2.Z) { m5 = (wMin.Z - p1.Z) / (p2.Z - p1.Z); m6 = (wMax.Z - p1.Z) / (p2.Z - p1.Z); }
+            Vector4 clipPos = new Vector4();
+            Vector4 pos = new Vector4();
+            Color4 col = new Color4(255, 255, 255);
+            Vector4 normal = new Vector4();
+            Vector4 uv = new Vector4();
+            switch (b)
+            {
+                case Boundary.Left:
+                    clipPos.X = wMin.X;
+                    clipPos.Y = p1.Y + (p2.Y - p1.Y) * m1;
+                    clipPos.Z = p1.Z + (p2.Z - p1.Z) * m1;
+                    clipPos.W = p1.W + (p2.W - p1.W) * m1;
+                    col = MathUtil.ColorInterp(v1.Color, v2.Color, m1);
+                    normal = MathUtil.Vector4Interp(v1.Normal, v2.Normal, m1);
+                    break;
+                case Boundary.Right:
+                    clipPos.X = wMax.X;
+                    clipPos.Y = p1.Y + (p2.Y - p1.Y) * m2;
+                    clipPos.Z = p1.Z + (p2.Z - p1.Z) * m2;
+                    clipPos.W = p1.W + (p2.W - p1.W) * m2;
+                    col = MathUtil.ColorInterp(v1.Color, v2.Color, m2);
+                    normal = MathUtil.Vector4Interp(v1.Normal, v2.Normal, m2);
+                    break;
+                case Boundary.Bottom:
+                    clipPos.Y = wMin.Y;
+                    clipPos.X = p1.X + (p2.X - p1.X) * m3;
+                    clipPos.Z = p1.Z + (p2.Z - p1.Z) * m3;
+                    clipPos.W = p1.W + (p2.W - p1.W) * m3;
+                    col = MathUtil.ColorInterp(v1.Color, v2.Color, m3);
+                    normal = MathUtil.Vector4Interp(v1.Normal, v2.Normal, m3);
+                    break;
+                case Boundary.Top:
+                    clipPos.Y = wMax.Y;
+                    clipPos.X = p1.X + (p2.X - p1.X) * m4;
+                    clipPos.Z = p1.Z + (p2.Z - p1.Z) * m4;
+                    clipPos.W = p1.W + (p2.W - p1.W) * m4;
+                    col = MathUtil.ColorInterp(v1.Color, v2.Color, m4);
+                    normal = MathUtil.Vector4Interp(v1.Normal, v2.Normal, m4);
+                    break;
+                case Boundary.Behind:
+                    clipPos.Z = wMin.Z;
+                    clipPos.X = p1.X + (p2.X - p1.X) * m5;
+                    clipPos.Y = p1.Y + (p2.Y - p1.Y) * m5;
+                    clipPos.W = p1.W + (p2.W - p1.W) * m5;
+                    col = MathUtil.ColorInterp(v1.Color, v2.Color, m5);
+                    normal = MathUtil.Vector4Interp(v1.Normal, v2.Normal, m5);
+                    break;
+                case Boundary.Front:
+                    clipPos.Z = wMax.Z;
+                    clipPos.X = p1.X + (p2.X - p1.X) * m6;
+                    clipPos.Y = p1.Y + (p2.Y - p1.Y) * m6;
+                    clipPos.W = p1.W + (p2.W - p1.W) * m6;
+                    col = MathUtil.ColorInterp(v1.Color, v2.Color, m6);
+                    normal = MathUtil.Vector4Interp(v1.Normal, v2.Normal, m6);
+                    break;
+            }
 
-		//求交点， 返回的pos视clip空间下坐标
-		Vertex Intersect(Vertex v1, Vertex v2, Boundary b, Vector4 wMin, Vector4 wMax)
-		{
-			Vertex iPt = new Vertex();
-			double m1 = 0, m2 = 0, m3 = 0, m4 = 0, m5 = 0, m6 = 0;
-			Vector4 p1 = v1.ClipSpacePosition;
-			Vector4 p2 = v2.ClipSpacePosition;
-			if (p1.x != p2.x)
-			{
-				m1 = (wMin.x - p1.x) / (p2.x - p1.x);
-				m2 = (wMax.x - p1.x) / (p2.x - p1.x);
-			}
-			if (p1.y != p2.y)
-			{
-				m3 = (wMin.y - p1.y) / (p2.y - p1.y);
-				m4 = (wMax.y - p1.y) / (p2.y - p1.y);
-			}
-			if (p1.z != p2.z)
-			{
-				m5 = (wMin.z - p1.z) / (p2.z - p1.z);
-				m6 = (wMax.z - p1.z) / (p2.z - p1.z);
-			}
-			//裁剪位置
-			Vector4 clipPos = new Vector4();
+            iPt.Position = pos;
+            iPt.ClipSpacePosition = clipPos;
+            iPt.ScreenSpacePosition = this.device.ViewPort(clipPos);
+            iPt.Normal = normal;
+            iPt.UV = uv;
+            iPt.Color = col;
+            return iPt;
+        }
 
-			Vector4 pos = new Vector4();
-			//颜色
-			Color4 col = new Color4(255, 255, 255);
-			//法线
-			Vector4 normal = new Vector4();
-			//uv平面
-			Vector4 uv = new Vector4();
+        bool Inside(Vector4 p, Boundary b, Vector4 wMin, Vector4 wMax)
+        {
+            bool flag = true;
+            switch (b)
+            {
+                case Boundary.Left:
+                    if (p.X < wMin.X)
+                        flag = false;
+                    break;
+                case Boundary.Right:
+                    if (p.X > wMax.X)
+                        flag = false;
+                    break;
+                case Boundary.Bottom:
+                    if (p.Y < wMin.Y)
+                        flag = false;
+                    break;
+                case Boundary.Top:
+                    if (p.Y > wMax.Y)
+                        flag = false;
+                    break;
+                case Boundary.Behind:
+                    if (p.Z < wMin.Z)
+                        flag = false;
+                    break;
+                case Boundary.Front:
+                    if (p.Z > wMax.Z)
+                        flag = false;
+                    break;
+            }
+            if (p.W < 0)
+            {
+                flag = false;
+            }
+            return flag;
+        }
 
-			double m = 0;
-			switch (b)
-			{
-				case Boundary.Left:
-					{
-						m = m1;
-					}
-					break;
-				case Boundary.Right:
-					{
-						m = m2;
-					}
-					break;
-				case Boundary.Bottom:
-					{
-						m = m3;
-					}
-					break;
-				case Boundary.Top:
-					{
-						m = m4;
-					}
-					break;
-				case Boundary.Behind:
-					{
-						m = m5;
-					}
-					break;
-				case Boundary.Front:
-					{
-						m = m6;
-					}
-					break;
-			}
+        // 需要clip空间下的坐标（除以w分量）
+        public void HodgmanPolygonClip(Boundary b, Vector4 wMin, Vector4 wMax, Vertex[] pIn)
+        {
+            Vertex s = pIn[pIn.Length - 1];
+            for (int i = 0; i < pIn.Length; i++)
+            {
+                Vertex p = pIn[i];
 
-			clipPos.x = wMin.x;
-			clipPos.y = p1.y + (p2.y - p1.y) * m;
-			clipPos.z = p1.z + (p2.z - p1.z) * m;
-			clipPos.h = p1.h + (p2.h - p1.h) * m;
-			col = MathUtil.ColorInterp(v1.Color, v2.Color, m);
-			normal = MathUtil.Vector4Interp(v1.Normal, v2.Normal, m);
-
-			iPt.Position = pos;
-			iPt.ClipSpacePosition = clipPos;
-			iPt.ScreenSpacePosition = this.device.ViewPort(clipPos);
-			iPt.Normal = normal;
-			iPt.UV = uv;
-			iPt.Color = col;
-			return iPt;
-		}
-
-		// 判断点是否包含在屏幕空间中
-		bool Inside(Vector4 p, Boundary b, Vector4 wMin, Vector4 wMax)
-		{
-			bool flag = true;
-			switch (b)
-			{
-				case Boundary.Left:
-					{
-						if (p.x < wMin.x)
-							flag = false;
-					}
-					break;
-				case Boundary.Right:
-					{
-						if (p.x > wMax.x)
-							flag = false;
-							
-					}
-					break;
-				case Boundary.Bottom:
-					{
-						if (p.y < wMin.y)
-							flag = false;
-					}
-					break;
-				case Boundary.Top:
-					{
-						if (p.y > wMax.y)
-							flag = false;
-					}
-					break;
-				case Boundary.Behind:
-					{
-						if (p.z < wMin.z)
-							flag = false;
-					}
-					break;
-				case Boundary.Front:
-					{
-						if (p.z > wMax.z)
-							flag = false;
-					}
-					break;		
-			}
-			if (p.h < 0)
-			{
-				flag = false;
-			}
-			return flag;
-		}
-
-		public void HodgmanPolygonClip(Boundary b, Vector4 wMin, Vector4 wMax, Vertex[] pIn)
-		{
-			Vertex s = pIn[pIn.Length - 1];
-			for (int i = 0; i < pIn.Length; i += 1)
-			{
-				Vertex p = pIn[i];
-
-				if (Inside(p.ClipSpacePosition, b, wMin, wMax))
-				{
-					if (Inside(s.ClipSpacePosition, b, wMax, wMin))
-					{
-						this.outputList.Add(p);
-					}
-					else
-					{
-						this.outputList.Add(Intersect(s, p, b, wMin, wMax));
-						this.outputList.Add(pIn[i]);
-					}
-				}
-				else if (Inside(s.ClipSpacePosition, b, wMin, wMax))
-				{
-					this.outputList.Add(Intersect( s , p, b, wMin, wMax));
-				}
-				s = pIn[i];
-			}
-		}
+                if (Inside(p.ClipSpacePosition, b, wMin, wMax))
+                {
+                    if (Inside(s.ClipSpacePosition, b, wMin, wMax))
+                    {
+                        this.outputList.Add(p);
+                    }
+                    else
+                    {
+                        this.outputList.Add(Intersect(s, p, b, wMin, wMax));
+                        this.outputList.Add(pIn[i]);
+                    }
+                }
+                else if (Inside(s.ClipSpacePosition, b, wMin, wMax))
+                {
+                    this.outputList.Add(Intersect(s, p, b, wMin, wMax));
+                }
+                s = pIn[i];
+            }
+        }
 	}
 }

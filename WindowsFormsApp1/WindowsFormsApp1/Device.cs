@@ -8,127 +8,416 @@ using System.Drawing.Imaging;
 
 namespace RenderingEngine
 {
-    class Device
+    public class Device
     {
-        public Bitmap bitmap;
-        public BitmapData bitmapData;
-		public HodgmanClip clip;
-		private Vector4 clipMin; //裁剪空间 （-1,-1，-1）
-		private Vector4 clipMax;// 裁剪空间（1,1,1）
-
-		
-        public int width;
-        public int height;
-		//扫描线
-		public Scanline scanline;
-		// 场景
+        private Bitmap bmp;
+        private BitmapData bmData;
+        private int height;
+        private int width;
+        private ScanLine scanLine;
+        private HodgmanClip clip;
+        private Vector4 clipMin;   // 裁剪空间(-1, -1, -1)
+        private Vector4 clipMax;   // 裁剪空间(1, 1, 1)
         private Scene scene;
-		//深度缓存
-		private readonly double[] depthBuffer;
+        private readonly float[] depthBuffer;
 
         public Device(Bitmap bmp)
         {
-            this.bitmap = bmp;
-            this.width = bmp.Width;
+            this.bmp = bmp;
             this.height = bmp.Height;
-            this.scanline = new Scanline(this);
-			this.depthBuffer = new double[bmp.Width * bmp.Height];
+            this.width = bmp.Width;
+            this.scanLine = new ScanLine(this);
+            this.clipMin = new Vector4(-1, -1, -1, 1);
+            this.clipMax = new Vector4(1, 1, 1, 1);
+            this.depthBuffer = new float[bmp.Width * bmp.Height];
         }
 
-        public void StartDisplay(FormWindow window)
+        public int GetHeight()
         {
-            //this.bitmapData = bitData;
-            this.scene = window.scene;
-            scanline.StartScan(this.scene);
-            window.g.DrawImage(this.bitmap, new Point(0, 0));
+            return this.height;
         }
 
-		public void ClearBitmap()
-		{
-			for (int i = 0; i < height; i += 1)
-			{
-				for (int j = 0; j < width; j += 1)
-				{
-					bitmap.SetPixel(j, i, Color.Black);
-				}
-			}
-		}
+        public int GetWidth()
+        {
+            return this.width;
+        }
 
-		public void ClearBitmapData(BitmapData data)
-		{
-			if (this.bitmapData == null)
-			{
-				this.bitmapData = data;
-			}
+        public void Clear(BitmapData data)
+        {
+            // clear depth buffer
+            for (int index = 0; index < depthBuffer.Length; index++)
+            {
+                depthBuffer[index] = float.MaxValue;
+            }
+            unsafe
+            {
+                byte* ptr = (byte*)(data.Scan0);
+                for (int i = 0; i < data.Height; i++)
+                {
+                    for (int j = 0; j < data.Width; j++)
+                    {
+                        *ptr = 128;
+                        *(ptr + 1) = 128;
+                        *(ptr + 2) = 128;
+                        ptr += 3;
+                    }
+                    ptr += data.Stride - data.Width * 3;
+                }
+            }
+        }
 
-			for(int i = 0; i<depthBuffer.Length; i+=1)
-			{
-				depthBuffer[i] = float.MaxValue;
-			}
-			
-			unsafe
-			{
-				//首地址
-				byte* ptr = (byte*)(bitmapData.Scan0);
-				for (int i = 0; i < bitmapData.Height; i++)
-				{
-					for (int j = 0; j < bitmapData.Width; j++)
-					{
-						*ptr = 0;
-						*(ptr + 1) = 0;
-						*(ptr + 3) = 0;
-						ptr += 3;
-					}
-					ptr += bitmapData.Stride - bitmapData.Width * 3;
-				}
-			}
-		}
+        public void PutPixel(int x, int y, float z, Color4 color)
+        {
+            int index = (x + y * GetWidth());
+            if (depthBuffer[index] < z) return;
+            depthBuffer[index] = z;
+            unsafe
+            {
+                byte* ptr = (byte*)(this.bmData.Scan0);
+                byte* row = ptr + (y * this.bmData.Stride);
+                row[x * 3] = color.blue;
+                row[x * 3 + 1] = color.green;
+                row[x * 3 + 2] = color.red;
+            }
+        }
 
+        private Vector4 Project(Vector4 coord, Matrix4x4 mvp)
+        {
+            Vector4 point = mvp.ApplY(coord);
+            Vector4 viewPort = Homogenize(point);
+            return viewPort;
+        }
+
+        // 归一化，得到屏幕坐标
+        private Vector4 Homogenize(Vector4 x)
+        {
+            Vector4 val = new Vector4();
+            float rhw = 1.0f / x.W;
+            val.X = (1.0f + x.X * rhw) * GetWidth() * 0.5f;
+            val.Y = (1.0f - x.Y * rhw) * GetHeight() * 0.5f;
+            val.Z = x.Z * rhw;
+            val.W = 1.0f;
+            return val;
+        }
+
+        // 裁剪平面
+        public Vector4 ClipSpace(Vector4 x, Matrix4x4 mvp)
+        {
+            Vector4 val = mvp.ApplY(x);
+            float rhw = 1.0f / val.W;
+            val.X = val.X * rhw;
+            val.Y = val.Y * rhw;
+            val.Z = val.Z * rhw;
+            val.W = val.W; // val.W = 1;
+            return val;
+        }
+
+        // 视平面 将规范化视空间安比例还原到屏幕上
+        public Vector4 ViewPort(Vector4 x)
+        {
+            Vector4 val = new Vector4();
+            val.X = (1.0f + x.X) * GetWidth() * 0.5f;
+            val.Y = (1.0f - x.Y) * GetHeight() * 0.5f;
+            val.Z = x.Z;
+            val.W = 1.0f;
+            return val;
+        }
+
+        public void DrawPoint(Vector4 point, Color4 c)
+        {
+            if (point.X >= 0 && point.Y >= 0 && point.X <= GetWidth() && point.Y <= GetHeight())
+            {
+                if (point.X == GetWidth()) point.X = point.X - 1;
+                if (point.Y == GetHeight()) point.Y = point.Y - 1;
+                PutPixel((int)point.X, (int)point.Y, point.Z, c);
+            }
+        }
+
+        public Color4 Tex2D(float u, float v, Texture texture)
+        {
+            int x = Math.Abs((int)((1f - u) * texture.GetWidth()) % texture.GetWidth());
+            int y = Math.Abs((int)((1f - v) * texture.GetHeight()) % texture.GetHeight());
+
+            byte r = 0;
+            byte g = 0;
+            byte b = 0;
+
+            unsafe
+            {
+                byte* ptr = (byte*)(texture.GetBmData().Scan0);
+                byte* row = ptr + (y * texture.GetBmData().Stride);
+                b = row[x * 3];
+                g = row[x * 3 + 1];
+                r = row[x * 3 + 2];
+            }
+
+            return new Color4((byte)r, (byte)g, (byte)b);
+        }
+
+        // DDA 画线算法
+        private void DrawLine(Vertex v1, Vertex v2, Vector4 point0, Vector4 point1, Scene scene)
+        {
+            int x0 = (int)point0.X;
+            int y0 = (int)point0.Y;
+            int x1 = (int)point1.X;
+            int y1 = (int)point1.Y;
+            float z1 = point0.Z;
+            float z2 = point1.Z;
+
+            int dx = x1 - x0;
+            int dy = y1 - y0;
+            int steps = Math.Max(Math.Abs(dx), Math.Abs(dy));
+            if (steps == 0) return;
+            float xInc = (float)dx / (float)steps;
+            float yInc = (float)dy / (float)steps;
+
+            float x = x0;
+            float y = y0;
+            //顶点位置和法线方向与 光线方向的点积  
+            // 顶点的实际颜色 = 光线方向 点积 法线方向 * 光的颜色* 本身颜色
+            float nDotL1 = scene.light.ComputeNDotL(v1.Position, v1.Normal);
+            float nDotL2 = scene.light.ComputeNDotL(v2.Position, v2.Normal);
+            for (int i = 1; i <= steps; i++)
+            {
+                float ratio = (float)i / (float)steps;
+                Color4 vertexColor = new Color4(0, 0, 0);
+                Color4 lightColor = new Color4(0, 0, 0);
+                if (scene.light.IsEnable)
+                {
+                    Color4 c1 = scene.light.GetFinalLightColor(nDotL1);
+                    Color4 c2 = scene.light.GetFinalLightColor(nDotL2);
+                    lightColor = MathUtil.ColorInterp(c1, c2, ratio);
+                }
+                else
+                {
+                    vertexColor = MathUtil.ColorInterp(v1.Color, v2.Color, ratio);
+                }
+                float z = MathUtil.Interp(z1, z2, ratio);
+                if (float.IsNaN(z))
+                {
+                    //Console.WriteLine("IsNaN");
+                    return;
+                }
+                DrawPoint(new Vector4((int)x, (int)y, z, 0), vertexColor + lightColor);
+                x += xInc;
+                y += yInc;
+            }
+        }
+
+        private bool ShouldBackFaceCull(VertexTriangle oriVt)
+        {
+            Vector4 a = new Vector4(oriVt.Vertices[0].ScreenSpacePosition);
+            Vector4 b = new Vector4(oriVt.Vertices[1].ScreenSpacePosition);
+            Vector4 c = new Vector4(oriVt.Vertices[2].ScreenSpacePosition);
+            a.Z = b.Z = c.Z = 0;
+            Vector4 ab = b - a;
+            Vector4 ac = c - a;
+            return Vector4.Cross(ab, ac).Z > 0;
+        }
+
+        private void DrawTriangle(VertexTriangle vt, VertexTriangle oriVt, Scene scene)
+        {
+            if (!ShouldBackFaceCull(oriVt))
+            {
+                this.scanLine.ProcessScanLine(vt, oriVt, scene);
+            }
+        }
+
+        /*
+        public void DrawTriangle(VertexTriangle vt, Scene scene)
+        {
+            Vector4 normal = vt.VertexA.Normal;
+            Vector4 dir = scene.camera.GetDir();
+            float dot = Vector4.Dot(dir, normal);
+            if (dot > 0) return;
+
+            List<Vertex> vList = new List<Vertex>();
+            vList.Add(vt.VertexA);
+            vList.Add(vt.VertexB);
+            vList.Add(vt.VertexC);
+            vList.Sort();
+
+            //Vector4 p1 = this.ViewPort(vList[0].ClipSpacePosition);
+            //Vector4 p2 = this.ViewPort(vList[1].ClipSpacePosition);
+            //Vector4 p3 = this.ViewPort(vList[2].ClipSpacePosition);   
+            Vector4 p1 = vList[0].ScreenSpacePosition;
+            Vector4 p2 = vList[1].ScreenSpacePosition;
+            Vector4 p3 = vList[2].ScreenSpacePosition;       
+
+            //if (p1.Y > p2.Y)
+            //{
+            //    var temp = p2;
+            //    p2 = p1;
+            //    p1 = temp;
+            //}
+
+            //if (p2.Y > p3.Y)
+            //{
+            //    var temp = p2;
+            //    p2 = p3;
+            //    p3 = temp;
+            //}
+
+            //if (p1.Y > p2.Y)
+            //{
+            //    var temp = p2;
+            //    p2 = p1;
+            //    p1 = temp;
+            //}
+
+            float dP1P2, dP1P3, dP2P3;
+            if (p2.Y - p1.Y > 0)
+                dP1P2 = (p2.X - p1.X) / (p2.Y - p1.Y);
+            else
+                dP1P2 = 0;
+
+            if (p3.Y - p1.Y > 0)
+                dP1P3 = (p3.X - p1.X) / (p3.Y - p1.Y);
+            else
+                dP1P3 = 0;
+
+            if (p3.Y - p2.Y > 0)
+                dP2P3 = (p3.X - p2.X) / (p3.Y - p2.Y);
+            else
+                dP2P3 = 0;
+
+            if(dP1P2 == 0)
+            {
+                if (p1.X > p2.X)
+                {
+                    var temp = vList[0];
+                    vList[0] = vList[1];
+                    vList[1] = temp;
+                }
+                for (var y = (int)p1.Y; y <= (int)p3.Y; y++)
+                {
+                    //this.scanLine.ProcessScanLineAd(y, p1, p3, p2, p3, scene);
+                    this.scanLine.ProcessScanLineAd(y, vList[0], vList[2], vList[1], vList[2], scene);
+                }
+            }
+            else
+            {
+                if (dP1P2 > dP1P3)
+                {
+                    for (var y = (int)p1.Y; y <= (int)p3.Y; y++)
+                    {
+                        if (y < p2.Y)
+                        {
+                            //this.scanLine.ProcessScanLineAd(y, p1, p3, p1, p2, scene);
+                            this.scanLine.ProcessScanLineAd(y, vList[0], vList[2], vList[0], vList[1], scene);
+                        }
+                        else
+                        {
+                            //this.scanLine.ProcessScanLineAd(y, p1, p3, p2, p3, scene);
+                            this.scanLine.ProcessScanLineAd(y, vList[0], vList[2], vList[1], vList[2], scene);
+                        }
+                    }
+                }
+                else
+                {
+                    for (var y = (int)p1.Y; y <= (int)p3.Y; y++)
+                    {
+                        if (y < p2.Y)
+                        {
+                            //this.scanLine.ProcessScanLineAd(y, p1, p2, p1, p3, scene);
+                            this.scanLine.ProcessScanLineAd(y, vList[0], vList[1], vList[0], vList[2], scene);
+                        }
+                        else
+                        {
+                            //this.scanLine.ProcessScanLineAd(y, p2, p3, p1, p3, scene);
+                            this.scanLine.ProcessScanLineAd(y, vList[1], vList[2], vList[0], vList[2], scene);
+                        }
+                    }
+                }
+            }
+        }
+        */
+
+        public void Render(Scene scene, BitmapData bmData)
+        {
+            this.scene = scene;
+            this.bmData = bmData;
+            Matrix4x4 matrixMVP = CATransform.MVPMatrix;
+
+            foreach (var triangle in scene.mesh.triangles)
+            {
+                Vertex vertexA = scene.mesh.Vertices[triangle.a];
+                Vertex vertexB = scene.mesh.Vertices[triangle.b];
+                Vertex vertexC = scene.mesh.Vertices[triangle.c];
+
+                List<Vertex> pIn = new List<Vertex>();
+
+                vertexA.ClipSpacePosition = this.ClipSpace(vertexA.Position, matrixMVP);
+                vertexB.ClipSpacePosition = this.ClipSpace(vertexB.Position, matrixMVP);
+                vertexC.ClipSpacePosition = this.ClipSpace(vertexC.Position, matrixMVP);
+                vertexA.ScreenSpacePosition = this.ViewPort(vertexA.ClipSpacePosition);
+                vertexB.ScreenSpacePosition = this.ViewPort(vertexB.ClipSpacePosition);
+                vertexC.ScreenSpacePosition = this.ViewPort(vertexC.ClipSpacePosition);
+
+                pIn.Add(vertexA);
+                pIn.Add(vertexB);
+                pIn.Add(vertexC);
+
+                for (int i = 0; i < 6; i++)
+                {
+                    if (pIn.Count == 0) break;
+                    clip = new HodgmanClip(this);
+                    clip.HodgmanPolygonClip((HodgmanClip.Boundary)i, clipMin, clipMax, pIn.ToArray());
+                    pIn = clip.GetOutputList();
+                }
+                List<VertexTriangle> vtList = this.MakeTriangle(pIn);
+                VertexTriangle oriVt = new VertexTriangle(vertexA, vertexB, vertexC);
+
+                if (scene.renderState == Scene.RenderState.WireFrame)
+                {
+                    // 画线框, 需要vertex的normal,pos,color
+                    //DrawLine(vertexA, vertexB, pixelA, pixelB, scene);
+                    //DrawLine(vertexB, vertexC, pixelB, pixelC, scene);
+                    for (int i = 0; i < vtList.Count; i++)
+                    {
+                        if (!ShouldBackFaceCull(oriVt))
+                        {
+                            int length = vtList[i].Vertices.Length;
+                            Vertex start = vtList[i].Vertices[length - 1];
+                            for (int j = 0; j < length; j++)
+                            {
+                                Vector4 viewPortA = this.ViewPort(start.ClipSpacePosition);
+                                Vector4 viewPortB = this.ViewPort(vtList[i].Vertices[j].ClipSpacePosition);
+                                DrawLine(start, vtList[i].Vertices[j], viewPortA, viewPortB, scene);
+                                start = vtList[i].Vertices[j];
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // 填充三角形                  
+                    for (int i = 0; i < vtList.Count; i++)
+                    {
+                        DrawTriangle(vtList[i], oriVt, scene);
+                    }
+                }
+            }
+        }
+
+        private List<VertexTriangle> MakeTriangle(List<Vertex> input)
+        {
+            List<VertexTriangle> temp = new List<VertexTriangle>();
+            for (int i = 0; i < input.Count - 2; i++)
+            {
+                VertexTriangle vt = new VertexTriangle(input[0], input[i + 1], input[i + 2]);
+                temp.Add(vt);
+            }
+            return temp;
+        }
         public void DrawTriangles(TriangleModel triangleModel)
         {
             Vertex[] vectex = triangleModel.Vertices;
-            DrawDDALine(new Vector2(vectex[0].Position.x, vectex[0].Position.y), new Vector2(vectex[1].Position.x, vectex[1].Position.y), vectex[0].Color);
-            DrawDDALine(new Vector2(vectex[1].Position.x, vectex[1].Position.y), new Vector2(vectex[2].Position.x, vectex[2].Position.y), vectex[1].Color);
-            DrawDDALine(new Vector2(vectex[2].Position.x, vectex[2].Position.y), new Vector2(vectex[0].Position.x, vectex[0].Position.y), vectex[2].Color);
+            DrawDDALine(new Vector2(vectex[0].Position.X, vectex[0].Position.Y), new Vector2(vectex[1].Position.X, vectex[1].Position.Y), vectex[0].Color);
+            DrawDDALine(new Vector2(vectex[1].Position.X, vectex[1].Position.Y), new Vector2(vectex[2].Position.X, vectex[2].Position.Y), vectex[1].Color);
+            DrawDDALine(new Vector2(vectex[2].Position.X, vectex[2].Position.Y), new Vector2(vectex[0].Position.X, vectex[0].Position.Y), vectex[2].Color);
         }
-
-		// 判断三角形的三个点是否在一条线上
-		public bool IsOnSameLine(TriangleModel orivt)
-		{
-			Vector4 a = new Vector4(orivt.Vertices[0].ScreenSpacePosition);
-			Vector4 b = new Vector4(orivt.Vertices[1].ScreenSpacePosition);
-			Vector4 c = new Vector4(orivt.Vertices[2].ScreenSpacePosition);
-
-			a.z = b.z = c.z = 0;
-			Vector4 ab = b - a;
-			Vector4 ac = c - a;
-			return ab.CrossMultiply(ac).z > 0;
-		}
-
-		public Color4 Text2D(float u, float v, Texture texture)
-		{
-			int x = Math.Abs((int)(1f - u) * texture.GetWidth() % texture.GetWidth());
-			int y = Math.Abs((int)(1f - v) * texture.GetHeight() % texture.GetHeight());
-			byte r = 0;
-			byte g = 0;
-			byte b = 0;
-			unsafe
-			{
-				byte* ptr = (byte*)(texture.GetBmData().Scan0);
-				byte* row = ptr + (y * texture.GetBmData().Stride);
-				b = row[x * 3];
-				g = row[x * 3 + 1];
-				r = row[x * 3 + 2];
-			}
-			return new Color4((byte)r, (byte)g, (byte)b);
-		}
-		private void DrawTriangle(TriangleModel vt, TriangleModel orivt, Scene scene)
-		{
-			if (!IsOnSameLine(orivt))
-			{
-				this.scanline.ProcessScanLine(vt, orivt, scene);
-			}
-		}
+		
 
         public void DrawDDALine(Vector2 point1, Vector2 point2, Color4 color)
         {
@@ -299,218 +588,10 @@ namespace RenderingEngine
         public void PutPixel(int x,int y, Color4 finalColor)
         {
             Color color = Color.FromArgb(finalColor.red, finalColor.blue, finalColor.green);
-            if (x >= 0 && y >= 0 && x <= scene.camera.ViewPlaneWidth && y <= scene.camera.ViewPlaneHeight)
-            {
-                this.bitmap.SetPixel(x, y, color);
-            }
+
+            this.bmp.SetPixel(x, y, color);
         }
 
-		public void PutPixel(int x, int y, float z,Color4 finalColor)
-		{
-			int index = (x + y * width);
-			if (index < 0 || index > depthBuffer.Length)
-				return;
-			if (depthBuffer[index] < z)
-				return;
-			depthBuffer[index] = z;
-			unsafe
-			{
-				//this.bitmap.SetPixel(x, y, Color.FromArgb(finalColor.red, finalColor.green, finalColor.blue));
-				byte* ptr = (byte*)(this.bitmapData.Scan0);
-				//stride 扫描宽度
-				byte* row = ptr + (y * this.bitmapData.Stride);
-				row[x * 3] = finalColor.blue;
-				row[x * 3 + 1] = finalColor.green;
-				row[x * 3 + 2] = finalColor.red;
-			}
-		}
 
-		private Vector4 Project(Vector4 coord, VETransform3D mvp)
-		{
-            Vector4 point = mvp.Maxtrix1x4(coord);
-			point.Normalize();
-			return point;
-		}
-
-		private Vector4 Normalization(Vector4 vt)
-		{
-			Vector4 vct = new Vector4();
-			double rhw = 1.0f / vt.h;
-			vct.x = (1.0f + vt.x * rhw) * width * 0.5f;
-			vct.y = (1.0f - vt.y * rhw) * height * 0.5f;
-			vct.z = vt.z * rhw;
-			vct.h = 1.0f;
-			return vct;
-		}
-
-		// 裁剪平面
-		public Vector4 ClipSpace(Vector4 x, VETransform3D mvp)
-		{
-			Vector4 val = mvp.Maxtrix1x4(x);
-			double rhw = 1.0f / val.h;
-			val.x = val.x * rhw;
-			val.y = val.y * rhw;
-			val.z = val.z * rhw;
-            val.h = val.h;
-			return val;
-		}
-
-		// 视平面 将规范化视空间安比例还原到屏幕上
-		public Vector4 ViewPort(Vector4 x)
-		{
-			Vector4 val = new Vector4();
-			val.x = (1.0f + x.x) * width * 0.5f;
-			val.y = (1.0f - x.y) * height * 0.5f;
-			val.z = x.z;
-			val.h = 1.0f;
-			return val;
-		}
-
-		public void DrawPoint(Vector4 point, Color4 color)
-		{
-			if (point.x == width)
-				point.x = point.x - 1;
-			if (point.y == height)
-				point.y = point.y - 1;
-			PutPixel((int)point.x, (int)point.y, (float)point.z, color);
-		}
-
-
-		public void DrawLine(Vertex v1, Vertex v2, Vector4 point0, Vector4 point1, Scene scene)
-		{
-			int x0 = (int)point0.x;
-			int y0 = (int)point0.y;
-			int x1 = (int)point1.x;
-			int y1 = (int)point1.y;
-
-			double z1 = point0.z;
-			double z2 = point1.z;
-
-			int dx = x1 - x0;
-			int dy = y1 - y0;
-
-			// 步长 DDA算法 按像素逐步递增划线
-			int steps = Math.Max(Math.Abs(dx), Math.Abs(dy));
-
-			if (steps == 0) return;
-
-			double xInc = dx / steps;
-			double yInc = dy / steps;
-
-			double x = x0;
-			double y = y0;
-
-			//顶点位置和法线方向与 光线方向的点积  
-			// 顶点的实际颜色 = 光线方向 点积 法线方向 * 光的颜色* 本身颜色
-			double nDotL1 = scene.light.ComputeNDotL(v1.Position, v1.Normal);
-
-			double nDotL2 = scene.light.ComputeNDotL(v2.Position, v2.Normal);
-
-			for (int i = 1; i <= steps; i++)
-			{
-
-				float ratio = (float)i / (float)steps;
-
-				Color4 vertexColor = new Color4(0, 0, 0);
-
-				Color4 lightColor = new Color4(0, 0, 0);
-
-				if (scene.light.IsEnable)
-				{
-					Color4 c1 = scene.light.GetFinalLightColor((float)nDotL1);
-					Color4 c2 = scene.light.GetFinalLightColor((float)nDotL2);
-					lightColor = MathUtil.ColorInterp(c1, c2, ratio);
-				}
-				else
-				{
-					vertexColor = MathUtil.ColorInterp(v1.Color, v2.Color,ratio);
-				}
-
-				float z = (float)MathUtil.Interp(z1, z2, ratio);
-				if (float.IsNaN(z))
-				{
-					return;
-				}
-				DrawPoint(new Vector4((int)x, (int)y, z, 0), vertexColor + lightColor);
-				x += xInc;
-				y += yInc;
-			}
-		}
-
-		public void Render(Scene scene, BitmapData bmData)
-		{
-			this.scene = scene;
-			this.bitmapData = bmData;
-			VETransform3D mvpMatrix = CATransform.MVPMatrix;
-			foreach (var triangle in scene.mesh.triangles)
-			{
-				Vertex vertexA = scene.mesh.vertices[triangle.a];
-				Vertex vertexB = scene.mesh.vertices[triangle.b];
-				Vertex vertexC = scene.mesh.vertices[triangle.c];
-
-				List<Vertex> pIn = new List<Vertex>();
-				//裁剪后的位置
-				vertexA.ClipSpacePosition = ClipSpace(vertexA.Position, mvpMatrix);
-				vertexB.ClipSpacePosition = ClipSpace(vertexB.Position, mvpMatrix);
-				vertexC.ClipSpacePosition = ClipSpace(vertexC.Position, mvpMatrix);
-				// 视区位置
-				vertexA.ScreenSpacePosition = ViewPort(vertexA.ClipSpacePosition);
-				vertexB.ScreenSpacePosition = ViewPort(vertexB.ClipSpacePosition);
-				vertexC.ScreenSpacePosition = ViewPort(vertexC.ClipSpacePosition);
-
-				pIn.Add(vertexA);
-				pIn.Add(vertexB);
-				pIn.Add(vertexC);
-
-				//for (int i = 0; i < 6; i += 1)
-				//{
-				//	if (pIn.Count == 0) break;
-				//	clip = new HodgmanClip(this);
-				//	clip.HodgmanPolygonClip((HodgmanClip.Boundary)i, clipMin, clipMax, pIn.ToArray());
-				//	pIn = clip.GetOutputList();
-				//}
-
-				List<TriangleModel> vtList = MakeTriangle(pIn);
-				TriangleModel orivt = new TriangleModel(vertexA, vertexB, vertexC);
-				if (scene.renderState == Scene.RenderState.WireFrame)
-				{
-                    //画线框 需要vertex的法向量normal， 位置 pos， 颜色 color
-                    if (!IsOnSameLine((orivt)))
-                    {
-                        for (int i = 0; i < vtList.Count; i += 1)
-                        {
-                            int length = vtList[i].Vertices.Length;
-                            Vertex start = vtList[i].Vertices[length - 1];
-                            for (int j = 0; j < length; j += 1)
-                            {
-                                Vector4 viewPortA = this.ViewPort(start.ClipSpacePosition);
-                                Vector4 viewPortB = this.ViewPort(vtList[i].Vertices[j].ClipSpacePosition);
-                                DrawLine(start, vtList[i].Vertices[j], viewPortA, viewPortB, scene);
-                                start = vtList[i].Vertices[j];
-                            }
-                        }
-                    }
-				}
-				else
-				{
-					//填充三角形
-					for (int i = 0; i < vtList.Count; i += 1)
-					{
-						DrawTriangle(vtList[i], orivt, scene);
-					}
-				}
-			}
-		}
-
-		private List<TriangleModel> MakeTriangle(List<Vertex> input)
-		{
-			List<TriangleModel> temp = new List<TriangleModel>();
-			for (int i = 0; i < input.Count - 2; i += 1)
-			{
-				TriangleModel vt = new TriangleModel(input[0], input[i + 1], input[i + 2]);
-				temp.Add(vt);
-			}
-			return temp;
-		}
 	}
 }

@@ -18,7 +18,7 @@ namespace RenderingEngine
 		{
 			this.width = width;
 			this.height = height;
-			this.bitmap = new Bitmap("");
+            this.bitmap = new Bitmap("/Users/wangao/Documents/workSpace/RenderingEngine/WindowsFormsApp1/WindowsFormsApp1/textures/background.jpg");
 		}
 
 		public BitmapData GetBmData()

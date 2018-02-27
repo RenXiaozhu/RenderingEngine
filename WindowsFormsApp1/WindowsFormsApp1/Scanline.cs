@@ -7,222 +7,287 @@ using System.Drawing;
 
 namespace RenderingEngine
 {
-    class Scanline
+    public class ScanLine
     {
         private Device device;
-        private Edge[] ET;  // Edge Table 边的分类表
-        private Edge AEL; //活化边表
+        private Edge[] ET;
+        private Edge AEL;
         private int height;
-        private int width;
-        private Color4 finalColor;
-        private List<Triangle> angleList;
-        public Color4 backgroundColor;
-        public Color4 forwardColor;
+        private Color4 final;
 
-        public Scanline(Device device)
+        public ScanLine(Device device)
         {
             this.device = device;
-            this.width = device.width;
-            this.height = device.height;
-            backgroundColor = new Color4(255, 255, 255);
-            forwardColor = new Color4(255, 0, 0);
-            //finalColor = new Color4(222, 128, 50);
-			finalColor = new Color4(255, 255, 255);
-			this.angleList = new List<Triangle>();
-
+            this.height = device.GetHeight();
             this.ET = new Edge[this.height];
             for (int i = 0; i < this.height; i++)
             {
                 this.ET[i] = new Edge();
+            }
+            final = new Color4(255, 255, 255);
+        }
+
+        #region 简单scanline
+        public void ProcessScanLineAd(int y, Vertex v1, Vertex v2, Vertex v3, Vertex v4, Scene scene)
+        {
+            var pa = v1.ScreenSpacePosition;
+            var pb = v2.ScreenSpacePosition;
+            var pc = v3.ScreenSpacePosition;
+            var pd = v4.ScreenSpacePosition;
+            var gradient1 = pa.Y != pb.Y ? (y - pa.Y) / (pb.Y - pa.Y) : 1;
+            var gradient2 = pc.Y != pd.Y ? (y - pc.Y) / (pd.Y - pc.Y) : 1;
+
+            int sx = (int)MathUtil.Interp(pa.X, pb.X, gradient1);
+            int ex = (int)MathUtil.Interp(pc.X, pd.X, gradient2);
+
+            float z1 = MathUtil.Interp(pa.Z, pb.Z, gradient1);
+            float z2 = MathUtil.Interp(pc.Z, pd.Z, gradient2);
+
+            for (var x = sx; x < ex; x++)
+            {
+                float gradient = (x - sx) / (float)(ex - sx);
+                var z = MathUtil.Interp(z1, z2, gradient);
+
+                if (scene.renderState == Scene.RenderState.GouraduShading)
+                {
+                    if (scene.light.IsEnable)
+                    {
+                        float nDotLA1V1 = scene.light.ComputeNDotL(v1.Position, v1.Normal);
+                        float nDotLA1V2 = scene.light.ComputeNDotL(v2.Position, v2.Normal);
+                        float nDotLA2V1 = scene.light.ComputeNDotL(v3.Position, v3.Normal);
+                        float nDotLA2V2 = scene.light.ComputeNDotL(v4.Position, v4.Normal);
+                        float nDotL1 = MathUtil.Interp(nDotLA1V1, nDotLA1V2, gradient1);
+                        float nDotL2 = MathUtil.Interp(nDotLA2V1, nDotLA2V2, gradient2);
+                        float nDotL = MathUtil.Interp(nDotL1, nDotL2, gradient);
+                        final = scene.light.GetFinalLightColor(nDotL);
+                    }
+                    else
+                    {
+                        Color4 c1 = MathUtil.ColorInterp(v1.Color, v2.Color, gradient1);
+                        Color4 c2 = MathUtil.ColorInterp(v3.Color, v4.Color, gradient2);
+                        Color4 c3 = MathUtil.ColorInterp(c1, c2, gradient);
+                        //vt.CalWeight(s1, s2, s3, new Vector4(x, i, 0, 0));
+                        //Color4 c3 = vt.GetInterColor();
+                        final = c3;
+                    }
+                }
+                else if (scene.renderState == Scene.RenderState.TextureMapping)
+                {
+                    float w11 = v1.ClipSpacePosition.W;
+                    float w12 = v2.ClipSpacePosition.W;
+                    float w21 = v3.ClipSpacePosition.W;
+                    float w22 = v4.ClipSpacePosition.W;
+
+                    float uu1 = MathUtil.Interp(v1.UV.X / w11, v2.UV.X / w12, gradient1);
+                    float vv1 = MathUtil.Interp(v1.UV.Y / w11, v2.UV.Y / w12, gradient1);
+                    float uu2 = MathUtil.Interp(v3.UV.X / w21, v4.UV.X / w22, gradient2);
+                    float vv2 = MathUtil.Interp(v3.UV.Y / w21, v4.UV.Y / w22, gradient2);
+                    float w1 = MathUtil.Interp(1 / w11, 1 / w12, gradient1);
+                    float w2 = MathUtil.Interp(1 / w21, 1 / w22, gradient2);
+
+                    float w = MathUtil.Interp(w1, w2, gradient);
+                    float uu3 = MathUtil.Interp(uu1, uu2, gradient) / w;
+                    float vv3 = MathUtil.Interp(vv1, vv2, gradient) / w;
+
+                    final = this.device.Tex2D(uu3, vv3, scene.mesh.texture);
+                    //final = this.device.Tex2D(u / w, v / w, scene.mesh.texture);
+                }
+                this.device.DrawPoint(new Vector4(x, y, z, 0), final);
+            }
+        }
+        #endregion
+
+        // 需要屏幕坐标, vt是裁剪后的三角形，orivt是原始三角形
+        public void ProcessScanLine(VertexTriangle vt, VertexTriangle oriVt, Scene scene)
+        {
+            int yMin = this.height;
+            int yMax = 0;
+
+            Vertex[] vertices = vt.Vertices;
+
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                for (int j = i + 1; j < vertices.Length; j++)
+                {
+                    Vector4 screen1 = vertices[i].ScreenSpacePosition;
+                    Vector4 screen2 = vertices[j].ScreenSpacePosition;
+
+                    if ((int)screen1.Y != (int)screen2.Y)
+                    {
+                        if (screen1.Y > yMax) yMax = (int)screen1.Y;
+                        if (screen2.Y > yMax) yMax = (int)screen2.Y;
+                        if (screen1.Y < yMin) yMin = (int)screen1.Y;
+                        if (screen2.Y < yMin) yMin = (int)screen2.Y;
+                        if (yMax > this.height) yMax = this.height;
+                        if (yMin < 0) yMin = 0;
+
+                        int x1 = (int)screen1.X;
+                        int y1 = (int)screen1.Y;
+                        int x2 = (int)screen2.X;
+                        int y2 = (int)screen2.Y;
+                        int ymin = y1 > y2 ? y2 : y1;
+                        if (ymin < 0) ymin = 0;
+                        int ymax = y1 > y2 ? y1 : y2;
+                        if (ymax > this.height) ymax = this.height;
+                        float x = y1 > y2 ? x2 : x1;
+                        float dx = (float)(x1 - x2) * 1.0f / (float)(y1 - y2);
+                        Edge e = new Edge();
+                        e.yMax = ymax;
+                        e.x = x;
+                        e.deltaX = dx;
+                        e.v1 = y1 > y2 ? vertices[j] : vertices[i];
+                        e.v2 = y1 > y2 ? vertices[i] : vertices[j];
+                        InsertEdge(ref ET[ymin].nextEdge, e);
+                    }
+                }
+            }
+
+            // 置空活动边表
+            AEL = new Edge();
+            for (int i = yMin; i < yMax; i++)
+            {
+                // 将边表的边插入活动边表，并删除边表里的边
+                while (ET[i].nextEdge != null)
+                {
+                    InsertEdge(ref AEL.nextEdge, ET[i].nextEdge);
+                    ET[i].nextEdge = ET[i].nextEdge.nextEdge;
+                }
+
+                if (AEL.nextEdge == null) continue;
+
+                // 填充扫描线
+                Edge a1 = (Edge)AEL.nextEdge.Clone();
+                Edge a2 = (Edge)AEL.nextEdge.nextEdge.Clone();
+
+                // 双线性插值
+                Vector4 screenA1V1 = a1.v1.ScreenSpacePosition;
+                Vector4 screenA1V2 = a1.v2.ScreenSpacePosition;
+                Vector4 screenA2V1 = a2.v1.ScreenSpacePosition;
+                Vector4 screenA2V2 = a2.v2.ScreenSpacePosition;
+                float r1 = ((float)i - screenA1V1.Y) / (float)(screenA1V2.Y - screenA1V1.Y);
+                float r2 = ((float)i - screenA2V1.Y) / (float)(screenA2V2.Y - screenA2V1.Y);
+                r1 = MathUtil.Clamp01(r1);
+                r2 = MathUtil.Clamp01(r2);
+                float z1 = MathUtil.Interp(screenA1V1.Z, screenA1V2.Z, r1);
+                float z2 = MathUtil.Interp(screenA2V1.Z, screenA2V2.Z, r2);
+
+                float nDotL1 = 0, nDotL2 = 0;
+                if (scene.light.IsEnable)
+                {
+                    float nDotLA1V1 = scene.light.ComputeNDotL(a1.v1.Position, a1.v1.Normal);
+                    float nDotLA1V2 = scene.light.ComputeNDotL(a1.v2.Position, a1.v2.Normal);
+                    float nDotLA2V1 = scene.light.ComputeNDotL(a2.v1.Position, a2.v1.Normal);
+                    float nDotLA2V2 = scene.light.ComputeNDotL(a2.v2.Position, a2.v2.Normal);
+                    nDotL1 = MathUtil.Interp(nDotLA1V1, nDotLA1V2, r1);
+                    nDotL2 = MathUtil.Interp(nDotLA2V1, nDotLA2V2, r2);
+                }
+                Color4 c1 = MathUtil.ColorInterp(a1.v1.Color, a1.v2.Color, r1);
+                Color4 c2 = MathUtil.ColorInterp(a2.v1.Color, a2.v2.Color, r2);
+                Color4 c3 = new Color4();
+                if (scene.renderState == Scene.RenderState.TextureMapping)
+                {
+                    oriVt.PreCalWeight();
+                }
+
+                while (a1 != null && a2 != null)
+                {
+                    for (int x = (int)AEL.nextEdge.x; x < (int)AEL.nextEdge.nextEdge.x; x++)
+                    {
+                        float r3 = MathUtil.Clamp01(((float)x - a1.x) / (a2.x - a1.x));
+                        //float r3 = (float)(x - Math.Floor(a1.x)) / (a2.x - a1.x);    
+                        float z = MathUtil.Interp(z1, z2, r3);
+                        if (scene.renderState == Scene.RenderState.GouraduShading)
+                        {
+                            if (scene.light.IsEnable)
+                            {
+                                float nDotL = MathUtil.Interp(nDotL1, nDotL2, r3);
+                                c3 = MathUtil.ColorInterp(c1, c2, r3);
+                                final = c3 * scene.light.GetDiffuseColor(nDotL) + c3 * DirectionLight.AmbientColor;
+                            }
+                            else
+                            {
+                                c3 = MathUtil.ColorInterp(c1, c2, r3);
+                                final = c3;
+                            }
+                        }
+                        else if (scene.renderState == Scene.RenderState.TextureMapping)
+                        {
+                            /*if (scene.light.IsEnable)
+                            {
+                                float nDotLA1V1 = scene.light.ComputeNDotL(a1.v1.Position, a1.v1.Normal);
+                                float nDotLA1V2 = scene.light.ComputeNDotL(a1.v2.Position, a1.v2.Normal);
+                                float nDotLA2V1 = scene.light.ComputeNDotL(a2.v1.Position, a2.v1.Normal);
+                                float nDotLA2V2 = scene.light.ComputeNDotL(a2.v2.Position, a2.v2.Normal);
+                                float nDotL1 = MathUtil.Interp(nDotLA1V1, nDotLA1V2, r1);
+                                float nDotL2 = MathUtil.Interp(nDotLA2V1, nDotLA2V2, r2);
+                                float nDotL = MathUtil.Interp(nDotL1, nDotL2, r3);
+                                final = this.device.Tex2D(u3, v3, scene.mesh.texture) * scene.light.GetDiffuseColor(nDotL);
+                                final += DirectionalLight.AmbientColor;
+                            }*/
+
+                            oriVt.CalWeight(new Vector4(x, i, 0, 0));
+                            Vector4 uv = oriVt.GetInterUV();
+                            final = this.device.Tex2D(uv.X, uv.Y, scene.mesh.texture);
+                        }
+                        this.device.DrawPoint(new Vector4(x, i, z, 0), final);
+                    }
+                    if (a2.nextEdge != null && a2.nextEdge.nextEdge != null)
+                    {
+                        a1 = (Edge)a2.nextEdge.Clone();
+                        a2 = (Edge)a1.nextEdge.Clone();
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                // 删除y=yMax-1的边
+                Edge p = AEL;
+                while (p.nextEdge != null)
+                {
+                    if (p.nextEdge.yMax - 1 == i)
+                    {
+                        Edge pDelete = p.nextEdge;
+                        p.nextEdge = pDelete.nextEdge;
+                        pDelete.nextEdge = null;
+                    }
+                    else
+                    {
+                        p = p.nextEdge;
+                    }
+                }
+
+                p = AEL;
+                while (p.nextEdge != null)
+                {
+                    p.nextEdge.x += p.nextEdge.deltaX;
+                    p = p.nextEdge;
+                }
+
             }
         }
 
         void InsertEdge(ref Edge root, Edge e)
         {
             Edge newEdge = (Edge)e.Clone();
+            Edge previous;
+            Edge current;
 
-        }
+            current = root;
+            previous = null;
 
-        public void StartScan(Scene scene)
-        {
-            // 模型坐标系转换
-            CATransform.ModelTransformToWindow(scene);
-
-
-            for (int i = 0; i < scene.mesh.triangles.Length; i+=1)
+            // 查找插入的位置  
+            while (current != null && (current.x < newEdge.x || (current.x == newEdge.x && current.deltaX < newEdge.deltaX)))
             {
-                Vertex[] tmp = scene.mesh.TmpVertices;
-                Triangle triangle = scene.mesh.triangles[i];
-                TriangleModel model = new TriangleModel(tmp[triangle.a], tmp[triangle.b], tmp[triangle.c]);
-
-                //this.device.PutPixel((int)vt.Position.x, (int)vt.Position.y, vt.Color);
-                    //this.device.DrawMidPointLine(new Vector2(vt.Position.x, vt.Position.y), new Vector2(next.Position.x, next.Position.y), vt.Color);
-                    //this.device.DrawDDALine(new Vector2(vt.Position.x, vt.Position.y), new Vector2(next.Position.x, next.Position.y), vt.Color);
-                    this.device.DrawTriangles(model);
+                previous = current;
+                current = current.nextEdge;
             }
+
+            newEdge.nextEdge = current;
+            if (previous == null) root = newEdge;
+            else previous.nextEdge = newEdge;
         }
 
-		// 需要屏幕坐标，vt是裁剪后的三角形， orivt是原始三角形
-		public void ProcessScanLine(TriangleModel vt, TriangleModel orivt, Scene scene)
-		{
-			int yMin = this.height;
-			int yMax = 0;
-
-			Vertex[] vertices = vt.Vertices;
-
-			for (int i = 0; i < vertices.Length; i += 1)
-			{
-				for (int j = i + 1; j < vertices.Length; j += 1)
-				{
-					Vector4 screen1 = vertices[i].ScreenSpacePosition;
-					Vector4 screen2 = vertices[j].ScreenSpacePosition;
-					int a = (int)screen1.y;
-					int b = (int)screen2.y;
-					int c = (int)screen1.x;
-					int d = (int)screen2.x;
-
-					if (a != (int)b)
-					{
-						if (a > yMax)
-							yMax = a;
-						if (b > yMax)
-							yMax = b;
-						if (a < yMin)
-							yMin = a;
-						if (b < yMin)
-							yMin = b;
-						if (yMax > this.height)
-							yMax = this.height;
-						if (yMin < 0)
-							yMin = 0;
-
-						int ymin = a > b ? b : a;
-						if (ymin < 0)
-							ymin = 0;
-
-						int ymax = a > b ? a : b;
-						if (ymax > this.height)
-							ymax = this.height;
-
-						float x = a > b ? d : c;
-						float dx = (float)(c-d)*1.0f / (float)(a - b);
-
-						Edge e = new Edge();
-						e.ymax = ymax;
-						e.deltax = dx;
-						e.yvMin = a > b ? vertices[j] : vertices[i];
-						e.yvMax = a > b ? vertices[i] : vertices[j];
-						InsertEdge(ref ET[ymin].nextEdge, e);
-					}
-				}
-			}
-			AEL = new Edge();
-			for (int i = yMin; i < yMax; i += 1)
-			{
-				while (ET[i].nextEdge != null)
-				{
-					InsertEdge(ref AEL.nextEdge, ET[i].nextEdge);
-					ET[i].nextEdge = ET[i].nextEdge.nextEdge;
-				}
-
-				if (AEL.nextEdge == null) continue;
-				//填充扫描线
-				Edge a1 = (Edge)AEL.nextEdge.Clone();
-				Edge a2 = (Edge)AEL.nextEdge.nextEdge.Clone();
-
-				//双线性插值
-				Vector4 screenA1V1 = a1.yvMin.ScreenSpacePosition;
-				Vector4 screenA1V2 = a1.yvMax.ScreenSpacePosition;
-				Vector4 screenA2V1 = a2.yvMin.ScreenSpacePosition;
-				Vector4 screenA2V2 = a2.yvMax.ScreenSpacePosition;
-
-				double r1 = (i - screenA1V1.y) / (screenA1V2.y - screenA1V1.y);
-				double r2 = (i - screenA2V1.y) / (screenA2V2.y - screenA2V1.y);
-				r1 = MathUtil.Clamp01(r1);
-				r2 = MathUtil.Clamp01(r2);
-
-				double z1 = MathUtil.Interp(screenA1V1.z, screenA1V2.z, r1);
-				double z2 = MathUtil.Interp(screenA2V1.z, screenA2V2.z, r2);
-
-				double nDotL1 = 0, nDotL2 = 0;
-
-				if (scene.light.IsEnable)
-				{
-					double nDotA1V1 = scene.light.ComputeNDotL(a1.yvMin.Position, a1.yvMin.Normal);
-					double nDotA1V2 = scene.light.ComputeNDotL(a1.yvMax.Position, a1.yvMax.Normal);
-					double nDotA2V1 = scene.light.ComputeNDotL(a2.yvMin.Position, a2.yvMin.Normal);
-					double nDotA2V2 = scene.light.ComputeNDotL(a2.yvMax.Position, a2.yvMax.Normal);
-					nDotL1 = MathUtil.Interp(nDotA1V1, nDotA1V2, r1);
-					nDotL2 = MathUtil.Interp(nDotA2V1, nDotA2V2, r2);
-				}
-
-				Color4 c1 = MathUtil.ColorInterp(a1.yvMin.Color, a1.yvMax.Color, r1);
-				Color4 c2 = MathUtil.ColorInterp(a2.yvMin.Color, a2.yvMax.Color, r2);
-				Color4 c3 = new Color4();
-				if (scene.renderState == Scene.RenderState.TextureMapping)
-				{
-					orivt.PreCalculateWeight();
-				}
-
-				while (a1 != null && a2 != null)
-				{
-					for (int x = (int)AEL.nextEdge.x ; x < (int)AEL.nextEdge.nextEdge.x ; x += 1)
-					{
-						double r3 = MathUtil.Clamp01((x - a1.x) / (a2.x - a1.x));
-						double z = MathUtil.Interp(z1, z2, r3);
-						if (scene.renderState == Scene.RenderState.GouraduShading)
-						{
-							if (scene.light.IsEnable)
-							{
-								double nDotL = MathUtil.Interp(nDotL1, nDotL2, r3);
-								c3 = MathUtil.ColorInterp(c1, c2, r3);
-								finalColor = c3 * scene.light.GetDiffuseColor((float)nDotL) + c3 * DirectionLight.AmbientColor;
-							}
-							else
-							{
-								c3 = MathUtil.ColorInterp(c1, c2, r3);
-								finalColor = c3;
-							}
-
-						}
-						else if(scene.renderState ==Scene.RenderState.TextureMapping)
-						{
-							orivt.CalWeight(new Vector4(x, i, 0, 0));
-							Vector4 uv = orivt.GetInterUV();
-							finalColor = this.device.Text2D((float)uv.x, (float)uv.y, scene.mesh.texture);
-						}
-						this.device.DrawPoint(new Vector4(x, i, z, 0), finalColor);
-					}
-
-					if (a2.nextEdge != null && a2.nextEdge.nextEdge != null)
-					{
-						a1 = (Edge)a2.nextEdge.Clone();
-						a2 = (Edge)a1.nextEdge.Clone();
-					}
-					else
-					{
-						break;
-					}
-				}
-				// 删除 y=ymax-1的边
-				Edge p = AEL;
-				while (p.nextEdge != null)
-				{
-					if (p.nextEdge.ymax - 1 == i)
-					{
-						Edge pDelete = p.nextEdge;
-					}
-					else
-					{
-						p = p.nextEdge;
-					}
-				}
-			}
-		}
-
-        public void addTriangle(Triangle triangle)
-        {
-            this.angleList.Add(triangle);
-        }
     }
 }

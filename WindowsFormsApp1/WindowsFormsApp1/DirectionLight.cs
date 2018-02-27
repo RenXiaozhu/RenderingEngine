@@ -47,12 +47,12 @@ namespace RenderingEngine
         }
 
 		// 光线的方向点积法线方向
-		public double ComputeNDotL(Vector4 pos, Vector4 normal)
+        public float ComputeNDotL(Vector4 pos, Vector4 normal)
 		{
 			var lightDirection = this.LightPos - pos;
 			normal.Normalize();
 			lightDirection.Normalize();
-			return Math.Max(0, normal.dot(lightDirection));
+            return Math.Max(0,Vector4.Dot(normal,lightDirection));
 		}
 
 		// 漫反射光照颜色

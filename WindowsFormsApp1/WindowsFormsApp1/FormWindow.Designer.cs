@@ -88,14 +88,11 @@
 			this.基本图形生成ToolStripMenuItem.Name = "基本图形生成ToolStripMenuItem";
 			this.基本图形生成ToolStripMenuItem.Size = new System.Drawing.Size(50, 21);
 			this.基本图形生成ToolStripMenuItem.Text = "Basic";
-			this.基本图形生成ToolStripMenuItem.Click += new System.EventHandler(this.基本图形生成ToolStripMenuItem_Click);
+			//this.基本图形生成ToolStripMenuItem.Click += new System.EventHandler(this.基本图形生成ToolStripMenuItem_Click);
 			// 
 			// DDALine
 			// 
-			this.DDALine.Name = "DDALine";
-			this.DDALine.Size = new System.Drawing.Size(178, 22);
-			this.DDALine.Text = "DDA Line";
-			this.DDALine.Click += new System.EventHandler(this.DDALine_Click);
+			
 			// 
 			// 中点直线ToolStripMenuItem
 			// 
@@ -117,10 +114,7 @@
 			// 
 			// bresenhamToolStripMenuItem1
 			// 
-			this.bresenhamToolStripMenuItem1.Name = "bresenhamToolStripMenuItem1";
-			this.bresenhamToolStripMenuItem1.Size = new System.Drawing.Size(178, 22);
-			this.bresenhamToolStripMenuItem1.Text = "Bresenham Circle";
-			this.bresenhamToolStripMenuItem1.Click += new System.EventHandler(this.bresenhamToolStripMenuItem1_Click);
+			
 			// 
 			// 正负圆ToolStripMenuItem
 			// 
@@ -151,28 +145,28 @@
 			this.三角形ToolStripMenuItem.Name = "三角形ToolStripMenuItem";
 			this.三角形ToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
 			this.三角形ToolStripMenuItem.Text = "Triangle";
-			this.三角形ToolStripMenuItem.Click += new System.EventHandler(this.三角形ToolStripMenuItem_Click);
+			//this.三角形ToolStripMenuItem.Click += new System.EventHandler(this.三角形ToolStripMenuItem_Click);
 			// 
 			// wireFrameToolStripMenuItem
 			// 
 			this.wireFrameToolStripMenuItem.Name = "wireFrameToolStripMenuItem";
 			this.wireFrameToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
 			this.wireFrameToolStripMenuItem.Text = "Wire Frame";
-			this.wireFrameToolStripMenuItem.Click += new System.EventHandler(this.wireFrameToolStripMenuItem_Click);
+			//this.wireFrameToolStripMenuItem.Click += new System.EventHandler(this.wireFrameToolStripMenuItem_Click);
 			// 
 			// gouraudShadingToolStripMenuItem
 			// 
 			this.gouraudShadingToolStripMenuItem.Name = "gouraudShadingToolStripMenuItem";
 			this.gouraudShadingToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
 			this.gouraudShadingToolStripMenuItem.Text = "Gouraud Shading";
-			this.gouraudShadingToolStripMenuItem.Click += new System.EventHandler(this.gouraudShadingToolStripMenuItem_Click);
+			//this.gouraudShadingToolStripMenuItem.Click += new System.EventHandler(this.gouraudShadingToolStripMenuItem_Click);
 			// 
 			// textureMappingToolStripMenuItem
 			// 
 			this.textureMappingToolStripMenuItem.Name = "textureMappingToolStripMenuItem";
 			this.textureMappingToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
 			this.textureMappingToolStripMenuItem.Text = "Texture Mapping";
-			this.textureMappingToolStripMenuItem.Click += new System.EventHandler(this.textureMappingToolStripMenuItem_Click);
+			//this.textureMappingToolStripMenuItem.Click += new System.EventHandler(this.textureMappingToolStripMenuItem_Click);
 			// 
 			// 二维图形变换ToolStripMenuItem
 			// 
@@ -185,7 +179,7 @@
 			this.二位图形裁剪ToolStripMenuItem.Name = "二位图形裁剪ToolStripMenuItem";
 			this.二位图形裁剪ToolStripMenuItem.Size = new System.Drawing.Size(123, 21);
 			this.二位图形裁剪ToolStripMenuItem.Text = "Stereogram tailor";
-			this.二位图形裁剪ToolStripMenuItem.Click += new System.EventHandler(this.二位图形裁剪ToolStripMenuItem_Click);
+			//this.二位图形裁剪ToolStripMenuItem.Click += new System.EventHandler(this.二位图形裁剪ToolStripMenuItem_Click);
 			// 
 			// 图形填充ToolStripMenuItem
 			// 
@@ -210,7 +204,7 @@
 			this.Exit.Name = "Exit";
 			this.Exit.Size = new System.Drawing.Size(40, 21);
 			this.Exit.Text = "Exit";
-			this.Exit.Click += new System.EventHandler(this.Exit_Click);
+			//this.Exit.Click += new System.EventHandler(this.Exit_Click);
 			// 
 			// FormWindow
 			// 
@@ -225,12 +219,12 @@
 			this.Name = "FormWindow";
 			this.Text = "Compute Plateform";
 			this.Load += new System.EventHandler(this.Form1_Load);
-			this.Paint += new System.Windows.Forms.PaintEventHandler(this.FormWindow_Paint);
-			this.Layout += new System.Windows.Forms.LayoutEventHandler(this.FormWindow_Layout);
-			this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseClick);
-			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FormWindow_MouseDown);
-			this.MouseLeave += new System.EventHandler(this.FormWindow_MouseLeave);
-			this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.FormWindow_MouseUp);
+			//this.Paint += new System.Windows.Forms.PaintEventHandler(this.FormWindow_Paint);
+			//this.Layout += new System.Windows.Forms.LayoutEventHandler(this.FormWindow_Layout);
+			//this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseClick);
+			//this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FormWindow_MouseDown);
+			//this.MouseLeave += new System.EventHandler(this.FormWindow_MouseLeave);
+			//this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.FormWindow_MouseUp);
 			this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
 			this.ResumeLayout(false);

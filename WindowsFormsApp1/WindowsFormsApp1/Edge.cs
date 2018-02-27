@@ -8,23 +8,26 @@ namespace RenderingEngine
 {
     class Edge: ICloneable
     {
-        public int ymax;//保存边的上端点y值
-        public float x;   // 在AEL中表示当前扫描线与边的交点的x坐标，初值（即在ET中的值） 为边的下端点的x坐标
-        public float deltax;//边的斜率的倒数
-        public Edge nextEdge;//指向下一条边
+        public int yMax;                // 边的上端点的y坐标
+        public float x;                 // AEL中表示当前扫描线与边的交点的x坐标， ET中的值为边的下端点的x坐标
+        public float deltaX;            // 边的斜率的倒数
+        public Edge nextEdge;           // 指向下一条边
 
-        public Vertex yvMax;//y较大的值
-        public Vertex yvMin;//y较小的值
+        public Vertex v1;               // 总保存y较小的点
+        public Vertex v2;               // 总保存y较大的点
 
-        public object Clone()
+        public Edge() { }
+
+        // 深拷贝
+        public Object Clone()
         {
             Edge e = new Edge();
-            e.ymax = ymax;
-            e.x = x;
-            e.deltax = deltax;
-            e.nextEdge = nextEdge;
-            e.yvMax = yvMax;
-            e.yvMin = yvMin;
+            e.deltaX = this.deltaX;
+            e.x = this.x;
+            e.yMax = this.yMax;
+            e.nextEdge = this.nextEdge;
+            e.v1 = this.v1;
+            e.v2 = this.v2;
             return e;
         }
     }

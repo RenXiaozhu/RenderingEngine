@@ -22,142 +22,101 @@ namespace RenderingEngine
     //3维齐次坐标
     public struct Vector4
     {
-        public double x;
-        public double y;
-        public double z;
-        public double h;
-		public Vector4 Normalized
-		{
-			get
-			{
-				Vector4 n = new Vector4(this.x, this.y, this.z, this.h);
-				n.Normalize();
-				return n;
-			}
-		}
-		public  void Vector3Nomal()
-		{
-			this.x = x / h;
-			this.y = y / h;
-			this.z = z / h;
-			this.h = 1;
-		}
-        public Vector4 StandardIdentity
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Z { get; set; }
+        public float W { get; set; }
+
+        public Vector4 Normalized
         {
             get
             {
-                Vector4 vt4 = new Vector4(this.x, this.y, this.z, this.h);
-                vt4.Normalize();
-                return vt4;
+                Vector4 n = new Vector4(this.X, this.Y, this.Z, this.W);
+                n.Normalize();
+                return n;
             }
         }
 
-        public Vector4(double x, double y, double z, double h)
+        //public Vector4() { }
+
+        public Vector4(float x, float y, float z, float w)
             : this()
         {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.h = h;
+            this.X = x;
+            this.Y = y;
+            this.Z = z;
+            this.W = w;
         }
 
-        // 拷贝坐标
         public Vector4(Vector4 other)
             : this()
         {
-            this.x = other.x;
-            this.y = other.y;
-            this.z = other.z;
-            this.h = other.h;
+            this.X = other.X;
+            this.Y = other.Y;
+            this.Z = other.Z;
+            this.W = other.W;
         }
 
-        
-
-        //2 3维矢量长度 2维坐标可以表示维（x,y,0）
-        public double Length()
+        public static Vector4 operator +(Vector4 a, Vector4 b)
         {
-            return Math.Sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+            return new Vector4(a.X + b.X, a.Y + b.Y, a.Z + b.Z, 1);
         }
 
-        //矢量归一化
+        public static Vector4 operator -(Vector4 a, Vector4 b)
+        {
+            return new Vector4(a.X - b.X, a.Y - b.Y, a.Z - b.Z, 1);
+        }
+
+        public static Vector4 operator /(Vector4 a, float t)
+        {
+            return new Vector4(a.X / t, a.Y / t, a.Z / t, 1);
+        }
+
+        public static Vector4 operator *(Vector4 a, float t)
+        {
+            return new Vector4(a.X * t, a.Y * t, a.Z * t, 1); ;
+        }
+
+        public static float Dot(Vector4 a, Vector4 b)
+        {
+            return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
+        }
+
+        public static Vector4 Cross(Vector4 a, Vector4 b)
+        {
+            float m1, m2, m3;
+            m1 = a.Y * b.Z - a.Z * b.Y;
+            m2 = a.Z * b.X - a.X * b.Z;
+            m3 = a.X * b.Y - a.Y * b.X;
+            return new Vector4(m1, m2, m3, 1f);
+        }
+
+        public float Length()
+        {
+            float sq = this.X * this.X + this.Y * this.Y + this.Z * this.Z;
+            return (float)Math.Sqrt(sq);
+        }
+
+        // 矢量归一化
         public void Normalize()
         {
-            double length = this.Length();
-            double coefficient = 1 / length;
-            this.Scale(coefficient);
-        }
-
-        public void Scale(double scale)
-        {
-            this.x *= scale;
-            this.y *= scale;
-            this.z *= scale;
+            float length = this.Length();
+            if (length != 0.0f)
+            {
+                float inv = 1.0f / length;
+                this.X *= inv;
+                this.Y *= inv;
+                this.Z *= inv;
+            }
         }
 
         public override string ToString()
         {
-            StringBuilder str = new StringBuilder();
-            str.AppendFormat("x = {0} , y = {1} , z = {2} , h = {3}", this.x, this.y, this.z, this.h);
-            return str.ToString();
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("x = {0}, y = {1}, z = {2}, w = {3}", this.X, this.Y, this.Z, this.W);
+            return sb.ToString();
         }
 
-   
-
-        /// <summary>
-        /// 运算符重载
-        /// 
-        /// 2 3维矢量和 几何意义在于将 vt1 点平移到 vt2点 2维坐标可以表示维（x,y,0）
-        public static Vector4 operator +(Vector4 m, Vector4 n)
-        {
-            return new Vector4(m.x + n.x, m.y + n.y, m.z + n.z, m.h + n.h);
-        }
-
-        public static Vector4 operator -(Vector4 m, Vector4 n)
-        {
-            return new Vector4(m.x - n.x, m.y - n.y, m.z - n.z, m.h - n.h);
-        }
-
-        //2 3维矢量积 几何意义在于延伸或缩短 2维坐标可以表示维（x,y,0）
-        public static Vector4 operator /(Vector4 m, double t)
-        {
-            return new Vector4(m.x / t, m.y / t, m.z / t, m.h /t);
-        }
-        //2 3维矢量积 几何意义在于延伸或缩短 2维坐标可以表示维（x,y,0）
-        public static Vector4 operator *(Vector4 m, double t)
-        {
-            return new Vector4(m.x * t, m.y * t, m.z * t, m.h * t);
-        }
-
-        public static bool operator ==(Vector4 m, Vector4 n)
-        {
-            return m.x == n.x && m.y == n.y && m.z == n.z;
-        }
-        public static bool operator !=(Vector4 m, Vector4 n)
-        {
-            return m.x != n.x && m.y != n.y && m.z != n.z;
-        }
-
-        public void zero()
-        {
-            x = y = z = 0;
-        }
-
-        public static  Vector4 operator -(Vector4 n)
-        {
-            return new Vector4(-n.x, -n.y, -n.z, n.h);
-        }
-
-        //矢量点积运算  2 3维适量点积 几何意义表示 向量vt1在vt2上的投影长度 2维坐标可以表示维（x,y,0）
-        public  double dot(Vector4 n)
-        {
-            return this.x * n.x + this.y * n.y + this.z * n.z + this.h * n.h;
-        }
-        //矢量叉积运算 
-        //   ||aXb|| = ||a|| * ||b|| *sinQ 
-        public  Vector4 CrossMultiply( Vector4 vt)
-        {
-            return new Vector4(this.y * vt.z - vt.y * this.z, vt.x * this.z - this.x * vt.z, this.x * vt.y - vt.x * this.y , 1);
-        }
         //
         
         /// <summary>
@@ -177,13 +136,13 @@ namespace RenderingEngine
         /// <returns></returns>
         public  double CosUV(Vector4 A)
         {
-            return (this.dot(A)) / this.Length() * A.Length();
+            return (Vector4.Dot(this,A)) / this.Length() * A.Length();
         }
 
         // 两向量夹角大小
         public double Degree(Vector4 A)
         {
-            return Math.Acos((this.dot(A)) / this.Length() * A.Length());
+            return Math.Acos(Vector4.Dot(this,A) / this.Length() * A.Length());
         }
 
         /* 向量投影
@@ -195,7 +154,7 @@ namespace RenderingEngine
         // 在 N 上的平行分量
         public Vector4 PComponent(Vector4 n)
         {
-            return n * (this.dot(n) / n.Length() * n.Length());
+            return n * (Vector4.Dot(this,n) / n.Length() * n.Length());
         }
 
         // 在N上的垂直分量

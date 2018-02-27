@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
-using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using MyBrush;
-using System.Drawing.Imaging;
 
-namespace RenderingEngine
+namespace SimpleRenderEngine
 {
-    public partial class FormWindow : Form
+    public partial class Form1 : Form
     {
         private Bitmap bmp;
         private Graphics g;
@@ -20,8 +19,8 @@ namespace RenderingEngine
         private Scene scene;
         private Rectangle rt;
         private PixelFormat pixelFormat;
-        private Point pressPoint;
-        public FormWindow()
+
+        public Form1()
         {
             InitializeComponent();
             InitSettings();
@@ -66,7 +65,7 @@ namespace RenderingEngine
         private int mouseX = 0;
         private int mouseY = 0;
         private float angle = 0;
-
+        
         private void Form1_OnMouseMove(object sender, MouseEventArgs e)
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
@@ -86,19 +85,15 @@ namespace RenderingEngine
                 //    float newZ = (float)(oriX * Math.Sin(RotateSpeed) + oriZ * Math.Cos(RotateSpeed));
                 //    this.scene.UpdateCameraPos(new Vector4(newX, oriY, newZ, 1));
                 //}
-                float angleX = Math.Atan(/this.scene.camera.Target.Z)
                 if (e.Y - mouseY > 0)
                 {
-                    angle -= 0.5f;
-                    this.scene.UpdateModelRotationMatrix(0,angle,0);
-                    //this.scene.camera.Pitch += 0.5f;
-
+                    //this.scene.UpdateModelRotateMatrix(angle);
+                    this.scene.camera.Pitch += 0.5f;
                 }
                 else
                 {
-                    angle += 0.5f;
-                    this.scene.UpdateModelRotationMatrix(0, angle, 0);
-                    //this.scene.camera.Pitch -= 0.5f;
+                    //this.scene.UpdateModelRotateMatrix(angle);
+                    this.scene.camera.Pitch -= 0.5f;
                 }
                 mouseX = e.X;
                 mouseY = e.Y;
@@ -157,7 +152,7 @@ namespace RenderingEngine
                 //this.scene.UpdateCameraPos(new Vector4(newX, oriY, newZ, 1));
                 //this.scene.UpdateCameraPos(new Vector4(oriX - MoveSpeed, oriY, oriZ, 1));
                 angle += RotateSpeed;
-                this.scene.UpdateModelRotationMatrix(0,angle,0);
+                this.scene.UpdateModelRotateMatrix(angle);
             }
             else if (keyData == Keys.D)
             {
@@ -166,7 +161,7 @@ namespace RenderingEngine
                 //this.scene.UpdateCameraPos(new Vector4(newX, oriY, newZ, 1));
                 //this.scene.UpdateCameraPos(new Vector4(oriX + MoveSpeed, oriY, oriZ, 1));
                 angle -= RotateSpeed;
-                this.scene.UpdateModelRotationMatrix(0,angle,0);
+                this.scene.UpdateModelRotateMatrix(angle);
             }
             this.Invalidate();
             return true;
@@ -175,7 +170,7 @@ namespace RenderingEngine
         // Wire Frame
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
-            if (this.wireFrameToolStripMenuItem.Checked)
+            if (this.radioButton1.Checked)
             {
                 this.scene.renderState = Scene.RenderState.WireFrame;
                 this.Invalidate();
@@ -185,9 +180,9 @@ namespace RenderingEngine
         // Gouraud Shading
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
-            if (this.gouraudShadingToolStripMenuItem.Checked)
+            if (this.radioButton2.Checked)
             {
-                this.scene.renderState = Scene.RenderState.GouraduShading;
+                this.scene.renderState = Scene.RenderState.GouraudShading;
                 this.Invalidate();
             }
         }
@@ -195,7 +190,7 @@ namespace RenderingEngine
         // Texture Mapping
         private void radioButton3_CheckedChanged(object sender, EventArgs e)
         {
-            if (this.textureMappingToolStripMenuItem.Checked)
+            if (this.radioButton3.Checked)
             {
                 this.scene.renderState = Scene.RenderState.TextureMapping;
                 BitmapData bmData = this.scene.mesh.texture.LockBits();
@@ -207,17 +202,17 @@ namespace RenderingEngine
         // Lighting
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            //this.textureMappingToolStripMenuItem.Visible = checkBox1.Checked;
-            //this.hScrollBar1.Value = (int)(DirectionalLight.STARTKD * this.hScrollBar1.Maximum);
-            //this.scene.light.IsEnable = checkBox1.Checked;
-            //this.Invalidate();
+            this.hScrollBar1.Visible = checkBox1.Checked;
+            this.hScrollBar1.Value = (int)(DirectionalLight.STARTKD * this.hScrollBar1.Maximum);
+            this.scene.light.IsEnable = checkBox1.Checked;
+            this.Invalidate();
         }
 
         private void hScrollBar1_Scroll(object sender, ScrollEventArgs e)
         {
-            //float ratio = (float)this.hScrollBar1.Value / (float)this.hScrollBar1.Maximum;
-            //this.scene.light.Kd = ratio;
-            //this.Invalidate();
+            float ratio = (float)this.hScrollBar1.Value / (float)this.hScrollBar1.Maximum;
+            this.scene.light.Kd = ratio;
+            this.Invalidate();
         }
     }
 }
