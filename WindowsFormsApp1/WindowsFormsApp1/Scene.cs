@@ -124,9 +124,9 @@ namespace RenderingEngine
 		public void UpdateModelRotationMatrix(float degreeX, float degreeY, float degreeZ)
 		{
 			//mesh.rotation.VETransform3DRotation(degreeX,new Vector4(1,0,0,1));
-			mesh.rotation.VETransform3DRotation(degreeY,new Vector4(1,1,1,1));
+			//mesh.rotation.VETransform3DRotation(degreeY,new Vector4(1,1,1,1));
 			//mesh.rotation.VETransform3DRotation(degreeZ, new Vector4(0,0,1,1));
-
+            mesh.rotation.VETransform3DRotation(degreeX, degreeY, degreeZ,true);
 			CATransform.InitMVPMatrix(this);
 		}
 

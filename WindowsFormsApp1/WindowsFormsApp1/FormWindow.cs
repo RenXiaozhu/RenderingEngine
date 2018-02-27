@@ -26,7 +26,7 @@ namespace RenderingEngine
             InitializeComponent();
             InitGraphics();
             InitScene();
-			InitSetting();
+			//InitSetting();
         }
 
         private void InitGraphics()
@@ -36,10 +36,10 @@ namespace RenderingEngine
 
         private void InitScene()
         {
-            this.bitmap = new Bitmap(584, 362, PixelFormat.Format24bppRgb);
+            this.bitmap = new Bitmap(this.ClientSize.Width, this.ClientSize.Height, PixelFormat.Format24bppRgb);
             this.device = new Device(bitmap);
-            this.scene = new Scene(584, 362);
-            this.rect = new Rectangle(0, 0,584, 362);
+            this.scene = new Scene(this.ClientSize.Width, this.ClientSize.Height);
+            this.rect = new Rectangle(0, 0,this.ClientSize.Width, this.ClientSize.Height);
             this.pixelFormat = bitmap.PixelFormat;
         }
 
@@ -86,7 +86,7 @@ namespace RenderingEngine
 
 		private void FormWindow_Paint(object sender, PaintEventArgs e)
 		{
-			this.device.ClearBitmap();
+			//this.device.ClearBitmap();
 			//g.Clear(BackColor1);
 			BitmapData data = this.bitmap.LockBits(rect, ImageLockMode.ReadWrite, this.pixelFormat);
 			this.device.ClearBitmapData(data);
@@ -113,11 +113,11 @@ namespace RenderingEngine
 			this.MouseWheel += new MouseEventHandler(FormWindow_OnMouseWheel);
 			this.MouseMove += new MouseEventHandler(FormWindow_OnMouseMove);
 
-			System.Timers.Timer t = new System.Timers.Timer(33); //实例化timer 设置时间间隔1000毫秒
-			t.Elapsed += new System.Timers.ElapsedEventHandler(Start);//到达时间的执行事件
-			t.AutoReset = true; // 设置是执行一次还是一直执行
-			t.Enabled = true; // 是否执行System.Timers.Timer.Elapsed事件
-			t.Start();
+			//System.Timers.Timer t = new System.Timers.Timer(33); //实例化timer 设置时间间隔1000毫秒
+			//t.Elapsed += new System.Timers.ElapsedEventHandler(Start);//到达时间的执行事件
+			//t.AutoReset = true; // 设置是执行一次还是一直执行
+			//t.Enabled = true; // 是否执行System.Timers.Timer.Elapsed事件
+			//t.Start();
 		}
 
 		private const float MoveSpeed = 5f;
@@ -129,7 +129,7 @@ namespace RenderingEngine
 		private void wireFrameToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			this.scene.renderState = Scene.RenderState.WireFrame;
-			
+            this.Invalidate();
 		}
 
 		private void gouraudShadingToolStripMenuItem_Click(object sender, EventArgs e)
@@ -143,7 +143,7 @@ namespace RenderingEngine
 
 			this.scene.renderState = Scene.RenderState.TextureMapping;
 			BitmapData bmData = this.scene.mesh.texture.LockBits();
-			//this.Invalidate();
+			this.Invalidate();
 			this.scene.mesh.texture.UnlockBits(bmData);
 		}
 
@@ -154,6 +154,7 @@ namespace RenderingEngine
 		private void FormWindow_MouseDown(object sender, MouseEventArgs e)
 		{
 			pressdown = new Point(e.X, e.Y);
+            this.Invalidate();
 		}
 
 		private void FormWindow_MouseLeave(object sender, EventArgs e)
@@ -184,8 +185,8 @@ namespace RenderingEngine
 				//	this.scene.UpdateCameraPos(new Vector4(newX, oriY, newZ, 1));
 				//}
 
-				this.scene.UpdateModelRotationMatrix((float)angleX, (float)angleY, 0);
-				float pitch = 0.0f;
+				//this.scene.UpdateModelRotationMatrix((float)angleX, (float)angleY, 0);
+				//float pitch = 0.0f;
 
 				//if (e.Y - pressdown.Y < 0)
 				//{
@@ -197,18 +198,20 @@ namespace RenderingEngine
 				//}
 				//this.scene.UpdateCameraPitch(pitch);
 				//图形重绘
-				this.Invalidate();
+				//this.Invalidate();
 			}
 		}
 
-		
 
-		private void FormWindow_OnMouseMove(object sender, MouseEventArgs e)
-		{
 
-			mouseX = e.X;
-			mouseY = e.Y;
-			//this.Invalidate();
+        private void FormWindow_OnMouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            {
+                mouseX = e.X;
+                mouseY = e.Y;
+                this.Invalidate();
+            }
 		}
 
 		private void FormWindow_OnMouseWheel(object sender, MouseEventArgs e)

@@ -146,67 +146,76 @@ namespace RenderingEngine
          * 坐标原点的旋转
          * 
          */
-        public void VETransform3DRotation(double angle, SystemCross cross, bool isLeftSystem)
+        public void VETransform3DRotation(double angleX,double angleY,double angleZ, bool isLeftSystem)
         {
             if (isLeftSystem)
             {
-                switch (cross)
-                {
-                    case SystemCross.SystemCross_X:
-                        this.d11 = 1;
-                        this.d23 = Math.Sin(angle);
-                        this.d32 = -Math.Sin(angle);
-                        this.d21 = Math.Sin(angle);
-                        this.d33 = Math.Cos(angle);
-                        this.d44 = 1;
-                        break;
-                    case SystemCross.SystemCross_Y:
-                        this.d11 = Math.Cos(angle);
-                        this.d13 = -Math.Sin(angle);
-                        this.d22 = 1;
-                        this.d31 = Math.Sin(angle);
-                        this.d33 = Math.Cos(angle);
-                        this.d44 = 1;
-                        break;
-                    case SystemCross.SystemCross_Z:
-                        this.d11 = Math.Cos(angle);
-                        this.d12 = Math.Sin(angle);
-                        this.d21 = -Math.Sin(angle);
-                        this.d22 = Math.Cos(angle);
-                        this.d33 = 1;
-                        this.d44 = 1;
-                        break;
-                }
+                VETransform3D transx = new VETransform3D();
+                VETransform3D transy = new VETransform3D();
+                VETransform3D transz = new VETransform3D();
+
+                transx.d11 = 1;
+                transx.d23 = Math.Sin(angleX);
+                transx.d32 = -Math.Sin(angleX);
+                transx.d21 = Math.Sin(angleX);
+                transx.d33 = Math.Cos(angleX);
+                transx.d44 = 1;
+
+                transy.d11 = Math.Cos(angleY);
+                transy.d13 = -Math.Sin(angleY);
+                transy.d22 = 1;
+                transy.d31 = Math.Sin(angleY);
+                transy.d33 = Math.Cos(angleY);
+                transy.d44 = 1;
+
+                transz.d11 = Math.Cos(angleZ);
+                transz.d12 = Math.Sin(angleZ);
+                transz.d21 = -Math.Sin(angleZ);
+                transz.d22 = Math.Cos(angleZ);
+                transz.d33 = 1;
+                transz.d44 = 1;
+
+                VETransform3D trans = transx * transy * transz;
+
+                this.d11 = trans.d11; this.d12 = trans.d12; this.d13 = trans.d13; this.d14 = trans.d14;
+                this.d21 = trans.d21; this.d22 = trans.d22; this.d23 = trans.d23; this.d24 = trans.d24;
+                this.d31 = trans.d31; this.d32 = trans.d32; this.d33 = trans.d33; this.d34 = trans.d34;
+                this.d41 = trans.d41; this.d42 = trans.d42; this.d43 = trans.d43; this.d44 = trans.d44;
             }
             else
             {
-                switch (cross)
-                {
-                    case SystemCross.SystemCross_X:
-                        this.d11 = 1;
-                        this.d23 = -Math.Sin(angle);
-                        this.d32 = Math.Sin(angle);
-                        this.d21 = Math.Sin(angle);
-                        this.d33 = Math.Cos(angle);
-                        this.d44 = 1;
-                        break;
-                    case SystemCross.SystemCross_Y:
-                        this.d11 = Math.Cos(angle);
-                        this.d13 = Math.Sin(angle);
-                        this.d22 = 1;
-                        this.d31 = -Math.Sin(angle);
-                        this.d33 = Math.Cos(angle);
-                        this.d44 = 1;
-                        break;
-                    case SystemCross.SystemCross_Z:
-                        this.d11 = Math.Cos(angle);
-                        this.d12 = -Math.Sin(angle);
-                        this.d21 = Math.Sin(angle);
-                        this.d22 = Math.Cos(angle);
-                        this.d33 = 1;
-                        this.d44 = 1;
-                        break;
-                }
+                VETransform3D transx = new VETransform3D();
+                VETransform3D transy = new VETransform3D();
+                VETransform3D transz = new VETransform3D();
+
+                transx.d11 = 1;
+                transx.d23 = -Math.Sin(angleX);
+                transx.d32 = Math.Sin(angleX);
+                transx.d21 = Math.Sin(angleX);
+                transx.d33 = Math.Cos(angleX);
+                transx.d44 = 1;
+
+                transy.d11 = Math.Cos(angleY);
+                transy.d13 = Math.Sin(angleY);
+                transy.d22 = 1;
+                transy.d31 = -Math.Sin(angleY);
+                transy.d33 = Math.Cos(angleY);
+                transy.d44 = 1;
+ 
+
+                transz.d11 = Math.Cos(angleZ);
+                transz.d12 = -Math.Sin(angleZ);
+                transz.d21 = Math.Sin(angleZ);
+                transz.d22 = Math.Cos(angleZ);
+                transz.d33 = 1;
+                transz.d44 = 1;
+
+                VETransform3D trans = transx * transy * transz;
+
+                this.d11 = trans.d11; this.d12 = trans.d12; this.d13 = trans.d13; this.d14 = trans.d14;
+                this.d21 = trans.d21; this.d22 = trans.d22; this.d23 = trans.d23; this.d24 = trans.d24;
+                this.d31 = trans.d31; this.d32 = trans.d32; this.d33 = trans.d33; this.d34 = trans.d34;
+                this.d41 = trans.d41; this.d42 = trans.d42; this.d43 = trans.d43; this.d44 = trans.d44;
             }
         }
 

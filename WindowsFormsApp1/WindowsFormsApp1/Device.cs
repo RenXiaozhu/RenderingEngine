@@ -60,6 +60,7 @@ namespace RenderingEngine
 			{
 				this.bitmapData = data;
 			}
+
 			for(int i = 0; i<depthBuffer.Length; i+=1)
 			{
 				depthBuffer[i] = float.MaxValue;
@@ -326,7 +327,7 @@ namespace RenderingEngine
 
 		private Vector4 Project(Vector4 coord, VETransform3D mvp)
 		{
-			Vector4 point = mvp.Maxtrix4x1(coord);
+            Vector4 point = mvp.Maxtrix1x4(coord);
 			point.Normalize();
 			return point;
 		}
@@ -350,7 +351,7 @@ namespace RenderingEngine
 			val.x = val.x * rhw;
 			val.y = val.y * rhw;
 			val.z = val.z * rhw;
-			val.h = 1.0f;
+            val.h = val.h;
 			return val;
 		}
 
@@ -473,19 +474,22 @@ namespace RenderingEngine
 				TriangleModel orivt = new TriangleModel(vertexA, vertexB, vertexC);
 				if (scene.renderState == Scene.RenderState.WireFrame)
 				{
-					//画线框 需要vertex的法向量normal， 位置 pos， 颜色 color
-					for (int i = 0; i < vtList.Count; i += 1)
-					{
-						int length = vtList[i].Vertices.Length;
-						Vertex start = vtList[i].Vertices[length - 1];
-						for (int j = 0; j < length; j += 1)
-						{
-							Vector4 viewPortA =this.ViewPort( start.ClipSpacePosition);
-							Vector4 viewPortB = this.ViewPort(vtList[i].Vertices[j].ClipSpacePosition);
-							DrawLine(start, vtList[i].Vertices[j], viewPortA, viewPortB, scene);
-							start = vtList[i].Vertices[j];
-						}
-					}
+                    //画线框 需要vertex的法向量normal， 位置 pos， 颜色 color
+                    if (!IsOnSameLine((orivt)))
+                    {
+                        for (int i = 0; i < vtList.Count; i += 1)
+                        {
+                            int length = vtList[i].Vertices.Length;
+                            Vertex start = vtList[i].Vertices[length - 1];
+                            for (int j = 0; j < length; j += 1)
+                            {
+                                Vector4 viewPortA = this.ViewPort(start.ClipSpacePosition);
+                                Vector4 viewPortB = this.ViewPort(vtList[i].Vertices[j].ClipSpacePosition);
+                                DrawLine(start, vtList[i].Vertices[j], viewPortA, viewPortB, scene);
+                                start = vtList[i].Vertices[j];
+                            }
+                        }
+                    }
 				}
 				else
 				{
