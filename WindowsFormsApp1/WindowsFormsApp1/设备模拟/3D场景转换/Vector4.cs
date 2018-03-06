@@ -77,6 +77,22 @@ namespace RenderingEngine
             return new Vector4(a.X * t, a.Y * t, a.Z * t, 1); ;
         }
 
+        public static bool operator ==(Vector4 a, Vector4 b)
+        {
+            if (a.X == b.X && a.Y == b.Y && a.Z == b.Z && a.W == b.W)
+                return true;
+            else
+                return false;
+        }
+
+        public static bool operator !=(Vector4 a, Vector4 b)
+        {
+            if (a.X == b.X && a.Y == b.Y && a.Z == b.Z && a.W == b.W)
+                return false;
+            else
+                return true;
+        }
+
         public static float Dot(Vector4 a, Vector4 b)
         {
             return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
@@ -134,7 +150,7 @@ namespace RenderingEngine
         /// 
         /// 
         /// <returns></returns>
-        public  double CosUV(Vector4 A)
+        public  float CosUV(Vector4 A)
         {
             return (Vector4.Dot(this,A)) / this.Length() * A.Length();
         }

@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using MyBrush;
 using System.Drawing.Imaging;
 
 namespace RenderingEngine
@@ -20,12 +19,27 @@ namespace RenderingEngine
         private Scene scene;
         private Rectangle rt;
         private PixelFormat pixelFormat;
-        private Point pressPoint;
+        private Point pressDown;
+        private Point pressUp;
+        private float degreeX = 0;
+        private float degreeY = 0;
+        private float MoveSpeed = 0.5f;
+        private const float RotateSpeed = 5f;
+        private float angle = 0;
+        private Point preE;
+        private bool isUp = false;
         public FormWindow()
         {
             InitializeComponent();
             InitSettings();
             InitScene();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            this.Paint += new PaintEventHandler(Form1_Paint);
+            this.MouseWheel += new MouseEventHandler(Form1_OnMouseWheel);
+            this.MouseMove += new MouseEventHandler(Form1_OnMouseMove);
         }
 
         private void InitScene()
@@ -47,61 +61,78 @@ namespace RenderingEngine
         private void Form1_Paint(object sender, System.Windows.Forms.PaintEventArgs pe)
         {
             BitmapData data = this.bmp.LockBits(rt, ImageLockMode.ReadWrite, this.pixelFormat);
+            BitmapData bmData = this.scene.mesh.texture.LockBits();
             this.device.Clear(data);
             device.Render(scene, data);
             this.bmp.UnlockBits(data);
+            this.scene.mesh.texture.UnlockBits(bmData);
             g = pe.Graphics;
             g.DrawImage(this.bmp, new Rectangle(0, 0, bmp.Width, bmp.Height));
         }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            this.Paint += new PaintEventHandler(Form1_Paint);
-            this.MouseWheel += new MouseEventHandler(Form1_OnMouseWheel);
-            this.MouseMove += new MouseEventHandler(Form1_OnMouseMove);
-        }
-
-        private const float MoveSpeed = 0.5f;
-        private const float RotateSpeed = 5f * (float)Math.PI / 180f;
-        private int mouseX = 0;
-        private int mouseY = 0;
-        private float angle = 0;
 
         private void Form1_OnMouseMove(object sender, MouseEventArgs e)
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                //float oriX = this.scene.camera.Position.X;
-                //float oriZ = this.scene.camera.Position.Z;
-                //float oriY = this.scene.camera.Position.Y;
-                //if (e.X - mouseX > 0)
-                //{
-                //    float newX = (float)(oriX * Math.Cos(-RotateSpeed) - oriZ * Math.Sin(-RotateSpeed));
-                //    float newZ = (float)(oriX * Math.Sin(-RotateSpeed) + oriZ * Math.Cos(-RotateSpeed));
-                //    this.scene.UpdateCameraPos(new Vector4(newX, oriY, newZ, 1));
-                //}
-                //else
-                //{
-                //    float newX = (float)(oriX * Math.Cos(RotateSpeed) - oriZ * Math.Sin(RotateSpeed));
-                //    float newZ = (float)(oriX * Math.Sin(RotateSpeed) + oriZ * Math.Cos(RotateSpeed));
-                //    this.scene.UpdateCameraPos(new Vector4(newX, oriY, newZ, 1));
-                //}
-                float angleX = Math.Atan(/this.scene.camera.Target.Z)
-                if (e.Y - mouseY > 0)
+                if(Math.Abs( e.X- pressDown.X) > Math.Abs( e.Y - pressDown.Y))
                 {
-                    angle -= 0.5f;
-                    this.scene.UpdateModelRotationMatrix(0,angle,0);
-                    //this.scene.camera.Pitch += 0.5f;
+                    if(e.X - pressDown.X < 0)
+                    {
+                        if(e.X > preE.X)
+                        {
+                            degreeY += RotateSpeed;
+                        }
+                        else if(e.X < preE.X)
+                        {
+                            degreeY -= RotateSpeed;
+                        }
 
+                    }
+                    else
+                    {
+                        if (e.X > preE.X)
+                        {
+                            degreeY += RotateSpeed;
+                        }
+                        else if (e.X < preE.X)
+                        {
+                            degreeY -= RotateSpeed;
+                        }
+                    }
+                    Action.RotateMesh(degreeX, degreeY, 0, scene);
                 }
                 else
                 {
-                    angle += 0.5f;
-                    this.scene.UpdateModelRotationMatrix(0, angle, 0);
-                    //this.scene.camera.Pitch -= 0.5f;
+                    if (e.Y - pressDown.Y < 0)
+                    {
+                        if (e.Y > preE.Y)
+                        {
+                            degreeX += RotateSpeed;
+                        }
+                        else if(e.Y < preE.Y)
+                        {
+                            degreeX -= RotateSpeed;
+                        }
+                    }
+                    else
+                    {
+                        if (e.Y > preE.Y)
+                        {
+                            degreeX += RotateSpeed;
+                        }
+                        else if(e.Y < preE.Y)
+                        {
+                            degreeX -= RotateSpeed;
+                        }
+
+                    }
+                    Action.RotateMesh(degreeX, degreeY, 0, scene);
                 }
-                mouseX = e.X;
-                mouseY = e.Y;
+
+
+                preE.X = e.X;
+                preE.Y = e.Y;
+                                      
                 this.Invalidate();
             }
         }
@@ -111,30 +142,43 @@ namespace RenderingEngine
             float oriX = this.scene.camera.Position.X;
             float oriY = this.scene.camera.Position.Y;
             float oriZ = this.scene.camera.Position.Z;
-            //Vector4 dir = this.scene.camera.Position.Normalized;
-            //float x = Vector4.Dot(dir, new Vector4(1, 0, 0, 1)) * MoveSpeed * 0.5f;
-            //float y = Vector4.Dot(dir, new Vector4(0, 1, 0, 1)) * MoveSpeed * 0.5f;
-            //float z = Vector4.Dot(dir, new Vector4(0, 0, 1, 1)) * MoveSpeed * 0.5f;
-
-            //if (e.Delta < 0)
-            //{
-            //    this.scene.UpdateCameraPos(new Vector4(oriX + x, oriY + y, oriZ + z, 1));
-            //}
-            //else
-            //{
-            //    this.scene.UpdateCameraPos(new Vector4(oriX - x, oriY - y, oriZ - z, 1));
-            //}
 
             if (e.Delta < 0)
             {
-                this.scene.UpdateCameraPos(new Vector4(oriX, oriY, oriZ - MoveSpeed * 0.5f, 1));
+                MoveSpeed += 0.5f;
+               Action.TranslateCamera( 0, 0, -0.5f,scene);
+                //MoveSpeed += 0.5f;
+                //Action.UpdateCameraPitch((float)MoveSpeed,scene);
+                //Action.UpdateCameraYaw(MoveSpeed, scene);
             }
             else
             {
-                this.scene.UpdateCameraPos(new Vector4(oriX, oriY, oriZ + MoveSpeed * 0.5f, 1));
+                MoveSpeed -= 0.5f;
+                //Action.UpdateCameraPitch((float)MoveSpeed, scene);
+                //Action.UpdateCameraYaw(MoveSpeed,scene);
+                Action.TranslateCamera(0, 0,  0.5f, scene);
             }
 
             this.Invalidate();
+        }
+
+        private void FormWindow_MouseUp(object sender, MouseEventArgs e)
+        {
+            if(e.Button == System.Windows.Forms.MouseButtons.Left)
+            {
+                pressUp = new Point(e.X, e.Y);
+                isUp = true;
+            }
+        }
+
+        private void FormWindow_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            {
+                pressDown = new Point(e.X, e.Y);
+                preE = new Point(e.X, e.Y);
+                isUp = false;
+            }
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -144,64 +188,49 @@ namespace RenderingEngine
             float oriZ = this.scene.camera.Position.Z;
             if (keyData == Keys.W)
             {
-                this.scene.UpdateCameraPos(new Vector4(oriX, oriY + MoveSpeed, oriZ, 1));
+                Action.TranslateCamera(oriX, oriY + MoveSpeed, oriZ, scene);
             }
             else if (keyData == Keys.S)
             {
-                this.scene.UpdateCameraPos(new Vector4(oriX, oriY - MoveSpeed, oriZ, 1));
+                Action.TranslateCamera(oriX, oriY - MoveSpeed, oriZ, scene);
             }
             else if (keyData == Keys.A)
             {
-                //float newX = (float)(oriX * Math.Cos(-RotateSpeed) - oriZ * Math.Sin(-RotateSpeed));
-                //float newZ = (float)(oriX * Math.Sin(-RotateSpeed) + oriZ * Math.Cos(-RotateSpeed));
-                //this.scene.UpdateCameraPos(new Vector4(newX, oriY, newZ, 1));
-                //this.scene.UpdateCameraPos(new Vector4(oriX - MoveSpeed, oriY, oriZ, 1));
                 angle += RotateSpeed;
-                this.scene.UpdateModelRotationMatrix(0,angle,0);
+                Action.RotateCamera(0,angle,0,scene);
             }
             else if (keyData == Keys.D)
             {
-                //float newX = (float)(oriX * Math.Cos(RotateSpeed) - oriZ * Math.Sin(RotateSpeed));
-                //float newZ = (float)(oriX * Math.Sin(RotateSpeed) + oriZ * Math.Cos(RotateSpeed));
-                //this.scene.UpdateCameraPos(new Vector4(newX, oriY, newZ, 1));
-                //this.scene.UpdateCameraPos(new Vector4(oriX + MoveSpeed, oriY, oriZ, 1));
                 angle -= RotateSpeed;
-                this.scene.UpdateModelRotationMatrix(0,angle,0);
+                Action.RotateCamera(0,angle,0,scene);
             }
             this.Invalidate();
             return true;
         }
 
         // Wire Frame
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        private void WireFrame(object sender, EventArgs e)
         {
-            if (this.wireFrameToolStripMenuItem.Checked)
-            {
-                this.scene.renderState = Scene.RenderState.WireFrame;
-                this.Invalidate();
-            }
+            this.scene.renderState = Scene.RenderState.WireFrame;
+            this.Invalidate();
         }
 
         // Gouraud Shading
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        private void gouraudShading(object sender, EventArgs e)
         {
-            if (this.gouraudShadingToolStripMenuItem.Checked)
-            {
-                this.scene.renderState = Scene.RenderState.GouraduShading;
-                this.Invalidate();
-            }
+
+            this.scene.renderState = Scene.RenderState.GouraduShading;
+            this.Invalidate();
         }
 
         // Texture Mapping
-        private void radioButton3_CheckedChanged(object sender, EventArgs e)
+        private void textureMapping(object sender, EventArgs e)
         {
-            if (this.textureMappingToolStripMenuItem.Checked)
-            {
-                this.scene.renderState = Scene.RenderState.TextureMapping;
-                BitmapData bmData = this.scene.mesh.texture.LockBits();
-                this.Invalidate();
-                this.scene.mesh.texture.UnlockBits(bmData);
-            }
+
+            this.scene.renderState = Scene.RenderState.TextureMapping;
+
+            this.Invalidate();
+
         }
 
         // Lighting
@@ -217,7 +246,68 @@ namespace RenderingEngine
         {
             //float ratio = (float)this.hScrollBar1.Value / (float)this.hScrollBar1.Maximum;
             //this.scene.light.Kd = ratio;
+           
             //this.Invalidate();
+        }
+
+        private void Blank(object sender, EventArgs e)
+        {
+            ToolStripDropDownItem item = (ToolStripDropDownItem)sender;
+            if(item.Text == "Blank")
+            {
+                item.Text = "cancel blank";
+                this.device.isShowBackFace = false;
+            }
+            else
+            {
+                item.Text = "Blank";
+                this.device.isShowBackFace = true;
+            }
+            this.Invalidate();
+        }
+
+        private void Exit_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void rotate(object sender, EventArgs e)
+        {
+      
+            degreeY -= RotateSpeed;
+           
+            Action.RotateMesh(degreeX, degreeY, 0, scene);
+
+            this.Invalidate();
+        }
+
+        private void rotate_right(object sender, EventArgs e)
+        {
+            degreeY += RotateSpeed;
+
+            Action.RotateMesh(degreeX, degreeY, 0, scene);
+
+            this.Invalidate();
+        }
+
+        private void tranlate(object sender, EventArgs e)
+        {
+            MoveSpeed += 0.5f;
+            Action.TranslateCamera(0,0,0.5f,scene);
+            this.Invalidate();
+        }
+
+        private void translate_right(object sender, EventArgs e)
+        {
+            MoveSpeed -= 0.5f;
+            Action.TranslateCamera(0, 0, -0.5f, scene);
+            this.Invalidate();
+        }
+
+        private void lighting(object sender, EventArgs e)
+        {
+            scene.light.IsEnable = true;
+            this.Invalidate();
         }
     }
 }

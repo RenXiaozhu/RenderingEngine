@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RenderingEngine
 {
-    class Edge: ICloneable
+    public class Edge: ICloneable
     {
         public int yMax;                // 边的上端点的y坐标
         public float x;                 // AEL中表示当前扫描线与边的交点的x坐标， ET中的值为边的下端点的x坐标
@@ -15,6 +15,7 @@ namespace RenderingEngine
 
         public Vertex v1;               // 总保存y较小的点
         public Vertex v2;               // 总保存y较大的点
+       
 
         public Edge() { }
 

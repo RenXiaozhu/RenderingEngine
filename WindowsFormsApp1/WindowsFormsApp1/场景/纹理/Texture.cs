@@ -9,8 +9,8 @@ namespace RenderingEngine
 {
 	public class Texture
 	{
-		private Bitmap bitmap;
-		private BitmapData bmData;
+        public Bitmap bitmap;
+        public BitmapData bmData;
 		public int width;
 		public int height;
 
@@ -18,7 +18,7 @@ namespace RenderingEngine
 		{
 			this.width = width;
 			this.height = height;
-            this.bitmap = new Bitmap("/Users/wangao/Documents/workSpace/RenderingEngine/WindowsFormsApp1/WindowsFormsApp1/textures/background.jpg");
+            this.bitmap = new Bitmap(filename);
 		}
 
 		public BitmapData GetBmData()

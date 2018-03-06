@@ -152,21 +152,21 @@
 			this.wireFrameToolStripMenuItem.Name = "wireFrameToolStripMenuItem";
 			this.wireFrameToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
 			this.wireFrameToolStripMenuItem.Text = "Wire Frame";
-			//this.wireFrameToolStripMenuItem.Click += new System.EventHandler(this.wireFrameToolStripMenuItem_Click);
+			this.wireFrameToolStripMenuItem.Click += new System.EventHandler(this.WireFrame);
 			// 
 			// gouraudShadingToolStripMenuItem
 			// 
 			this.gouraudShadingToolStripMenuItem.Name = "gouraudShadingToolStripMenuItem";
 			this.gouraudShadingToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
 			this.gouraudShadingToolStripMenuItem.Text = "Gouraud Shading";
-			//this.gouraudShadingToolStripMenuItem.Click += new System.EventHandler(this.gouraudShadingToolStripMenuItem_Click);
+			this.gouraudShadingToolStripMenuItem.Click += new System.EventHandler(this.gouraudShading);
 			// 
 			// textureMappingToolStripMenuItem
 			// 
 			this.textureMappingToolStripMenuItem.Name = "textureMappingToolStripMenuItem";
 			this.textureMappingToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
 			this.textureMappingToolStripMenuItem.Text = "Texture Mapping";
-			//this.textureMappingToolStripMenuItem.Click += new System.EventHandler(this.textureMappingToolStripMenuItem_Click);
+			this.textureMappingToolStripMenuItem.Click += new System.EventHandler(this.textureMapping);
 			// 
 			// 二维图形变换ToolStripMenuItem
 			// 
@@ -198,13 +198,74 @@
 			this.消隐ToolStripMenuItem.Name = "消隐ToolStripMenuItem";
 			this.消隐ToolStripMenuItem.Size = new System.Drawing.Size(52, 21);
 			this.消隐ToolStripMenuItem.Text = "Blank";
+            this.消隐ToolStripMenuItem.Click += new System.EventHandler(this.Blank);
+
+
+
+            int y = 150;
+            int x = 600;
+
+            this.RotateBtn = new System.Windows.Forms.Button();
+            this.RotateBtn.Name = "左旋转";
+            this.RotateBtn.BackColor = BackColor;
+            this.RotateBtn.Text = "left rotate";
+            this.RotateBtn.AutoSize = true;
+            this.RotateBtn.Click += new System.EventHandler(this.rotate);
+            this.RotateBtn.SetBounds(x, y + 50, 50, 20);
+            Controls.Add(this.RotateBtn);
+
+            this.RotateBtn_right = new System.Windows.Forms.Button();
+            this.RotateBtn_right.Name = "右旋转";
+            this.RotateBtn_right.BackColor = BackColor;
+            this.RotateBtn_right.SetBounds(x, y + 90, 50, 20);
+            this.RotateBtn_right.AutoSize = true;
+            this.RotateBtn_right.Text = "right rotate";
+            this.RotateBtn_right.Click += new System.EventHandler(this.rotate_right);
+            Controls.Add(this.RotateBtn_right);
+
+
+            this.TranslateBtn = new System.Windows.Forms.Button();
+            this.TranslateBtn.Name = "左平移";
+            this.TranslateBtn.SetBounds(x, y + 130, 50, 20);
+            this.TranslateBtn.BackColor = BackColor;
+            this.TranslateBtn.Text = "left transleft";
+            this.TranslateBtn.AutoSize = true;
+            this.TranslateBtn.Click += new System.EventHandler(this.tranlate);
+            Controls.Add(this.TranslateBtn);
+
+
+            this.TranslateBtn_right = new System.Windows.Forms.Button();
+            this.TranslateBtn_right.SetBounds(x, y + 170, 50, 20);
+            this.TranslateBtn_right.Name = "右平移";
+            this.TranslateBtn_right.BackColor = BackColor;
+            this.TranslateBtn_right.Text = "right translate";
+            this.TranslateBtn_right.AutoSize = true;
+            this.TranslateBtn_right.Click += new System.EventHandler(this.translate_right);
+            Controls.Add(this.TranslateBtn_right);
+
+            this.LightBtn = new System.Windows.Forms.Button();
+            //this.LightBtn.DisplayRectangle = new System.Drawing.Rectangle(50, 50, 50, 20);
+            //this.LightBtn.ClientSize = new System.Drawing.Size(50, 20);
+            //this.LightBtn.Name = "灯光";
+            this.LightBtn.SetBounds(x, y + 210, 50, 20);
+            //this.LightBtn.Size = new System.Drawing.Size(100, 20);
+            this.LightBtn.BackColor = BackColor;
+            this.LightBtn.Text = "open light";
+            this.LightBtn.AutoSize = true;
+            this.LightBtn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.LightBtn.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.LightBtn.Click += new System.EventHandler(this.lighting);
+            Controls.Add(this.LightBtn);
+
+
+
 			// 
 			// Exit
 			// 
 			this.Exit.Name = "Exit";
 			this.Exit.Size = new System.Drawing.Size(40, 21);
 			this.Exit.Text = "Exit";
-			//this.Exit.Click += new System.EventHandler(this.Exit_Click);
+            this.Exit.Click += new System.EventHandler(this.Exit_Click);
 			// 
 			// FormWindow
 			// 
@@ -222,13 +283,21 @@
 			//this.Paint += new System.Windows.Forms.PaintEventHandler(this.FormWindow_Paint);
 			//this.Layout += new System.Windows.Forms.LayoutEventHandler(this.FormWindow_Layout);
 			//this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseClick);
-			//this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FormWindow_MouseDown);
+			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FormWindow_MouseDown);
 			//this.MouseLeave += new System.EventHandler(this.FormWindow_MouseLeave);
-			//this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.FormWindow_MouseUp);
-			this.menuStrip1.ResumeLayout(false);
+			this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.FormWindow_MouseUp);
+            this.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.Form1_OnMouseWheel);
+
+
+
+
+
+            this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
+
+
 
         }
 
@@ -255,6 +324,12 @@
 		private System.Windows.Forms.ToolStripMenuItem wireFrameToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem gouraudShadingToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem textureMappingToolStripMenuItem;
+        private System.Windows.Forms.Button RotateBtn;
+        private System.Windows.Forms.Button RotateBtn_right;
+        private System.Windows.Forms.Button TranslateBtn;
+        private System.Windows.Forms.Button TranslateBtn_right;
+        private System.Windows.Forms.Button LightBtn;
+
 	}
 }
 

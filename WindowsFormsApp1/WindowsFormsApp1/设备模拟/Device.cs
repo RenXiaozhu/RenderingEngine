@@ -19,7 +19,11 @@ namespace RenderingEngine
         private Vector4 clipMin;   // 裁剪空间(-1, -1, -1)
         private Vector4 clipMax;   // 裁剪空间(1, 1, 1)
         private Scene scene;
+
+        // z-buffer
         private readonly float[] depthBuffer;
+
+        public bool isShowBackFace { get; set; }
 
         public Device(Bitmap bmp)
         {
@@ -68,6 +72,8 @@ namespace RenderingEngine
 
         public void PutPixel(int x, int y, float z, Color4 color)
         {
+            // 利用深度消除不需要显示的像素
+            // 当新像素的深度大于原像素深度时，显示原有像素，新像素被抛弃
             int index = (x + y * GetWidth());
             if (depthBuffer[index] < z) return;
             depthBuffer[index] = z;
@@ -100,7 +106,7 @@ namespace RenderingEngine
             return val;
         }
 
-        // 裁剪平面
+        // 将坐标规格化到裁剪空间
         public Vector4 ClipSpace(Vector4 x, Matrix4x4 mvp)
         {
             Vector4 val = mvp.ApplY(x);
@@ -112,9 +118,23 @@ namespace RenderingEngine
             return val;
         }
 
-        // 视平面 将规范化视空间安比例还原到屏幕上
+        /* 视平面 将规范化视空间安比例还原到屏幕上
+         * 因为裁剪空间坐标是在[-1,1]之间
+         * 
+         * 所以要想将坐标转换到视区[0,1]之间
+         * 需要对空间坐标平移 x + 1, y + 1
+         * 因为设备坐标系是倒置的，
+         * 
+         * 0 ------>x
+         *   |
+         *   |
+         * y v
+         * 所以 x' = 1 + x ; y' = 1 - y
+         *  
+         */
         public Vector4 ViewPort(Vector4 x)
         {
+            
             Vector4 val = new Vector4();
             val.X = (1.0f + x.X) * GetWidth() * 0.5f;
             val.Y = (1.0f - x.Y) * GetHeight() * 0.5f;
@@ -135,6 +155,7 @@ namespace RenderingEngine
 
         public Color4 Tex2D(float u, float v, Texture texture)
         {
+            // 如果不将uv坐标进行 1 - u ；1 - v；图像将是倒置的
             int x = Math.Abs((int)((1f - u) * texture.GetWidth()) % texture.GetWidth());
             int y = Math.Abs((int)((1f - v) * texture.GetHeight()) % texture.GetHeight());
 
@@ -144,7 +165,7 @@ namespace RenderingEngine
 
             unsafe
             {
-                byte* ptr = (byte*)(texture.GetBmData().Scan0);
+                byte* ptr = (byte *)texture.GetBmData().Scan0;
                 byte* row = ptr + (y * texture.GetBmData().Stride);
                 b = row[x * 3];
                 g = row[x * 3 + 1];
@@ -177,21 +198,22 @@ namespace RenderingEngine
             // 顶点的实际颜色 = 光线方向 点积 法线方向 * 光的颜色* 本身颜色
             float nDotL1 = scene.light.ComputeNDotL(v1.Position, v1.Normal);
             float nDotL2 = scene.light.ComputeNDotL(v2.Position, v2.Normal);
+
             for (int i = 1; i <= steps; i++)
             {
                 float ratio = (float)i / (float)steps;
                 Color4 vertexColor = new Color4(0, 0, 0);
                 Color4 lightColor = new Color4(0, 0, 0);
+
                 if (scene.light.IsEnable)
                 {
                     Color4 c1 = scene.light.GetFinalLightColor(nDotL1);
                     Color4 c2 = scene.light.GetFinalLightColor(nDotL2);
                     lightColor = MathUtil.ColorInterp(c1, c2, ratio);
                 }
-                else
-                {
-                    vertexColor = MathUtil.ColorInterp(v1.Color, v2.Color, ratio);
-                }
+
+                 vertexColor = MathUtil.ColorInterp(v1.Color, v2.Color, ratio);
+
                 float z = MathUtil.Interp(z1, z2, ratio);
                 if (float.IsNaN(z))
                 {
@@ -204,6 +226,7 @@ namespace RenderingEngine
             }
         }
 
+        //消隐
         private bool ShouldBackFaceCull(VertexTriangle oriVt)
         {
             Vector4 a = new Vector4(oriVt.Vertices[0].ScreenSpacePosition);
@@ -333,17 +356,194 @@ namespace RenderingEngine
         }
         */
 
+        // 渲染，绘制点 线 面 颜色
         public void Render(Scene scene, BitmapData bmData)
         {
             this.scene = scene;
+
             this.bmData = bmData;
+
+            //从世界->相机->裁剪空间->屏幕空间->视区
             Matrix4x4 matrixMVP = CATransform.MVPMatrix;
 
-            foreach (var triangle in scene.mesh.triangles)
+            foreach (var face in scene.mesh.faces)
             {
-                Vertex vertexA = scene.mesh.Vertices[triangle.a];
-                Vertex vertexB = scene.mesh.Vertices[triangle.b];
-                Vertex vertexC = scene.mesh.Vertices[triangle.c];
+                Vertex vertexA;
+                Vertex vertexB;
+                Vertex vertexC;
+                switch (face.type)
+                {
+                    case Face.FaceType.Front:
+                        {
+                            Triangle t1 = face.t_1;
+                            vertexA = scene.mesh.Vertices[t1.a];
+                            vertexA.UV = new Vector4(0, 0, 0, 0);
+
+                            vertexB = scene.mesh.Vertices[t1.b];
+                            vertexB.UV = new Vector4(1, 0, 0, 0);
+
+                            vertexC = scene.mesh.Vertices[t1.c];
+                            vertexC.UV = new Vector4(0, 1, 0, 0);
+
+                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
+
+                            Triangle t2 = face.t_2;
+                            vertexA = scene.mesh.Vertices[t2.a];
+                            vertexA.UV = new Vector4(1, 1, 0, 0);
+
+                            vertexB = scene.mesh.Vertices[t2.b];
+                            vertexB.UV = new Vector4(0, 1, 0, 0);
+
+                            vertexC = scene.mesh.Vertices[t2.c];
+                            vertexC.UV = new Vector4(1, 0, 0, 0);
+
+                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
+
+                        }
+                        break;
+                    case Face.FaceType.Left:
+                        {
+                            Triangle t1 = face.t_1;
+                            vertexA = scene.mesh.Vertices[t1.a];
+                            vertexA.UV = new Vector4(0, 0, 0, 0);
+
+                            vertexB = scene.mesh.Vertices[t1.b];
+                            vertexB.UV = new Vector4(1, 0, 0, 0);
+
+                            vertexC = scene.mesh.Vertices[t1.c];
+                            vertexC.UV = new Vector4(0, 1, 0, 0);
+
+                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
+
+                            Triangle t2 = face.t_2;
+                            vertexA = scene.mesh.Vertices[t2.a];
+                            vertexA.UV = new Vector4(1, 1, 0, 0);
+
+                            vertexB = scene.mesh.Vertices[t2.b];
+                            vertexB.UV = new Vector4(0, 1, 0, 0);
+
+                            vertexC = scene.mesh.Vertices[t2.c];
+                            vertexC.UV = new Vector4(1, 0, 0, 0);
+
+                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
+                        }
+                        break;
+                    case Face.FaceType.Right:
+                        {
+                            Triangle t1 = face.t_1;
+                            vertexA = scene.mesh.Vertices[t1.a];
+                            vertexA.UV = new Vector4(0, 0, 0, 0);
+
+                            vertexB = scene.mesh.Vertices[t1.b];
+                            vertexB.UV = new Vector4(1, 0, 0, 0);
+
+                            vertexC = scene.mesh.Vertices[t1.c];
+                            vertexC.UV = new Vector4(0, 1, 0, 0);
+
+                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
+
+                            Triangle t2 = face.t_2;
+                            vertexA = scene.mesh.Vertices[t2.a];
+                            vertexA.UV = new Vector4(1, 1, 0, 0);
+
+                            vertexB = scene.mesh.Vertices[t2.b];
+                            vertexB.UV = new Vector4(0, 1, 0, 0);
+
+                            vertexC = scene.mesh.Vertices[t2.c];
+                            vertexC.UV = new Vector4(1, 0, 0, 0);
+
+                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
+                        }
+                        break;
+                    case Face.FaceType.Up:
+                        {
+                            Triangle t1 = face.t_1;
+                            vertexA = scene.mesh.Vertices[t1.a];
+                            vertexA.UV = new Vector4(0, 0, 0, 0);
+
+                            vertexB = scene.mesh.Vertices[t1.b];
+                            vertexB.UV = new Vector4(1, 0, 0, 0);
+
+                            vertexC = scene.mesh.Vertices[t1.c];
+                            vertexC.UV = new Vector4(0, 1, 0, 0);
+
+                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
+
+                            Triangle t2 = face.t_2;
+                            vertexA = scene.mesh.Vertices[t2.a];
+                            vertexA.UV = new Vector4(1, 1, 0, 0);
+
+                            vertexB = scene.mesh.Vertices[t2.b];
+                            vertexB.UV = new Vector4(0, 1, 0, 0);
+
+                            vertexC = scene.mesh.Vertices[t2.c];
+                            vertexC.UV = new Vector4(1, 0, 0, 0);
+
+                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
+                        }
+                        break;
+                    case Face.FaceType.Behind:
+                        {
+                            Triangle t1 = face.t_1;
+                            vertexA = scene.mesh.Vertices[t1.a];
+                            vertexA.UV = new Vector4(0, 0, 0, 0);
+
+                            vertexB = scene.mesh.Vertices[t1.b];
+                            vertexB.UV = new Vector4(1, 0, 0, 0);
+
+                            vertexC = scene.mesh.Vertices[t1.c];
+                            vertexC.UV = new Vector4(0, 1, 0, 0);
+
+                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
+
+                            Triangle t2 = face.t_2;
+                            vertexA = scene.mesh.Vertices[t2.a];
+                            vertexA.UV = new Vector4(1, 1, 0, 0);
+
+                            vertexB = scene.mesh.Vertices[t2.b];
+                            vertexB.UV = new Vector4(0, 1, 0, 0);
+
+                            vertexC = scene.mesh.Vertices[t2.c];
+                            vertexC.UV = new Vector4(1, 0, 0, 0);
+
+                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
+                        }
+                        break;
+                    case Face.FaceType.Below:
+                        {
+                            Triangle t1 = face.t_1;
+                            vertexA = scene.mesh.Vertices[t1.a];
+                            vertexA.UV = new Vector4(0, 0, 0, 0);
+
+                            vertexB = scene.mesh.Vertices[t1.b];
+                            vertexB.UV = new Vector4(1, 0, 0, 0);
+
+                            vertexC = scene.mesh.Vertices[t1.c];
+                            vertexC.UV = new Vector4(0, 1, 0, 0);
+
+                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
+
+                            Triangle t2 = face.t_2;
+                            vertexA = scene.mesh.Vertices[t2.a];
+                            vertexA.UV = new Vector4(1, 1, 0, 0);
+
+                            vertexB = scene.mesh.Vertices[t2.b];
+                            vertexB.UV = new Vector4(0, 1, 0, 0);
+
+                            vertexC = scene.mesh.Vertices[t2.c];
+                            vertexC.UV = new Vector4(1, 0, 0, 0);
+
+                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
+                        }
+                        break;
+                }
+
+            }
+
+        }
+
+        public void renderTriangle(Vertex vertexA, Vertex vertexB, Vertex vertexC , Matrix4x4 matrixMVP)
+        {
 
                 List<Vertex> pIn = new List<Vertex>();
 
@@ -384,6 +584,7 @@ namespace RenderingEngine
                                 Vector4 viewPortA = this.ViewPort(start.ClipSpacePosition);
                                 Vector4 viewPortB = this.ViewPort(vtList[i].Vertices[j].ClipSpacePosition);
                                 DrawLine(start, vtList[i].Vertices[j], viewPortA, viewPortB, scene);
+                                //DrawDDALine(start, vtList[i].Vertices[j]);
                                 start = vtList[i].Vertices[j];
                             }
                         }
@@ -391,15 +592,17 @@ namespace RenderingEngine
                 }
                 else
                 {
-                    // 填充三角形                  
+
+                    // 填充三角形                   bv gf      
                     for (int i = 0; i < vtList.Count; i++)
                     {
+                        //Console.WriteLine(vtList.Count);
                         DrawTriangle(vtList[i], oriVt, scene);
                     }
                 }
-            }
         }
 
+        //生成三角形数组
         private List<VertexTriangle> MakeTriangle(List<Vertex> input)
         {
             List<VertexTriangle> temp = new List<VertexTriangle>();
@@ -413,59 +616,57 @@ namespace RenderingEngine
         public void DrawTriangles(TriangleModel triangleModel)
         {
             Vertex[] vectex = triangleModel.Vertices;
-            DrawDDALine(new Vector2(vectex[0].Position.X, vectex[0].Position.Y), new Vector2(vectex[1].Position.X, vectex[1].Position.Y), vectex[0].Color);
-            DrawDDALine(new Vector2(vectex[1].Position.X, vectex[1].Position.Y), new Vector2(vectex[2].Position.X, vectex[2].Position.Y), vectex[1].Color);
-            DrawDDALine(new Vector2(vectex[2].Position.X, vectex[2].Position.Y), new Vector2(vectex[0].Position.X, vectex[0].Position.Y), vectex[2].Color);
+            //DrawDDALine(new Vector2(vectex[0].Position.X, vectex[0].Position.Y), new Vector2(vectex[1].Position.X, vectex[1].Position.Y), vectex[0].Color);
+            //DrawDDALine(new Vector2(vectex[1].Position.X, vectex[1].Position.Y), new Vector2(vectex[2].Position.X, vectex[2].Position.Y), vectex[1].Color);
+            //DrawDDALine(new Vector2(vectex[2].Position.X, vectex[2].Position.Y), new Vector2(vectex[0].Position.X, vectex[0].Position.Y), vectex[2].Color);
         }
-		
 
-        public void DrawDDALine(Vector2 point1, Vector2 point2, Color4 color)
+
+        public void DrawDDALine(Vertex v1, Vertex v2)
         {
-            int a, b, c, d;
-            double m = point2.x - point1.x;
-            double n = point2.y - point1.y;
-            if (m == 0)
+            //int a, b, c, d;
+            double m = v2.ScreenSpacePosition.X - v1.ScreenSpacePosition.X;
+            double n = v2.ScreenSpacePosition.Y - v1.ScreenSpacePosition.Y;
+
+            Vector4 point1 = v1.ScreenSpacePosition;
+            Vector4 point2 = v2.ScreenSpacePosition;
+            //顶点位置和法线方向与 光线方向的点积  
+            // 顶点的实际颜色 = 光线方向 点积 法线方向 * 光的颜色* 本身颜色
+            float nDotL1 = scene.light.ComputeNDotL(v1.Position, v1.Normal);
+            float nDotL2 = scene.light.ComputeNDotL(v2.Position, v2.Normal);
+            float z1 = point1.Z;
+            float z2 = point2.Z;
+
+
+            double px = point1.X;
+            double py = point1.Y;
+            double steps = Math.Max(Math.Abs(m), Math.Abs(n));
+            double xt = m / steps;
+            double yt = n / steps;
+            for (int i = 0; i < steps; i++)
             {
-                double tmp = point2.y > point1.y ? point2.y : point1.y;
-                double tmpy = point2.y < point1.y ? point2.y : point1.y;
-                for (double y = tmpy; y <= tmp; y = y + 1)
+                Color4 vertexColor = new Color4(0, 0, 0);
+                Color4 lightColor = new Color4(0, 0, 0);
+                float ratio = (float)(i / steps);
+                if (scene.light.IsEnable)
                 {
-                    PutPixel((int)point1.x, (int)y , color);
+                    Color4 c1 = scene.light.GetFinalLightColor(nDotL1);
+                    Color4 c2 = scene.light.GetFinalLightColor(nDotL2);
+                    lightColor = MathUtil.ColorInterp(c1, c2, ratio);
                 }
+
+                vertexColor = MathUtil.ColorInterp(v1.Color, v2.Color, ratio);
+
+                float z = MathUtil.Interp(z1, z2, ratio);
+                //PutPixel((int)x, (int)(y + 0.5), color);
+                DrawPoint(new Vector4((int)px, (int)(py + 0.5), z, 0), vertexColor + lightColor);
+                px += xt;
+                py += yt;
             }
-            else if (n == 0)
-            {
-                double tmp = point2.x > point1.x ? point2.x : point1.x;
-                double tmpx = point2.x< point1.x ? point2.x : point1.x;
-                for (int x = (int)tmpx; x <=tmp; x = x + 1)
-                {
-                    PutPixel(x, (int)point1.y, color);
-                }
-            }
-            else
-            {
-                double aspect = (point2.x - point1.x) / (point2.y - point1.y);
-                if (point1.x > point2.x)
-                {
-                    a = (int)point2.x;
-                    b = (int)point2.y;
-                    c = (int)point1.x;
-                    d = (int)point1.y;
-                }
-                else
-                {
-                    a = (int)point1.x;
-                    b = (int)point1.y;
-                    c = (int)point2.x;
-                    d = (int)point2.y;
-                }
-                for (double x = a, y = b; x <= c; x += 1, y = y + aspect)
-                {
-                    PutPixel((int)x, (int)(y + 0.5), color);
-                }
-            }
-           
-         }
+        }
+                              
+
+                 
 
         
         // 直线段中点算法
