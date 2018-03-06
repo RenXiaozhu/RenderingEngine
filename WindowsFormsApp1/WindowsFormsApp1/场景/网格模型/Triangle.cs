@@ -46,90 +46,6 @@ namespace RenderingEngine
         */
     }
 
-    public class TriangleModel
-    {
-        public Vertex[] Vertices { get; set; }
-        public double weight1;
-        public double weight2;
-
-		//三角形重心插值的二元一次方程组的系数
-		private int a, b, c, d, dn1, dn2;
-		private double u1, v1;
-		private double u2, v2;
-		private double u3, v3;
-		private double w1, w2, w3;
-
-        public TriangleModel(Vertex A, Vertex B, Vertex C)
-        {
-            this.Vertices = new Vertex[] { A, B, C };
-        }
-
-		public void PreCalculateWeight()
-		{
-			Vector4 p1 = this.Vertices[0].ScreenSpacePosition;
-			Vector4 p2 = this.Vertices[1].ScreenSpacePosition;
-			Vector4 p3 = this.Vertices[2].ScreenSpacePosition;
-
-            a = (int)(p2.X - p1.X);
-            b = (int)(p3.X - p1.X);
-            c = (int)(p2.Y - p1.Y);
-            d = (int)(p3.Y - p1.Y);
-			dn1 = (b * c - a * d);
-			dn2 = (a * d - b * c);
-
-            u1 = Vertices[0].UV.X / Vertices[0].ClipSpacePosition.W;
-            u2 = Vertices[1].UV.X / Vertices[1].ClipSpacePosition.W;
-            u3 = Vertices[2].UV.X / Vertices[2].ClipSpacePosition.W;
-            v1 = Vertices[0].UV.Y / Vertices[0].ClipSpacePosition.W;
-            v2 = Vertices[1].UV.Y / Vertices[1].ClipSpacePosition.W;
-            v3 = Vertices[2].UV.Y / Vertices[2].ClipSpacePosition.W;
-            w1 = 1f / Vertices[0].ClipSpacePosition.W;
-            w2 = 1f / Vertices[1].ClipSpacePosition.W;
-            w3 = 1f / Vertices[2].ClipSpacePosition.W;
-
-		}
-
-		public void CalWeight(Vector4 p)
-		{
-			Vector4 p1 = this.Vertices[0].ScreenSpacePosition;
-            int m = (int)(p.X - p1.X);
-            int n = (int)(p.Y - p1.Y);
-			this.weight1 = (b * n - d * m)/dn1;
-			this.weight2 = (a * n - c * m) / dn2;
-		}
-
-		public double GetInterValue(double a, double b, double c)
-		{
-			return ((1 - weight1 - weight2) * a + weight1 * b + weight2 * c);
-		}
-
-		public Vector4 GetInterUV()
-		{
-			double u = GetInterValue(u1, u2, u3);
-			double v = GetInterValue(v1, v2, v3);
-			double w = GetInterValue(w1, w2, w3);
-            return new Vector4((float)u /(float) w, (float)v /(float) w, 0, 0);
-		}
-
-        public bool IsPointInTriangle(Point point)
-        {
-            Vector4 P = new Vector4(point.X, point.Y, 0, 0);
-            return SameSide(Vertices[0].Position, Vertices[1].Position, Vertices[2].Position, P) && SameSide(Vertices[1].Position, Vertices[2].Position, Vertices[0].Position, P) && SameSide(Vertices[2].Position, Vertices[0].Position, Vertices[1].Position, P);
-        }
-
-        public bool SameSide(Vector4 A, Vector4 B, Vector4 C, Vector4 P)
-        {
-            Vector4 AB = B - A;
-            Vector4 AC = C - A;
-            Vector4 AP = P - A;
-            //求出垂直于当前平面的向量
-            Vector4 v1 = Vector4.Cross(AB,AC);
-            Vector4 v2 = Vector4.Cross(AB,AP);
-            // 判断这两个平面法向量的夹角: 0  两个向量垂直 (90度);  >0 : 形成的是锐角  ;  <0 :夹角大于90度
-            return Vector4.Dot(v1,v2) >= 0;
-        }
-    }
-
     public struct VertexTriangle
     {
         public Face.FaceType type;
@@ -153,6 +69,7 @@ namespace RenderingEngine
         private float w1, w2, w3;
         private Vector4 nowpos;
         private float area;
+        private float l1, l2, l3, l;
 
         public VertexTriangle(Vertex a, Vertex b, Vertex c) : this()
         {
@@ -208,31 +125,6 @@ namespace RenderingEngine
         * p2点UV坐标[u2,v2]
         * p3点UV坐标[u3,v3]
         */
-        public void PreCalWeight()
-        {
-            Vector4 p1 = this.Vertices[0].ScreenSpacePosition;
-            Vector4 p2 = this.Vertices[1].ScreenSpacePosition;
-            Vector4 p3 = this.Vertices[2].ScreenSpacePosition;
-
-            a = (int)(p2.X - p1.X);
-            b = (int)(p3.X - p1.X);
-            c = (int)(p2.Y - p1.Y);
-            d = (int)(p3.Y - p1.Y);
-
-            dn1 = (b * c - a * d);
-            dn2 = (a * d - b * c);
-
-            u1 = Vertices[0].UV.X / Vertices[0].ClipSpacePosition.W;
-            u2 = Vertices[1].UV.X / Vertices[1].ClipSpacePosition.W;
-            u3 = Vertices[2].UV.X / Vertices[2].ClipSpacePosition.W;
-            v1 = Vertices[0].UV.Y / Vertices[0].ClipSpacePosition.W;
-            v2 = Vertices[1].UV.Y / Vertices[1].ClipSpacePosition.W;
-            v3 = Vertices[2].UV.Y / Vertices[2].ClipSpacePosition.W;
-            //透视校正
-            w1 = 1f / Vertices[0].ClipSpacePosition.W;
-            w2 = 1f / Vertices[1].ClipSpacePosition.W;
-            w3 = 1f / Vertices[2].ClipSpacePosition.W;
-        }
 
         public void Preproccess()
         {
@@ -249,12 +141,18 @@ namespace RenderingEngine
 
             Vector4 e1 = p2 - p1;
             Vector4 e2 = p3 - p1;
+            Vector4 e3 = p3 - p2;
 
             Vector4 at = Vector4.Cross(e1, e2);
 
             area = at.Length() / 2;
             //公式的分母
             den = d * b + e * c;
+
+            l1 = e1.Length();
+            l2 = e2.Length();
+            l3 = e3.Length();
+            l = (l1 + l2 + l3) / 2;
 
             u1 = Vertices[0].UV.X / Vertices[0].ClipSpacePosition.W;
             u2 = Vertices[1].UV.X / Vertices[1].ClipSpacePosition.W;
@@ -266,6 +164,8 @@ namespace RenderingEngine
             w1 = 1f / Vertices[0].ClipSpacePosition.W;
             w2 = 1f / Vertices[1].ClipSpacePosition.W;
             w3 = 1f / Vertices[2].ClipSpacePosition.W;
+
+
         }
 
         public void CalculateWeight(Vector4 p)
@@ -286,9 +186,14 @@ namespace RenderingEngine
             Vector4 tp2 = p3 - p;
             Vector4 tp3 = p1 - p;
 
-            float t1 = Vector4.Cross(tp1, tp2).Length() / 2;
-            float t2 = Vector4.Cross(tp3, tp2).Length() / 2;
-            float t3 = Vector4.Cross(tp3, tp1).Length() / 2;
+            float d1 = tp1.Length();
+            float d2 = tp2.Length();
+            float d3 = tp3.Length();
+
+            float h = (d1 + d2 + d3) / 2;
+            float t1 = (float)Math.Sqrt(h * (h - d1) * (h - d2) * (h - l3));
+            float t2 = (float)Math.Sqrt(h * (h - d1) * (h - d2) * (h - l1));
+            float t3 = (float)Math.Sqrt(h * (h - d1) * (h - d2) * (h - l2));
 
             b1 = t1 / area;
             b1 = MathUtil.Clamp01(b1);
