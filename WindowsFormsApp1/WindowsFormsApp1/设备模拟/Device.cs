@@ -246,115 +246,6 @@ namespace RenderingEngine
             }
         }
 
-        /*
-        public void DrawTriangle(VertexTriangle vt, Scene scene)
-        {
-            Vector4 normal = vt.VertexA.Normal;
-            Vector4 dir = scene.camera.GetDir();
-            float dot = Vector4.Dot(dir, normal);
-            if (dot > 0) return;
-
-            List<Vertex> vList = new List<Vertex>();
-            vList.Add(vt.VertexA);
-            vList.Add(vt.VertexB);
-            vList.Add(vt.VertexC);
-            vList.Sort();
-
-            //Vector4 p1 = this.ViewPort(vList[0].ClipSpacePosition);
-            //Vector4 p2 = this.ViewPort(vList[1].ClipSpacePosition);
-            //Vector4 p3 = this.ViewPort(vList[2].ClipSpacePosition);   
-            Vector4 p1 = vList[0].ScreenSpacePosition;
-            Vector4 p2 = vList[1].ScreenSpacePosition;
-            Vector4 p3 = vList[2].ScreenSpacePosition;       
-
-            //if (p1.Y > p2.Y)
-            //{
-            //    var temp = p2;
-            //    p2 = p1;
-            //    p1 = temp;
-            //}
-
-            //if (p2.Y > p3.Y)
-            //{
-            //    var temp = p2;
-            //    p2 = p3;
-            //    p3 = temp;
-            //}
-
-            //if (p1.Y > p2.Y)
-            //{
-            //    var temp = p2;
-            //    p2 = p1;
-            //    p1 = temp;
-            //}
-
-            float dP1P2, dP1P3, dP2P3;
-            if (p2.Y - p1.Y > 0)
-                dP1P2 = (p2.X - p1.X) / (p2.Y - p1.Y);
-            else
-                dP1P2 = 0;
-
-            if (p3.Y - p1.Y > 0)
-                dP1P3 = (p3.X - p1.X) / (p3.Y - p1.Y);
-            else
-                dP1P3 = 0;
-
-            if (p3.Y - p2.Y > 0)
-                dP2P3 = (p3.X - p2.X) / (p3.Y - p2.Y);
-            else
-                dP2P3 = 0;
-
-            if(dP1P2 == 0)
-            {
-                if (p1.X > p2.X)
-                {
-                    var temp = vList[0];
-                    vList[0] = vList[1];
-                    vList[1] = temp;
-                }
-                for (var y = (int)p1.Y; y <= (int)p3.Y; y++)
-                {
-                    //this.scanLine.ProcessScanLineAd(y, p1, p3, p2, p3, scene);
-                    this.scanLine.ProcessScanLineAd(y, vList[0], vList[2], vList[1], vList[2], scene);
-                }
-            }
-            else
-            {
-                if (dP1P2 > dP1P3)
-                {
-                    for (var y = (int)p1.Y; y <= (int)p3.Y; y++)
-                    {
-                        if (y < p2.Y)
-                        {
-                            //this.scanLine.ProcessScanLineAd(y, p1, p3, p1, p2, scene);
-                            this.scanLine.ProcessScanLineAd(y, vList[0], vList[2], vList[0], vList[1], scene);
-                        }
-                        else
-                        {
-                            //this.scanLine.ProcessScanLineAd(y, p1, p3, p2, p3, scene);
-                            this.scanLine.ProcessScanLineAd(y, vList[0], vList[2], vList[1], vList[2], scene);
-                        }
-                    }
-                }
-                else
-                {
-                    for (var y = (int)p1.Y; y <= (int)p3.Y; y++)
-                    {
-                        if (y < p2.Y)
-                        {
-                            //this.scanLine.ProcessScanLineAd(y, p1, p2, p1, p3, scene);
-                            this.scanLine.ProcessScanLineAd(y, vList[0], vList[1], vList[0], vList[2], scene);
-                        }
-                        else
-                        {
-                            //this.scanLine.ProcessScanLineAd(y, p2, p3, p1, p3, scene);
-                            this.scanLine.ProcessScanLineAd(y, vList[1], vList[2], vList[0], vList[2], scene);
-                        }
-                    }
-                }
-            }
-        }
-        */
 
         // 渲染，绘制点 线 面 颜色
         public void Render(Scene scene, BitmapData bmData)
@@ -612,13 +503,6 @@ namespace RenderingEngine
                 temp.Add(vt);
             }
             return temp;
-        }
-        public void DrawTriangles(TriangleModel triangleModel)
-        {
-            Vertex[] vectex = triangleModel.Vertices;
-            //DrawDDALine(new Vector2(vectex[0].Position.X, vectex[0].Position.Y), new Vector2(vectex[1].Position.X, vectex[1].Position.Y), vectex[0].Color);
-            //DrawDDALine(new Vector2(vectex[1].Position.X, vectex[1].Position.Y), new Vector2(vectex[2].Position.X, vectex[2].Position.Y), vectex[1].Color);
-            //DrawDDALine(new Vector2(vectex[2].Position.X, vectex[2].Position.Y), new Vector2(vectex[0].Position.X, vectex[0].Position.Y), vectex[2].Color);
         }
 
 
