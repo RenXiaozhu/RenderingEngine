@@ -69,7 +69,8 @@ namespace RenderingEngine
         private float w1, w2, w3;
         private Vector4 nowpos;
         private float area;
-        private float l1, l2, l3, l;
+        private float p;// 半周长
+        private float d1, d2, d3;// 边长
 
         public VertexTriangle(Vertex a, Vertex b, Vertex c) : this()
         {
@@ -141,18 +142,12 @@ namespace RenderingEngine
 
             Vector4 e1 = p2 - p1;
             Vector4 e2 = p3 - p1;
-            Vector4 e3 = p3 - p2;
 
             Vector4 at = Vector4.Cross(e1, e2);
 
             area = at.Length() / 2;
             //公式的分母
             den = d * b + e * c;
-
-            l1 = e1.Length();
-            l2 = e2.Length();
-            l3 = e3.Length();
-            l = (l1 + l2 + l3) / 2;
 
             u1 = Vertices[0].UV.X / Vertices[0].ClipSpacePosition.W;
             u2 = Vertices[1].UV.X / Vertices[1].ClipSpacePosition.W;
@@ -186,14 +181,9 @@ namespace RenderingEngine
             Vector4 tp2 = p3 - p;
             Vector4 tp3 = p1 - p;
 
-            float d1 = tp1.Length();
-            float d2 = tp2.Length();
-            float d3 = tp3.Length();
-
-            float h = (d1 + d2 + d3) / 2;
-            float t1 = (float)Math.Sqrt(h * (h - d1) * (h - d2) * (h - l3));
-            float t2 = (float)Math.Sqrt(h * (h - d1) * (h - d2) * (h - l1));
-            float t3 = (float)Math.Sqrt(h * (h - d1) * (h - d2) * (h - l2));
+            float t1 = Vector4.Cross(tp1, tp2).Length() / 2;
+            float t2 = Vector4.Cross(tp3, tp2).Length() / 2;
+            float t3 = Vector4.Cross(tp3, tp1).Length() / 2;
 
             b1 = t1 / area;
             b1 = MathUtil.Clamp01(b1);

@@ -108,8 +108,8 @@ namespace RenderingEngine
 			var lightDirection = LightPos - pos;
 			normal.Normalize();
 			//lightDirection.Normalize();
-            float t = lightDirection.CosUV(normal);
-
+            //float t = lightDirection.CosUV(normal);
+            float t = Vector4.Dot(lightDirection,normal);
             return MathUtil.Clamp01(t);
 		}
 
