@@ -31,8 +31,8 @@ C:/Users/Administrator/Desktop/111/RenderingEngine/WindowsFormsApp1/WindowsForms
 /Users/wangao/Documents/workSpace/RenderingEngine/WindowsFormsApp1/WindowsFormsApp1/bin/Debug/RenderingEngine.exe.config
 /Users/wangao/Documents/workSpace/RenderingEngine/WindowsFormsApp1/WindowsFormsApp1/bin/Debug/RenderingEngine.exe
 /Users/wangao/Documents/workSpace/RenderingEngine/WindowsFormsApp1/WindowsFormsApp1/bin/Debug/RenderingEngine.pdb
-/Users/wangao/Documents/workSpace/RenderingEngine/WindowsFormsApp1/WindowsFormsApp1/obj/Debug/RenderingEngine.FormWindow.resources
 /Users/wangao/Documents/workSpace/RenderingEngine/WindowsFormsApp1/WindowsFormsApp1/obj/Debug/RenderingEngine.Properties.Resources.resources
+/Users/wangao/Documents/workSpace/RenderingEngine/WindowsFormsApp1/WindowsFormsApp1/obj/Debug/RenderingEngine.FormWindow.resources
 /Users/wangao/Documents/workSpace/RenderingEngine/WindowsFormsApp1/WindowsFormsApp1/obj/Debug/RenderingEngine.csproj.GenerateResource.Cache
 /Users/wangao/Documents/workSpace/RenderingEngine/WindowsFormsApp1/WindowsFormsApp1/obj/Debug/RenderingEngine.csproj.CoreCompileInputs.cache
 /Users/wangao/Documents/workSpace/RenderingEngine/WindowsFormsApp1/WindowsFormsApp1/obj/Debug/RenderingEngine.exe

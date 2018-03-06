@@ -63,36 +63,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Camera.cs" />
-    <Compile Include="CATransform.cs" />
-    <Compile Include="Color4.cs" />
-    <Compile Include="CoordinateTransform.cs" />
-    <Compile Include="Device.cs" />
-    <Compile Include="DirectionLight.cs" />
-    <Compile Include="Edge.cs" />
-    <Compile Include="HodgmanClip.cs" />
-    <Compile Include="MathUtil.cs" />
-    <Compile Include="MatrixTransform.cs" />
-    <Compile Include="Mesh.cs" />
-    <Compile Include="MyBrush.cs" />
-    <Compile Include="FormWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FormWindow.Designer.cs">
-      <DependentUpon>FormWindow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scanline.cs" />
-    <Compile Include="Scene.cs" />
-    <Compile Include="Texture.cs" />
-    <Compile Include="Triangle.cs" />
-    <Compile Include="Vector4.cs" />
-    <Compile Include="VectorBase.cs" />
-    <Compile Include="Vertex.cs" />
-    <EmbeddedResource Include="FormWindow.resx">
-      <DependentUpon>FormWindow.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -112,6 +83,38 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="光照模型\DirectionLight.cs" />
+    <Compile Include="设备模拟\Device.cs" />
+    <Compile Include="场景\网格模型\Mesh.cs" />
+    <Compile Include="场景\纹理\Texture.cs" />
+    <Compile Include="场景\Scene.cs" />
+    <Compile Include="场景\网格模型\Triangle.cs" />
+    <Compile Include="场景\网格模型\Vertex.cs" />
+    <Compile Include="设备模拟\裁剪\HodgmanClip.cs" />
+    <Compile Include="相机模型\Camera.cs" />
+    <Compile Include="设备模拟\3D场景转换\CATransform.cs" />
+    <Compile Include="设备模拟\3D场景转换\CoordinateTransform.cs" />
+    <Compile Include="设备模拟\3D场景转换\Vector4.cs" />
+    <Compile Include="设备模拟\3D场景转换\VectorBase.cs" />
+    <Compile Include="设备模拟\3D场景转换\MathUtil.cs" />
+    <Compile Include="设备模拟\3D场景转换\MatrixTransform.cs" />
+    <Compile Include="设备模拟\渲染\Scanline.cs" />
+    <Compile Include="设备模拟\渲染\Color4.cs" />
+    <Compile Include="设备模拟\渲染\Edge.cs" />
+    <Compile Include="窗口\FormWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="窗口\FormWindow.Designer.cs">
+      <DependentUpon>FormWindow.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="窗口\FormWindow.resx">
+      <DependentUpon>FormWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="窗口\Program.cs" />
+    <Compile Include="设备模拟\动作\Action.cs" />
+    <Compile Include="设备模拟\渲染\Padding.cs" />
+    <Compile Include="设备模拟\渲染\EdgeTable.cs" />
+    <Compile Include="场景\网格模型\Face.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -127,6 +130,19 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="相机模型\" />
+    <Folder Include="光照模型\" />
+    <Folder Include="设备模拟\" />
+    <Folder Include="场景\" />
+    <Folder Include="场景\纹理\" />
+    <Folder Include="场景\网格模型\" />
+    <Folder Include="设备模拟\裁剪\" />
+    <Folder Include="设备模拟\3D场景转换\" />
+    <Folder Include="设备模拟\渲染\" />
+    <Folder Include="窗口\" />
+    <Folder Include="设备模拟\动作\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
