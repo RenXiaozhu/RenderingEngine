@@ -13,7 +13,7 @@ namespace RenderingEngine
         public byte green;
         public byte A;
         
-        public Color4(byte red, byte blue, byte green)
+        public Color4(byte red, byte green, byte blue)
             :this()
         {
             this.red = red;
@@ -52,6 +52,22 @@ namespace RenderingEngine
             byte g = (byte)Math.Min((c1.green - c2.green), 255);
             byte b = (byte)Math.Min((c1.blue - c2.blue), 255);
             return new Color4(r, g, b);
+        }
+
+        public static bool operator ==(Color4 c1, Color4 c2)
+        {
+            if (c1.red == c2.red && c1.green == c2.green && c1.blue == c2.blue)
+                return true;
+            else
+                return false;
+        }
+
+        public static bool operator !=(Color4 c1, Color4 c2)
+        {
+            if (c1.red == c2.red && c1.green == c2.green && c1.blue == c2.blue)
+                return false;
+            else
+                return true;
         }
 
 

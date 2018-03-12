@@ -22,8 +22,8 @@ namespace RenderingEngine
             Matrix4x4 scale = new Matrix4x4();
             scale.SetScale(1, 1, 1);
 
-            Matrix4x4 rotation = scene.mesh.rotation;
-            Matrix4x4 model = scale * rotation * translate;
+            Matrix4x4 rotation = scene.camera.rotate;
+            Matrix4x4 model = scale *rotation * translate;
             Matrix4x4 view = scene.camera.FPSView();
             Matrix4x4 projection = scene.camera.Perspective();
             Matrix4x4 mvp = model * view;

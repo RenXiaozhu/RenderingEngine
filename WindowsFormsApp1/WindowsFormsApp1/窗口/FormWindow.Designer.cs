@@ -272,7 +272,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.WindowText;
-			this.ClientSize = new System.Drawing.Size(721, 429);
+			this.ClientSize = new System.Drawing.Size(700, 700);
 			this.Controls.Add(this.menuStrip1);
 			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
 			this.MainMenuStrip = this.menuStrip1;
@@ -287,18 +287,12 @@
 			//this.MouseLeave += new System.EventHandler(this.FormWindow_MouseLeave);
 			this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.FormWindow_MouseUp);
             this.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.Form1_OnMouseWheel);
-
-
-
-
+            this.Layout += new System.Windows.Forms.LayoutEventHandler(this.ForLayout);
 
             this.menuStrip1.ResumeLayout(false);
 			this.menuStrip1.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
-
-
-
         }
 
         #endregion

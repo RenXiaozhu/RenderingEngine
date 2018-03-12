@@ -14,7 +14,7 @@ namespace RenderingEngine
         private Edge AEL;
         private int height;
         private Color4 final;
-
+        private VertexTriangle nowVt;
         public ScanLine(Device device)
         {
             this.device = device;
@@ -97,12 +97,254 @@ namespace RenderingEngine
         }
         #endregion
 
+        public Vertex[] GetList(Vertex[] list)
+        {
+            Vertex A = list[0];
+            Vertex B = list[1];
+            Vertex C = list[2];
+
+            Vertex[] vt = new Vertex[3];
+            float ay = A.ScreenSpacePosition.Y;
+            float by = B.ScreenSpacePosition.Y;
+            float cy = C.ScreenSpacePosition.Y;
+
+            float ax = A.ScreenSpacePosition.X;
+            float bx = B.ScreenSpacePosition.X;
+            float cx = C.ScreenSpacePosition.X;
+            if (ay < by && ay < cy)
+            {
+                vt[0] = A;
+                if (by < cy)
+                {
+                    vt[1] = B;
+                    vt[2] = C;
+                }
+                else
+                {
+                    vt[1] = C;
+                    vt[2] = B;
+                }
+            }
+            if (by < cy && by < ay)
+            {
+                vt[0] = B;
+                if (ay < cy)
+                {
+                    vt[1] = A;
+                    vt[2] = C;
+                }
+                else
+                {
+                    vt[1] = C;
+                    vt[2] = A;
+                }
+            }
+
+            if (cy < by && cy < ay)
+            {
+                vt[0] = C;
+                if (by < ay)
+                {
+                    vt[1] = B;
+                    vt[2] = A;
+                }
+                else
+                {
+                    vt[1] = A;
+                    vt[2] = B;
+                }
+            }
+
+            if (ay == by)
+            {
+                if (cy < ay)
+                {
+                    vt[0] = C;
+                    if (ax < bx)
+                    {
+                        vt[1] = A;
+                        vt[2] = B;
+                    }
+                    else
+                    {
+                        vt[1] = B;
+                        vt[2] = A;
+                    }
+                }
+                else
+                {
+                    vt[2] = C;
+                    if (ax < bx)
+                    {
+                        vt[0] = A;
+                        vt[1] = B;
+                    }
+                    else
+                    {
+                        vt[0] = B;
+                        vt[1] = A;
+                    }
+                }
+            }
+
+            if (ay == cy)
+            {
+                if (by < ay)
+                {
+                    vt[0] = B;
+                    if (ax < cx)
+                    {
+                        vt[1] = A;
+                        vt[2] = C;
+                    }
+                    else
+                    {
+                        vt[1] = C;
+                        vt[2] = A;
+                    }
+                }
+                else
+                {
+                    vt[2] = B;
+                    if (ax < cx)
+                    {
+                        vt[0] = A;
+                        vt[1] = C;
+                    }
+                    else
+                    {
+                        vt[0] = C;
+                        vt[1] = A;
+                    }
+                }
+            }
+            if (by == cy)
+            {
+                if (ay < cy)
+                {
+                    vt[0] = A;
+                    if (cx < bx)
+                    {
+                        vt[1] = C;
+                        vt[2] = B;
+                    }
+                    else
+                    {
+                        vt[1] = B;
+                        vt[2] = C;
+                    }
+                }
+                else
+                {
+                    vt[2] = A;
+                    if (bx < cx)
+                    {
+                        vt[0] = B;
+                        vt[1] = C;
+                    }
+                    else
+                    {
+                        vt[0] = C;
+                        vt[1] = B;
+                    }
+                }
+            }
+            return vt;
+        }
+
+        // 重心坐标
+        public void StartScanLine(VertexTriangle vt, VertexTriangle oriVt, Scene scene)
+        {
+            float yMin = this.height;
+            float yMax = 0;
+            Vertex[] vv = GetList(vt.Vertices);
+            Vertex A = vv[0];
+            Vertex B = vv[1];
+            Vertex C = vv[2];
+
+            //Console.WriteLine(a1.v1.Position +" " + a1.v1.Normal);
+            float nDotLA1V1 = scene.light.ComputeNDotL(A.nowPos, A.nowNormal);
+            A.lightColor = A.Color * scene.light.GetFinalLightColor(nDotLA1V1);
+
+            float nDotLA1V2 = scene.light.ComputeNDotL(B.nowPos, B.nowNormal);
+            B.lightColor = B.Color * scene.light.GetFinalLightColor(nDotLA1V2);
+
+            float nDotLA2V1 = scene.light.ComputeNDotL(C.nowPos, C.nowNormal);
+            C.lightColor = C.Color * scene.light.GetFinalLightColor(nDotLA2V1);
+
+
+            float ay = A.ScreenSpacePosition.Y;
+            float by = B.ScreenSpacePosition.Y;
+            float cy = C.ScreenSpacePosition.Y;
+
+            float ax = A.ScreenSpacePosition.X;
+            float bx = B.ScreenSpacePosition.X;
+            float cx = C.ScreenSpacePosition.X;
+
+            float az = A.ScreenSpacePosition.Z;
+            float bz = B.ScreenSpacePosition.Z;
+            float cz = C.ScreenSpacePosition.Z;
+
+            yMin = Math.Min(Math.Min(ay, by), Math.Min(by, cy));
+            yMax = Math.Max(Math.Max(ay, by), Math.Max(by, cy));
+            float xMin = (int)Math.Min(Math.Min(ax, bx), Math.Min(bx, cx));
+            float xMax = (int)Math.Max(Math.Max(ax, bx), Math.Max(bx, cx));
+
+            vt.Preproccess();
+
+            float dtx = 0;
+            float dty = 0;
+            if (yMax - yMin > xMax - xMin)
+            {
+                dtx = (xMax - xMin) / (yMax - yMin);
+                dty = 1;
+            }
+            else
+            {
+                dtx = 1;
+                dty = (yMax - yMin) / (xMax - xMin);
+            }
+
+            for (int y = (int)yMin; y < yMax; y++)
+            {
+                for (int x = (int)xMin; x < xMax; x++)
+                {
+                    //float r3 = (x - x1) / (x0 - x1);
+                    //vt.CalculateWeight(new Vector4(x,y,0,0));
+
+                    float z = vt.GetInterValue(az, bz, cz);
+
+                    Padding.GouraudColor(scene, device, x, y, z, vt, oriVt);
+                }
+            }
+        }
         /* vt是裁剪后的三角形，
          * orivt是原始三角形,目的是在纹理映射的时候计算权重
          * 
          */
-        public void ProcessScanLine(VertexTriangle vt, VertexTriangle oriVt, Scene scene)
+        public void ProcessScanLine(VertexTriangle vt, VertexTriangle oriVt, Scene scene, bool isworld)
         {
+            //DrawTriangle_new(vt, oriVt);
+            int yMin = this.height;
+            int yMax = 0;
+
+            Vertex A = vt.Vertices[0];
+            Vertex B = vt.Vertices[1];
+            Vertex C = vt.Vertices[2];
+
+            //Console.WriteLine(a1.v1.Position +" " + a1.v1.Normal);
+            float nDotLA1V1 = scene.light.ComputeNDotL(A.nowPos, A.nowNormal);
+            A.lightColor = A.Color * scene.light.GetFinalLightColor(nDotLA1V1);
+
+            float nDotLA1V2 = scene.light.ComputeNDotL(B.nowPos, B.nowNormal);
+            B.lightColor = B.Color * scene.light.GetFinalLightColor(nDotLA1V2);
+
+            float nDotLA2V1 = scene.light.ComputeNDotL(C.nowPos, C.nowNormal);
+            C.lightColor = C.Color * scene.light.GetFinalLightColor(nDotLA2V1);
+
+
+            //float nDotLA2V2 = scene.light.ComputeNDotL(a2.v2.nowPos, a2.v2.nowNormal);
+            //a2.v2.lightColor = a2.v2.Color * scene.light.GetFinalLightColor(nDotLA2V2);
             /* 扫描线原理
              * 
              * 1. 求扫描线与多边形的交点
@@ -115,8 +357,7 @@ namespace RenderingEngine
              * 并将三角形的边以顶点坐标X的值从左往右(x 从小到大)填充
              * 在边表 ET[] 中对应三角形的Ymin处
             */
-            int yMin = this.height;
-            int yMax = 0;
+
 
             Vertex[] vertices = vt.Vertices;
 
@@ -148,7 +389,7 @@ namespace RenderingEngine
                         // 保存的边的上端点x坐标
                         float x = y1 > y2 ? x2 : x1;
 
-                        // 边的斜率的倒数
+                        //边的斜率的倒数
                         float dx = (float)(x1 - x2) * 1.0f / (float)(y1 - y2);
 
                         Edge e = new Edge();
@@ -177,8 +418,7 @@ namespace RenderingEngine
 
             // 从ymin开始扫描填充
 
-            oriVt.Preproccess();
-
+            oriVt.PreCalWeight();
 
             for (int i = yMin; i < yMax; i++)
             {
@@ -191,46 +431,16 @@ namespace RenderingEngine
                 Edge a1 = (Edge)AEL.nextEdge.Clone();
                 Edge a2 = (Edge)AEL.nextEdge.nextEdge.Clone();
 
-                if (scene.light.IsEnable)
-                {
-
-                    //Console.WriteLine(a1.v1.Position +" " + a1.v1.Normal);
-                    float nDotLA1V1 = scene.light.ComputeNDotL(a1.v1.nowPos, a1.v1.nowNormal);
-                    a1.v1.lightColor = a1.v1.Color * scene.light.GetFinalLightColor(nDotLA1V1);
-
-                    float nDotLA1V2 = scene.light.ComputeNDotL(a1.v2.nowPos, a1.v2.nowNormal);
-                    a1.v2.lightColor = a1.v2.Color * scene.light.GetFinalLightColor(nDotLA1V2);
-
-                    float nDotLA2V1 = scene.light.ComputeNDotL(a2.v1.nowPos, a2.v1.nowNormal);
-                    a2.v1.lightColor = a2.v1.Color * scene.light.GetFinalLightColor(nDotLA2V1);
-
-                    float nDotLA2V2 = scene.light.ComputeNDotL(a2.v2.nowPos, a2.v2.nowNormal);
-                    a2.v2.lightColor = a2.v2.Color * scene.light.GetFinalLightColor(nDotLA2V2);
-
-                    //nDotL1 = MathUtil.Interp(nDotLA1V1, nDotLA1V2, r1);
-                    //nDotL2 = MathUtil.Interp(nDotLA2V1, nDotLA2V2, r2);
-                }
-
-                if (scene.renderState == Scene.RenderState.TextureMapping)
-                {
-                    
-                }
-
                 // 横向填充
                 while (a1 != null && a2 != null)
                 {
-                    //Padding.x = AEL.nextEdge.x;
-                    //Padding.GouraudColor(scene, device, i, a1, a2, oriVt);
-
-                    //Padding.x = AEL.nextEdge.nextEdge.x-1;
-                    //Padding.GouraudColor(scene, device, i, a1, a2, oriVt);
-
-                    for (int x = (int)AEL.nextEdge.x ; x < (int)AEL.nextEdge.nextEdge.x; x++)
+                    for (int x = (int)AEL.nextEdge.x; x < (int)AEL.nextEdge.nextEdge.x; x++)
                     {
                         Padding.x = x;
-                        Padding.GouraudColor(scene, device, i, a1, a2, oriVt);
+                        Padding.GouraudColor(scene, device, i, a1, a2, oriVt, vt, isworld);
                     }
-                    if (a2.nextEdge != null && a2.nextEdge.nextEdge != null)
+
+                    if (a2.nextEdge != null)
                     {
                         a1 = (Edge)a2.nextEdge.Clone();
                         a2 = (Edge)a1.nextEdge.Clone();
@@ -245,10 +455,465 @@ namespace RenderingEngine
                 // 所以要删除，避免盲目求交
                 // 同时算出 x 的下一个坐标 并保存在 AEL的第一个边中 p.nextEdge.x += p.nextEdge.deltaX;
                 EdgeTable.DeleteEdge(AEL, i);
-
             }
 
         }
 
+
+        public void ScanLine_new(VertexTriangle vt, VertexTriangle orit, Scene scene)
+        {
+            Vertex A = vt.Vertices[0];
+            Vertex B = vt.Vertices[1];
+            Vertex C = vt.Vertices[2];
+
+            if (scene.light.IsEnable)
+            {
+                //Console.WriteLine(a1.v1.Position +" " + a1.v1.Normal);
+
+                float nDotLA1V1 = scene.light.ComputeNDotL(A.nowPos, A.nowNormal);
+                Color4 a = scene.light.GetFinalLightColor(nDotLA1V1);
+                A.lightColor = A.Color * a;
+
+                float nDotLA1V2 = scene.light.ComputeNDotL(B.nowPos, B.nowNormal);
+                Color4 b = scene.light.GetFinalLightColor(nDotLA1V2);
+                B.lightColor = B.Color * b;
+
+                float nDotLA2V1 = scene.light.ComputeNDotL(C.nowPos, C.nowNormal);
+                Color4 c = scene.light.GetFinalLightColor(nDotLA2V1);
+                C.lightColor = C.Color * c;
+
+                DrawNormalTriangle(vt, a, b, c);
+            }
+            else
+            {
+                A.lightColor = new Color4(A.Color.red, A.Color.green, A.Color.blue);
+                B.lightColor = new Color4(B.Color.red, B.Color.green, B.Color.blue);
+                C.lightColor = new Color4(C.Color.red, C.Color.green, C.Color.blue);
+                DrawNormalTriangle(vt, new Color4(0, 0, 0), new Color4(0, 0, 0), new Color4(0, 0, 0));
+            }
+
+        }
+
+        // 三角形扫描
+        public void DrawNormalTriangle(VertexTriangle vt, Color4 lightA, Color4 lightB, Color4 lightC)
+        {
+            Vertex[] vv = GetList(vt.Vertices);
+
+            Vertex v1 = vv[0];
+            Vertex v2 = vv[1];
+            Vertex v3 = vv[2];
+
+            Vector4 p1 = v1.ScreenSpacePosition;
+            Vector4 p2 = v2.ScreenSpacePosition;
+            Vector4 p3 = v3.ScreenSpacePosition;
+
+            float ax = p1.X;
+            float bx = p2.X;
+            float cx = p3.X;
+            float ay = p1.Y;
+            float by = p2.Y;
+            float cy = p3.Y;
+
+            float az = p1.Z;
+            float bz = p2.Z;
+            float cz = p3.Z;
+
+            Color4 color1 = v1.lightColor;
+            Color4 color2 = v2.lightColor;
+            Color4 color3 = v3.lightColor;
+
+            if (ay == by)
+            {
+                DrawTopTriangle(v1, v2, v3);
+            }
+            else if (by == cy)
+            {
+                DrawBottomTriangle(v1, v2, v3);
+            }
+            else
+            {
+                if (ax == cx)
+                {
+                    Vertex newVt = new Vertex();
+
+                    float y1 = (by - ay) / (cy - ay);
+                    y1 = MathUtil.Clamp01(y1);
+
+                    float x = MathUtil.Interp(ax, cx, y1);
+
+                    float z = MathUtil.Interp(az, cz, y1);
+
+                    Color4 c = MathUtil.ColorInterp(color1, color3, y1);
+
+                    newVt.ScreenSpacePosition = new Vector4(x, by, z, 0);
+
+                    newVt.lightColor = c;
+
+                    if ((int)bx > (int)cx)
+                    {
+                        DrawBottomTriangle(v1, newVt, v2);
+
+                        DrawTopTriangle(newVt, v2, v3);
+                    }
+                    else
+                    {
+                        DrawBottomTriangle(v1, v2, newVt);
+
+                        DrawTopTriangle(v2, newVt, v3);
+                    }
+                }
+                else if (ax == bx)
+                {
+                    Vertex newVt = new Vertex();
+
+                    float y1 = (by - ay) / (cy - ay);
+
+                    y1 = MathUtil.Clamp01(y1);
+
+                    float x = MathUtil.Interp(ax, cx, y1);
+
+                    float z = MathUtil.Interp(az, cz, y1);
+
+                    Color4 c = MathUtil.ColorInterp(color1, color3, y1);
+
+                    newVt.ScreenSpacePosition = new Vector4(x, by, z, 0);
+
+                    newVt.lightColor = c;
+
+                    if (cx < bx)
+                    {
+                        DrawBottomTriangle(v1, newVt, v2);
+
+                        DrawTopTriangle(newVt, v2, v3);
+                    }
+                    else
+                    {
+                        DrawBottomTriangle(v1, v2, newVt);
+
+                        DrawTopTriangle(v2, newVt, v3);
+                    }
+                }
+                else if (bx == cx)
+                {
+
+                    Vertex newVt = new Vertex();
+
+                    float y1 = (by - ay) / (cy - ay);
+
+                    y1 = MathUtil.Clamp01(y1);
+
+                    float x = MathUtil.Interp(ax, cx, y1);
+
+                    float z = MathUtil.Interp(az, cz, y1);
+
+                    Color4 c = MathUtil.ColorInterp(color1, color3, y1);
+
+                    newVt.ScreenSpacePosition = new Vector4(x, by, z, 0);
+
+                    newVt.lightColor = c;
+
+                    if (ax < bx)
+                    {
+                        DrawBottomTriangle(v1, newVt, v2);
+
+                        DrawTopTriangle(newVt, v2, v3);
+                    }
+                    else
+                    {
+                        DrawBottomTriangle(v1, v2, newVt);
+
+                        DrawTopTriangle(v2, newVt, v3);
+                    }
+                }
+                else
+                {
+                    Vertex newVt = new Vertex();
+
+                    float y1 = (float)(by - ay) / (float)(cy - ay);
+
+                    y1 = MathUtil.Clamp01(y1);
+
+                    float x = MathUtil.Interp(ax, cx, y1);
+
+                    float z = MathUtil.Interp(az, cz, y1);
+
+                    Color4 c = MathUtil.ColorInterp(color1, color3, y1);
+
+                    newVt.ScreenSpacePosition = new Vector4(x, by, z, 0);
+
+                    newVt.lightColor = c;
+
+                    // 计算线条的方向  
+                    float dP1P2, dP1P3;
+
+                    // http://en.wikipedia.org/wiki/Slope  
+                    // 计算斜率  
+                    if (p2.Y - p1.Y > 0)
+                        dP1P2 = (p2.X - p1.X) / (p2.Y - p1.Y);
+                    else
+                        dP1P2 = 0;
+
+                    if (p3.Y - p1.Y > 0)
+                        dP1P3 = (p3.X - p1.X) / (p3.Y - p1.Y);
+                    else
+                        dP1P3 = 0;
+
+                    if (dP1P2 > dP1P3)
+                    {
+                        DrawBottomTriangle(v1, newVt, v2);
+
+                        DrawTopTriangle(newVt, v2, v3);
+                    }
+                    else
+                    {
+                        DrawBottomTriangle(v1, v2, newVt);
+
+                        DrawTopTriangle(v2, newVt, v3);
+                    }
+                }
+            }
+        }
+
+        public void DrawTopTriangle(Vertex v1, Vertex v2, Vertex v3)
+        {
+            Vector4 p1 = v1.ScreenSpacePosition;
+            Vector4 p2 = v2.ScreenSpacePosition;
+            Vector4 p3 = v3.ScreenSpacePosition;
+
+            Color4 color1 = v1.lightColor;
+            Color4 color2 = v2.lightColor;
+            Color4 color3 = v3.lightColor;
+
+            float ax = p1.X;
+            float bx = p2.X;
+            float cx = p3.X;
+            float ay = p1.Y;
+            float by = p2.Y;
+            float cy = p3.Y;
+
+            float az = p1.Z;
+            float bz = p2.Z;
+            float cz = p3.Z;
+
+            if (bx == cx)
+            {
+                for (int y = (int)ay; y <= (int)cy; y++)
+                {
+                    float y1 = (float)(y - ay) / (float)(cy - ay);
+                    float y2 = (float)(y - by) / (float)(cy - by);
+                    y1 = MathUtil.Clamp01(y1);
+                    y2 = MathUtil.Clamp01(y2);
+
+                    int x0 = (int)MathUtil.Interp(ax, cx, y1);
+                    int x1 = (int)bx;
+
+                    float z1 = MathUtil.Interp(az, cz, y1);
+                    float z2 = bz;
+
+                    Color4 c1 = MathUtil.ColorInterp(color1, color3, y1);
+                    Color4 c2 = MathUtil.ColorInterp(color2, color3, y2);
+
+                    for (int x = x0; x <= x1; x++)
+                    {
+                        float r3 = (float)(x - x0) / (float)(x1 - x0);
+                        r3 = MathUtil.Clamp01(r3);
+                        float z = MathUtil.Interp(z1, z2, r3);
+
+                        Color4 final = MathUtil.ColorInterp(c1, c2, r3);
+
+                        device.DrawPoint(new Vector4(x, y, z, 0), final);
+                    }
+                }
+
+            }
+            else if (ax == cx)
+            {
+                for (int y = (int)ay; y <= (int)cy; y++)
+                {
+                    float y1 = (float)(y - ay) / (float)(cy - ay);
+                    float y2 = (float)(y - by) / (float)(cy - by);
+                    y1 = MathUtil.Clamp01(y1);
+                    y2 = MathUtil.Clamp01(y2);
+
+                    int x0 = (int)ax;
+                    int x1 = (int)MathUtil.Interp(bx, cx, y2);
+
+                    float z1 = MathUtil.Interp(az, cz, y1);
+                    float z2 = MathUtil.Interp(bz, cz, y2);
+
+                    Color4 c1 = MathUtil.ColorInterp(color1, color3, y1);
+                    Color4 c2 = MathUtil.ColorInterp(color2, color3, y2);
+
+                    for (int x = x0; x < x1; x++)
+                    {
+                        float r3 = (float)(x - x0) / (float)(x1 - x0);
+
+                        r3 = MathUtil.Clamp01(r3);
+
+                        float z = MathUtil.Interp(z1, z2, r3);
+
+                        Color4 final = MathUtil.ColorInterp(c1, c2, r3);
+
+                        device.DrawPoint(new Vector4(x, y, z, 0), final);
+                    }
+                }
+            }
+            else
+            {
+                for (int y = (int)ay; y <= cy; y++)
+                {
+                    float y1 = (float)(y - ay) / (float)(cy - ay);
+                    y1 = MathUtil.Clamp01(y1);
+
+                    float y2 = (y - by) / (cy - by);
+                    y2 = MathUtil.Clamp01(y2);
+
+                    float x0 = (int)MathUtil.Interp(ax, cx, y1);
+                    float x1 = (int)MathUtil.Interp(bx, cx, y2);
+
+                    float z1 = MathUtil.Interp(az, cz, y1);
+                    float z2 = MathUtil.Interp(bz, cz, y2);
+
+                    Color4 c1 = MathUtil.ColorInterp(color1, color3, y1);
+                    Color4 c2 = MathUtil.ColorInterp(color2, color3, y2);
+
+                    for (float x = x0; x < x1; x++)
+                    {
+                        float r3 = (float)(x - x0) / (float)(x1 - x0);
+
+                        r3 = MathUtil.Clamp01(r3);
+
+                        float z = MathUtil.Interp(z1, z2, r3);
+
+                        Color4 final = MathUtil.ColorInterp(c1, c2, r3);
+
+                        device.DrawPoint(new Vector4(x, (int)y, z, 0), final);
+                    }
+                }
+            }
+        }
+
+        public void DrawBottomTriangle(Vertex v1, Vertex v2, Vertex v3)
+        {
+            Vector4 p1 = v1.ScreenSpacePosition;
+            Vector4 p2 = v2.ScreenSpacePosition;
+            Vector4 p3 = v3.ScreenSpacePosition;
+
+            Color4 color1 = v1.lightColor;
+            Color4 color2 = v2.lightColor;
+            Color4 color3 = v3.lightColor;
+
+            float ax = p1.X;
+            float bx = p2.X;
+            float cx = p3.X;
+            float ay = p1.Y;
+            float by = p2.Y;
+            float cy = p3.Y;
+
+            float az = p1.Z;
+            float bz = p2.Z;
+            float cz = p3.Z;
+
+            if (ax == bx)
+            {
+                for (int y = (int)ay; y <= (int)cy; y++)
+                {
+                    float y1 = (float)(y - ay) / (float)(by - ay);
+                    y1 = MathUtil.Clamp01(y1);
+
+                    float y2 = (y - ay) / (cy - ay);
+                    y2 = MathUtil.Clamp01(y2);
+
+                    int x0 = (int)ax;
+                    int x1 = (int)MathUtil.Interp(ax, cx, y2);
+
+                    float z1 = az;
+                    float z2 = MathUtil.Interp(az, cz, y2);
+
+                    Color4 c1 = MathUtil.ColorInterp(color1, color2, y1);
+                    Color4 c2 = MathUtil.ColorInterp(color1, color3, y2);
+
+                    for (int x = x0; x < x1; x++)
+                    {
+                        float r3 = (float)(x - x0) / (float)(x1 - x0);
+
+                        r3 = MathUtil.Clamp01(r3);
+
+                        float z = MathUtil.Interp(z1, z2, r3);
+
+                        Color4 final = MathUtil.ColorInterp(c1, c2, r3);
+
+                        device.DrawPoint(new Vector4(x, y, z, 0), final);
+                    }
+                }
+
+            }
+            else if (ax == cx)
+            {
+                for (int y = (int)ay; y <= (int)cy; y++)
+                {
+                    float y1 = (float)(y - ay) / (float)(by - ay);
+                    y1 = MathUtil.Clamp01(y1);
+                    float y2 = (y - ay) / (cy - ay);
+                    y2 = MathUtil.Clamp01(y2);
+
+                    int x0 = (int)MathUtil.Interp(ax, bx, y1);
+                    int x1 = (int)ax;
+
+                    float z1 = MathUtil.Interp(az, bz, y1);
+                    float z2 = MathUtil.Interp(az, cz, y2);
+
+                    Color4 c1 = MathUtil.ColorInterp(color1, color2, y1);
+                    Color4 c2 = MathUtil.ColorInterp(color1, color3, y2);
+
+                    for (int x = x0; x < x1; x++)
+                    {
+
+                        float r3 = (float)(x - x0) / (float)(x1 - x0);
+
+                        r3 = MathUtil.Clamp01(r3);
+
+                        float z = MathUtil.Interp(z1, z2, r3);
+
+                        Color4 final = MathUtil.ColorInterp(c1, c2, r3);
+
+                        device.DrawPoint(new Vector4(x, y, z, 0), final);
+                    }
+                }
+            }
+            else
+            {
+                for (int y = (int)ay; y <= (int)cy; y++)
+                {
+                    float y1 = (float)(y - ay) / (float)(by - ay);
+                    y1 = MathUtil.Clamp01(y1);
+
+                    float y2 = (y - ay) / (cy - ay);
+                    y2 = MathUtil.Clamp01(y2);
+
+                    int x0 = (int)MathUtil.Interp(ax, bx, y1);
+                    int x1 = (int)MathUtil.Interp(ax, cx, y2);
+
+                    float z1 = MathUtil.Interp(az, bz, y1);
+                    float z2 = MathUtil.Interp(bz, cz, y2);
+
+                    Color4 c1 = MathUtil.ColorInterp(color1, color2, y1);
+                    Color4 c2 = MathUtil.ColorInterp(color1, color3, y2);
+
+                    for (int x = x0; x < x1; x++)
+                    {
+                        float r3 = (float)(x - x0) / (float)(x1 - x0);
+
+                        r3 = MathUtil.Clamp01(r3);
+
+                        float z = MathUtil.Interp(z1, z2, r3);
+
+                        Color4 final = MathUtil.ColorInterp(c1, c2, r3);
+
+                        device.DrawPoint(new Vector4(x, y, z, 0), final);
+                    }
+                }
+            }
+        }
     }
 }

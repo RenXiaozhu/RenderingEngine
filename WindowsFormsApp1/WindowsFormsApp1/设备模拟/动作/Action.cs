@@ -34,9 +34,15 @@ namespace RenderingEngine
 
         public static void RotateCamera(float degreeX, float degreeY, float degreeZ,Scene scene)
         {
-            Matrix4x4 rotate = new Matrix4x4();
-            rotate.SetRotate(degreeX, degreeY, degreeZ);
-            scene.camera.Target = rotate.ApplY(scene.camera.Target);
+            Matrix4x4 rotateNew = new Matrix4x4();
+            rotateNew.SetRotate(degreeX/100, degreeY/100, degreeZ/100);
+            Matrix4x4 rotate = scene.camera.rotate;
+            scene.camera.rotate = rotate *rotateNew;
+            //scene.camera.Position = rotate.ApplY(scene.camera.Position);
+            //scene.camera.Yaw = -degreeX/180;
+           // scene.camera.Yaw = -degreeY/180;
+            //scene.camera.Up = rotate.ApplY(scene.camera.Up);
+            //scene.camera.Up.Normalize();
             CATransform.InitMVPMatrix(scene);
         }
 
@@ -48,9 +54,8 @@ namespace RenderingEngine
 
         public static void RotateMesh(float degreeX, float degreeY, float degreeZ, Scene scene)
         {
-            
-            scene.mesh.Rotate(degreeX, degreeY, degreeZ);
-             
+            scene.mesh.Action_Rotate(degreeX, degreeY, degreeZ);
+            //scene.worldMap.Action_Rotate(degreeX, degreeY, degreeZ);
             CATransform.InitMVPMatrix(scene);
         }
 

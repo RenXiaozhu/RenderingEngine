@@ -60,9 +60,9 @@ namespace RenderingEngine
                 {
                     for (int j = 0; j < data.Width; j++)
                     {
-                        *ptr = 128;
-                        *(ptr + 1) = 128;
-                        *(ptr + 2) = 128;
+                        *ptr = 0;
+                        *(ptr + 1) = 0;
+                        *(ptr + 2) = 0;
                         ptr += 3;
                     }
                     ptr += data.Stride - data.Width * 3;
@@ -238,14 +238,24 @@ namespace RenderingEngine
             return Vector4.Cross(ab, ac).Z > 0;
         }
 
-        private void DrawTriangle(VertexTriangle vt, VertexTriangle oriVt, Scene scene)
+        private void DrawTriangle(VertexTriangle vt, VertexTriangle oriVt, Scene scene,bool isWorld)
         {
             if (!ShouldBackFaceCull(oriVt))
             {
-                this.scanLine.ProcessScanLine(vt, oriVt, scene);
+                //this.scanLine.ProcessScanLine(vt, oriVt, scene);
+                if(scene.renderState == Scene.RenderState.TextureMapping)
+                {
+                    this.scanLine.ProcessScanLine(vt, oriVt, scene,isWorld);
+                }
+                if(scene.renderState == Scene.RenderState.GouraduShading)
+                {
+                    this.scanLine.ScanLine_new(vt, oriVt, scene);
+                }
+
+                //this.scanLine.StartScanLine(vt,oriVt,scene);
+                //this.scanLine.StartScanTriangle(vt,oriVt,scene);
             }
         }
-
 
         // 渲染，绘制点 线 面 颜色
         public void Render(Scene scene, BitmapData bmData)
@@ -262,185 +272,67 @@ namespace RenderingEngine
                 Vertex vertexA;
                 Vertex vertexB;
                 Vertex vertexC;
-                switch (face.type)
-                {
-                    case Face.FaceType.Front:
-                        {
-                            Triangle t1 = face.t_1;
-                            vertexA = scene.mesh.Vertices[t1.a];
-                            vertexA.UV = new Vector4(0, 0, 0, 0);
 
-                            vertexB = scene.mesh.Vertices[t1.b];
-                            vertexB.UV = new Vector4(1, 0, 0, 0);
+                scene.mesh.PrePareUV(face);
 
-                            vertexC = scene.mesh.Vertices[t1.c];
-                            vertexC.UV = new Vector4(0, 1, 0, 0);
+                Triangle t1 = face.t_1;
 
-                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
+                vertexA = scene.mesh.Vertices[t1.a];
 
-                            Triangle t2 = face.t_2;
-                            vertexA = scene.mesh.Vertices[t2.a];
-                            vertexA.UV = new Vector4(1, 1, 0, 0);
+                vertexB = scene.mesh.Vertices[t1.b];
 
-                            vertexB = scene.mesh.Vertices[t2.b];
-                            vertexB.UV = new Vector4(0, 1, 0, 0);
+                vertexC = scene.mesh.Vertices[t1.c];
 
-                            vertexC = scene.mesh.Vertices[t2.c];
-                            vertexC.UV = new Vector4(1, 0, 0, 0);
+                renderTriangle(vertexA, vertexB, vertexC, matrixMVP,false);
 
-                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
+                Triangle t2 = face.t_2;
 
-                        }
-                        break;
-                    case Face.FaceType.Left:
-                        {
-                            Triangle t1 = face.t_1;
-                            vertexA = scene.mesh.Vertices[t1.a];
-                            vertexA.UV = new Vector4(0, 0, 0, 0);
+                vertexA = scene.mesh.Vertices[t2.a];
 
-                            vertexB = scene.mesh.Vertices[t1.b];
-                            vertexB.UV = new Vector4(1, 0, 0, 0);
+                vertexB = scene.mesh.Vertices[t2.b];
 
-                            vertexC = scene.mesh.Vertices[t1.c];
-                            vertexC.UV = new Vector4(0, 1, 0, 0);
+                vertexC = scene.mesh.Vertices[t2.c];
 
-                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
+                renderTriangle(vertexA, vertexB, vertexC, matrixMVP,false);
+            }
 
-                            Triangle t2 = face.t_2;
-                            vertexA = scene.mesh.Vertices[t2.a];
-                            vertexA.UV = new Vector4(1, 1, 0, 0);
+            foreach (var face in scene.worldMap.faces)
+            {
+                Vertex vertexA;
+                Vertex vertexB;
+                Vertex vertexC;
 
-                            vertexB = scene.mesh.Vertices[t2.b];
-                            vertexB.UV = new Vector4(0, 1, 0, 0);
+                Triangle t1 = face.t_1;
+                scene.worldMap.PrePareUV(face);
+                vertexA = scene.worldMap.Vertices[t1.a];
 
-                            vertexC = scene.mesh.Vertices[t2.c];
-                            vertexC.UV = new Vector4(1, 0, 0, 0);
+                vertexB = scene.worldMap.Vertices[t1.b];
 
-                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
-                        }
-                        break;
-                    case Face.FaceType.Right:
-                        {
-                            Triangle t1 = face.t_1;
-                            vertexA = scene.mesh.Vertices[t1.a];
-                            vertexA.UV = new Vector4(0, 0, 0, 0);
+                vertexC = scene.worldMap.Vertices[t1.c];
 
-                            vertexB = scene.mesh.Vertices[t1.b];
-                            vertexB.UV = new Vector4(1, 0, 0, 0);
+                //renderTriangle(vertexA, vertexB, vertexC, matrixMVP,true);
 
-                            vertexC = scene.mesh.Vertices[t1.c];
-                            vertexC.UV = new Vector4(0, 1, 0, 0);
+                Triangle t2 = face.t_2;
 
-                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
+                vertexA = scene.worldMap.Vertices[t2.a];
 
-                            Triangle t2 = face.t_2;
-                            vertexA = scene.mesh.Vertices[t2.a];
-                            vertexA.UV = new Vector4(1, 1, 0, 0);
+                vertexB = scene.worldMap.Vertices[t2.b];
 
-                            vertexB = scene.mesh.Vertices[t2.b];
-                            vertexB.UV = new Vector4(0, 1, 0, 0);
+                vertexC = scene.worldMap.Vertices[t2.c];
 
-                            vertexC = scene.mesh.Vertices[t2.c];
-                            vertexC.UV = new Vector4(1, 0, 0, 0);
-
-                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
-                        }
-                        break;
-                    case Face.FaceType.Up:
-                        {
-                            Triangle t1 = face.t_1;
-                            vertexA = scene.mesh.Vertices[t1.a];
-                            vertexA.UV = new Vector4(0, 0, 0, 0);
-
-                            vertexB = scene.mesh.Vertices[t1.b];
-                            vertexB.UV = new Vector4(1, 0, 0, 0);
-
-                            vertexC = scene.mesh.Vertices[t1.c];
-                            vertexC.UV = new Vector4(0, 1, 0, 0);
-
-                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
-
-                            Triangle t2 = face.t_2;
-                            vertexA = scene.mesh.Vertices[t2.a];
-                            vertexA.UV = new Vector4(1, 1, 0, 0);
-
-                            vertexB = scene.mesh.Vertices[t2.b];
-                            vertexB.UV = new Vector4(0, 1, 0, 0);
-
-                            vertexC = scene.mesh.Vertices[t2.c];
-                            vertexC.UV = new Vector4(1, 0, 0, 0);
-
-                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
-                        }
-                        break;
-                    case Face.FaceType.Behind:
-                        {
-                            Triangle t1 = face.t_1;
-                            vertexA = scene.mesh.Vertices[t1.a];
-                            vertexA.UV = new Vector4(0, 0, 0, 0);
-
-                            vertexB = scene.mesh.Vertices[t1.b];
-                            vertexB.UV = new Vector4(1, 0, 0, 0);
-
-                            vertexC = scene.mesh.Vertices[t1.c];
-                            vertexC.UV = new Vector4(0, 1, 0, 0);
-
-                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
-
-                            Triangle t2 = face.t_2;
-                            vertexA = scene.mesh.Vertices[t2.a];
-                            vertexA.UV = new Vector4(1, 1, 0, 0);
-
-                            vertexB = scene.mesh.Vertices[t2.b];
-                            vertexB.UV = new Vector4(0, 1, 0, 0);
-
-                            vertexC = scene.mesh.Vertices[t2.c];
-                            vertexC.UV = new Vector4(1, 0, 0, 0);
-
-                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
-                        }
-                        break;
-                    case Face.FaceType.Below:
-                        {
-                            Triangle t1 = face.t_1;
-                            vertexA = scene.mesh.Vertices[t1.a];
-                            vertexA.UV = new Vector4(0, 0, 0, 0);
-
-                            vertexB = scene.mesh.Vertices[t1.b];
-                            vertexB.UV = new Vector4(1, 0, 0, 0);
-
-                            vertexC = scene.mesh.Vertices[t1.c];
-                            vertexC.UV = new Vector4(0, 1, 0, 0);
-
-                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
-
-                            Triangle t2 = face.t_2;
-                            vertexA = scene.mesh.Vertices[t2.a];
-                            vertexA.UV = new Vector4(1, 1, 0, 0);
-
-                            vertexB = scene.mesh.Vertices[t2.b];
-                            vertexB.UV = new Vector4(0, 1, 0, 0);
-
-                            vertexC = scene.mesh.Vertices[t2.c];
-                            vertexC.UV = new Vector4(1, 0, 0, 0);
-
-                            renderTriangle(vertexA, vertexB, vertexC, matrixMVP);
-                        }
-                        break;
-                }
-
+                //renderTriangle(vertexA, vertexB, vertexC, matrixMVP,true);
             }
 
         }
 
-        public void renderTriangle(Vertex vertexA, Vertex vertexB, Vertex vertexC , Matrix4x4 matrixMVP)
+        public void renderTriangle(Vertex vertexA, Vertex vertexB, Vertex vertexC , Matrix4x4 matrixMVP , bool isWorld)
         {
 
                 List<Vertex> pIn = new List<Vertex>();
 
-                vertexA.ClipSpacePosition = this.ClipSpace(vertexA.Position, matrixMVP);
-                vertexB.ClipSpacePosition = this.ClipSpace(vertexB.Position, matrixMVP);
-                vertexC.ClipSpacePosition = this.ClipSpace(vertexC.Position, matrixMVP);
+                vertexA.ClipSpacePosition = this.ClipSpace(vertexA.nowPos, matrixMVP);
+                vertexB.ClipSpacePosition = this.ClipSpace(vertexB.nowPos, matrixMVP);
+                vertexC.ClipSpacePosition = this.ClipSpace(vertexC.nowPos, matrixMVP);
                 vertexA.ScreenSpacePosition = this.ViewPort(vertexA.ClipSpacePosition);
                 vertexB.ScreenSpacePosition = this.ViewPort(vertexB.ClipSpacePosition);
                 vertexC.ScreenSpacePosition = this.ViewPort(vertexC.ClipSpacePosition);
@@ -488,7 +380,8 @@ namespace RenderingEngine
                     for (int i = 0; i < vtList.Count; i++)
                     {
                         //Console.WriteLine(vtList.Count);
-                        DrawTriangle(vtList[i], oriVt, scene);
+                        DrawTriangle(vtList[i], oriVt, scene ,isWorld);
+                        //DrawTriangle(vtList[i]);
                     }
                 }
         }

@@ -125,7 +125,46 @@ namespace RenderingEngine
          * Ia = (ya - y2)*I1/(y1-y2) + (y1-ya)*I2/(y1 -y2)
          *
          */
-        public static void GouraudColor(Scene scene,Device device, int i, Edge a1, Edge a2,VertexTriangle orivt)
+        public static void GouraudColor(Scene scene, Device device,float x, float y,float z, VertexTriangle vt, VertexTriangle orivt)
+        {
+            Color4 final = new Color4();
+            Vertex A = vt.Vertices[0];
+            Vertex B = vt.Vertices[1];
+            Vertex C = vt.Vertices[2];
+
+            //Console.WriteLine(a1.v1.Position +" " + a1.v1.Normal);
+            //float nDotLA1V1 = scene.light.ComputeNDotL(A.nowPos, A.nowNormal);
+            //A.lightColor = A.Color * scene.light.GetFinalLightColor(nDotLA1V1);
+
+            //float nDotLA1V2 = scene.light.ComputeNDotL(B.nowPos, B.nowNormal);
+            //B.lightColor = B.Color * scene.light.GetFinalLightColor(nDotLA1V2);
+
+            //float nDotLA2V1 = scene.light.ComputeNDotL(C.nowPos, C.nowNormal);
+            //C.lightColor = C.Color * scene.light.GetFinalLightColor(nDotLA2V1);
+
+
+            float ay = A.ScreenSpacePosition.Y;
+            float by = B.ScreenSpacePosition.Y;
+            float cy = C.ScreenSpacePosition.Y;
+            float ax = A.ScreenSpacePosition.X;
+            float bx = B.ScreenSpacePosition.X;
+            float cx = C.ScreenSpacePosition.X;
+
+            bool isIn = vt.CalculateWeight(new Vector4(x, y, 0, 0));
+
+            if(isIn)
+            {
+                final = vt.GetInterColor();
+                device.DrawPoint(new Vector4(x, y, z, 0), final);
+            }
+            else
+            {
+                //Console.WriteLine(j+ " " + i);
+            }
+
+        }
+
+        public static void GouraudColor(Scene scene,Device device, int i, Edge a1, Edge a2,VertexTriangle orivt ,VertexTriangle vt, bool isworld)
         {
             Color4 final = new Color4();
             /*
@@ -156,126 +195,73 @@ namespace RenderingEngine
             float r1 = ((float)i - screenA1V1.Y) / (float)(screenA1V2.Y - screenA1V1.Y);
             float r2 = ((float)i - screenA2V1.Y) / (float)(screenA2V2.Y - screenA2V1.Y);
 
-
-
-            // 保证 r1 r2 在[0,1]之间
             r1 = MathUtil.Clamp01(r1);
             r2 = MathUtil.Clamp01(r2);
 
             // 像素点深度插值
             float z1 = MathUtil.Interp(screenA1V1.Z, screenA1V2.Z, r1);
             float z2 = MathUtil.Interp(screenA2V1.Z, screenA2V2.Z, r2);
-
-            float nDotL1 = 0, nDotL2 = 0;
-
-            //if (scene.light.IsEnable)
-            //{
-             
-            //    //Console.WriteLine(a1.v1.Position +" " + a1.v1.Normal);
-            //    float nDotLA1V1 = scene.light.ComputeNDotL(a1.v1.nowPos, a1.v1.nowNormal);
-            //    a1.v1.lightColor = a1.v1.Color * scene.light.GetFinalLightColor(nDotLA1V1);
-
-            //    float nDotLA1V2 = scene.light.ComputeNDotL(a1.v2.nowPos, a1.v2.nowNormal);
-            //    a1.v2.lightColor = a1.v2.Color * scene.light.GetFinalLightColor(nDotLA1V2);
-
-            //    float nDotLA2V1 = scene.light.ComputeNDotL(a2.v1.nowPos, a2.v1.nowNormal);
-            //    a2.v1.lightColor = a2.v1.Color * scene.light.GetFinalLightColor(nDotLA2V1);
-
-            //    float nDotLA2V2 = scene.light.ComputeNDotL(a2.v2.nowPos, a2.v2.nowNormal);
-            //    a2.v2.lightColor = a2.v2.Color*scene.light.GetFinalLightColor(nDotLA2V2);
-
-            //    //nDotL1 = MathUtil.Interp(nDotLA1V1, nDotLA1V2, r1);
-            //    //nDotL2 = MathUtil.Interp(nDotLA2V1, nDotLA2V2, r2);
-            //}
-
+            //float z3 = 0;
             float r3 = MathUtil.Clamp01(((float)x - a1.x) / (a2.x - a1.x));
             //float r3 = (float)(x - Math.Floor(a1.x)) / (a2.x - a1.x);    
             float z = MathUtil.Interp(z1, z2, r3);
+            //float z = vt.GetInterValue(z1, z2, z3);
+            float nDotL1 = 0, nDotL2 = 0;
 
-            orivt.CalculateWeight(new Vector4(x, i, 0, 0));
             switch (scene.renderState)
             {
                 
                 case Scene.RenderState.WireFrame:
                     {
-                        // 插值算出左右交点颜色
-                        //Color4 c1 = MathUtil.ColorInterp(a1.v1.Color, a1.v2.Color, r1);
-                        //Color4 c2 = MathUtil.ColorInterp(a2.v1.Color, a2.v2.Color, r2);
-                        //Color4 c3 = new Color4();
+                        
+                       
 
-
-                        //if (scene.light.IsEnable)
-                        //{
-                            //float nDotL = MathUtil.Interp(nDotL1, nDotL2, r3);
-                            //c3 = MathUtil.ColorInterp(c1, c2, r3);
-                            //final = c3 * scene.light.GetDiffuseColor(nDotL) + c3 * DirectionLight.AmbientColor;
-                        //}
                     }
                     break;
                 case Scene.RenderState.GouraduShading:
                     {
                         
-                        if (scene.light.IsEnable)
-                        {
-                            //float nDotL = MathUtil.Interp(nDotL1, nDotL2, r3);
-                            //c3 = MathUtil.ColorInterp(c1, c2, r3);
-
-                            //final =  c3 * scene.light.GetFinalLightColor(nDotL);
-                            final = orivt.GetInterColor();
-                        }
-                        else
-                        {
-                            final = orivt.GetInterColor();
-                            //c3 = MathUtil.ColorInterp(c1, c2, r3);
-                            //final = c3;
-                        }
                     }
                     break;
                 case Scene.RenderState.TextureMapping:
                     {
-                        
+                        orivt.CalWeight(new Vector4(x, i, 0, 0));
                         Vector4 uv = orivt.GetInterUV();
-                        final = device.Tex2D(uv.X, uv.Y, scene.mesh.texture);
+                        if(isworld)
+                        {
+                            //final = device.Tex2D(uv.X, uv.Y, scene.worldMap.texture);
+                        }
+                        else
+                        {
+                            if (scene.light.IsEnable)
+                            {
+                                float nDotLA1V1 = scene.light.ComputeNDotL(a1.v1.nowPos, a1.v1.nowNormal);
+                                float nDotLA1V2 = scene.light.ComputeNDotL(a1.v2.nowPos, a1.v2.nowNormal);
+                                float nDotLA2V1 = scene.light.ComputeNDotL(a2.v1.nowPos, a2.v1.nowNormal);
+                                float nDotLA2V2 = scene.light.ComputeNDotL(a2.v2.nowPos, a2.v2.nowNormal);
+
+                                nDotL1 = MathUtil.Interp(nDotLA1V1, nDotLA1V2, r1);
+                                nDotL2 = MathUtil.Interp(nDotLA2V1, nDotLA2V2, r2);
+
+                                float nDotL = MathUtil.Interp(nDotL1, nDotL2, r3);
+                                //Console.WriteLine(nDotL1+" "+ nDotL2+" " + nDotL);
+                                final = device.Tex2D(uv.X, uv.Y, scene.mesh.texture);
+                                final = final * scene.light.GetFinalLightColor(nDotL);
+                            }
+                            else
+                            {
+                                final = device.Tex2D(uv.X, uv.Y, scene.mesh.texture);
+                            }
+
+
+                        }
+
                     }
                     break;
             }
             device.DrawPoint(new Vector4(x, i, z, 0), final);
 
         }
-
-        public static List<Vector4> GetYOrder(Vertex v1, Vertex v2, Vertex v3, Vertex v4)
-        {
-
-            Vector4 ab1 = v1.ScreenSpacePosition;
-            Vector4 ab2 = v2.ScreenSpacePosition;
-
-            Vector4 ac1 = v3.ScreenSpacePosition;
-            Vector4 ac2 = v4.ScreenSpacePosition;
-
-            List<Vector4> tt = new List<Vector4>(){ ab1, ab2, ac1, ac2 };
-
-            // 获取Y从小到大的排列
-            GetYmin(tt);
-
-            // 共有顶点的位置
-            int index = 0;
-
-            for (int i = 0; i < tt.Count; i++)
-            {
-                for (int j = i+1; j < tt.Count; j++)
-                {
-                    if (tt[i] == tt[j])
-                    {
-                        index = j;
-                        tt.RemoveAt(i);
-                        break;
-                    }
-                }
-            }
-
-            return tt;
-        }
-
 
         public static void GetYmin(List<Vector4> vt)
         {
@@ -291,7 +277,6 @@ namespace RenderingEngine
                     }
                 }
             }
-
         }
 
         // 求交点 A B x坐标

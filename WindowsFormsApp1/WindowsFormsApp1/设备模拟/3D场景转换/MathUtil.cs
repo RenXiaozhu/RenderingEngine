@@ -46,5 +46,18 @@ namespace RenderingEngine
             return new Color4(r, g, b);
         }
 
+        public static Color4 ColorLineInterp(Color4 c1, Color4 c2, float t)
+        {
+            byte r = LineInterp(c1.red, c2.red, t);
+            byte g = LineInterp(c1.green, c2.green, t);
+            byte b = LineInterp(c1.blue, c2.blue, t);
+            return new Color4(r, g, b);
+        }
+
+        public static byte LineInterp(byte x1, byte x2, float t)
+        {
+            return (byte)(x1*(1-t) + x2 * t);
+        }
+
 	}
 }

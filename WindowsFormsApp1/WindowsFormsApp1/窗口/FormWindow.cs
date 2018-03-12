@@ -23,15 +23,22 @@ namespace RenderingEngine
         private Point pressUp;
         private float degreeX = 0;
         private float degreeY = 0;
+        private float degreeZ = 0;
         private float MoveSpeed = 0.5f;
-        private const float RotateSpeed = 5f;
+        private const float RotateSpeed = 3f;
         private float angle = 0;
         private Point preE;
         private bool isUp = false;
+
         public FormWindow()
         {
             InitializeComponent();
             InitSettings();
+            InitScene();
+        }
+
+        private void ForLayout(object sender, LayoutEventArgs handle)
+        {
             InitScene();
         }
 
@@ -62,10 +69,12 @@ namespace RenderingEngine
         {
             BitmapData data = this.bmp.LockBits(rt, ImageLockMode.ReadWrite, this.pixelFormat);
             BitmapData bmData = this.scene.mesh.texture.LockBits();
+            BitmapData bData = this.scene.worldMap.texture.LockBits();
             this.device.Clear(data);
             device.Render(scene, data);
             this.bmp.UnlockBits(data);
             this.scene.mesh.texture.UnlockBits(bmData);
+            this.scene.worldMap.texture.UnlockBits(bData);
             g = pe.Graphics;
             g.DrawImage(this.bmp, new Rectangle(0, 0, bmp.Width, bmp.Height));
         }
@@ -74,67 +83,23 @@ namespace RenderingEngine
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                if(Math.Abs( e.X- pressDown.X) > Math.Abs( e.Y - pressDown.Y))
-                {
-                    if(e.X - pressDown.X < 0)
-                    {
-                        if(e.X > preE.X)
-                        {
-                            degreeY += RotateSpeed;
-                        }
-                        else if(e.X < preE.X)
-                        {
-                            degreeY -= RotateSpeed;
-                        }
+                float dt = (Math.Abs(degreeX) / 90.0f)%2;
 
-                    }
-                    else
-                    {
-                        if (e.X > preE.X)
-                        {
-                            degreeY += RotateSpeed;
-                        }
-                        else if (e.X < preE.X)
-                        {
-                            degreeY -= RotateSpeed;
-                        }
-                    }
-                    Action.RotateMesh(degreeX, degreeY, 0, scene);
-                }
-                else
-                {
-                    if (e.Y - pressDown.Y < 0)
-                    {
-                        if (e.Y > preE.Y)
-                        {
-                            degreeX += RotateSpeed;
-                        }
-                        else if(e.Y < preE.Y)
-                        {
-                            degreeX -= RotateSpeed;
-                        }
-                    }
-                    else
-                    {
-                        if (e.Y > preE.Y)
-                        {
-                            degreeX += RotateSpeed;
-                        }
-                        else if(e.Y < preE.Y)
-                        {
-                            degreeX -= RotateSpeed;
-                        }
+                float dtx = Math.Abs(e.X - pressDown.X);
 
-                    }
-                    Action.RotateMesh(degreeX, degreeY, 0, scene);
-                }
+                degreeX = (e.Y - pressDown.Y);
+                degreeY = (e.X - pressDown.X);
 
+                Console.WriteLine(degreeX+" "+degreeY);
+
+                Action.RotateCamera(degreeX, degreeY, degreeZ, scene);
 
                 preE.X = e.X;
                 preE.Y = e.Y;
-                                      
+
                 this.Invalidate();
             }
+
         }
 
         private void Form1_OnMouseWheel(object sender, MouseEventArgs e)
@@ -188,15 +153,15 @@ namespace RenderingEngine
             float oriZ = this.scene.camera.Position.Z;
             if (keyData == Keys.W)
             {
-                Action.TranslateCamera(oriX, oriY + MoveSpeed, oriZ, scene);
+                Action.TranslateCamera( 0,  0, MoveSpeed, scene);
             }
             else if (keyData == Keys.S)
             {
-                Action.TranslateCamera(oriX, oriY - MoveSpeed, oriZ, scene);
+                Action.TranslateCamera(oriX, 0, -MoveSpeed, scene);
             }
             else if (keyData == Keys.A)
             {
-                angle += RotateSpeed;
+                degreeX+= RotateSpeed;
                 Action.RotateCamera(0,angle,0,scene);
             }
             else if (keyData == Keys.D)
@@ -276,7 +241,7 @@ namespace RenderingEngine
       
             degreeY -= RotateSpeed;
            
-            Action.RotateMesh(degreeX, degreeY, 0, scene);
+            Action.RotateMesh(degreeX, degreeY,0 , scene);
 
             this.Invalidate();
         }
@@ -306,7 +271,15 @@ namespace RenderingEngine
 
         private void lighting(object sender, EventArgs e)
         {
-            scene.light.IsEnable = true;
+            if(scene.light.IsEnable == false)
+            {
+                scene.light.IsEnable = true;
+            }
+            else
+            {
+                scene.light.IsEnable = false;
+            }
+
             this.Invalidate();
         }
     }

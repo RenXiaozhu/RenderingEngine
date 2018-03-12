@@ -17,7 +17,7 @@ namespace RenderingEngine
         public float aspect { get; set; }
         public float zn { get; set; }
         public float zf { get; set; }
-
+        public Matrix4x4 rotate;
 
         public Camera(float fov, float aspect, float zn, float zf)
         {
@@ -25,6 +25,7 @@ namespace RenderingEngine
             this.aspect = aspect;
             this.zn = zn;
             this.zf = zf;
+            this.rotate = new Matrix4x4();
         }
 
         public Vector4 GetDir()

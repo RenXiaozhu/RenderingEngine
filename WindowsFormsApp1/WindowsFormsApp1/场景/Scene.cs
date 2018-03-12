@@ -22,12 +22,15 @@ namespace RenderingEngine
         // 网格模型
         public Mesh mesh;
 
+        public World worldMap;
+
 
         public Scene(int width, int height)
         {
             this.renderState = RenderState.WireFrame;
             InitCamera(width, height);
             InitMesh();
+            InitWorldMap();
 			InitLight();
 			CATransform.InitMVPMatrix(this);
         }
@@ -44,7 +47,14 @@ namespace RenderingEngine
 
         void InitMesh()
         {
-            this.mesh = new Mesh("Cube");
+            this.mesh = new Mesh("Cube",@"/Users/wangao/Documents/workSpace/RenderingEngine/WindowsFormsApp1/WindowsFormsApp1/textures/map.jpg");
+
+        }
+
+        void InitWorldMap()
+        {
+            this.worldMap = new World("World", @"/Users/wangao/Documents/workSpace/RenderingEngine/WindowsFormsApp1/WindowsFormsApp1/textures/map.jpg");
+           
         }
 
         public void InitLight()
