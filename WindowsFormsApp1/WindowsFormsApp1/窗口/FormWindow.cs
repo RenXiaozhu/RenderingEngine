@@ -93,20 +93,27 @@ namespace RenderingEngine
 
                 float dtx = Math.Abs(e.X - pressDown.X);
 
-                degreeX = (e.Y - pressDown.Y);
-                degreeY = (e.X - pressDown.X);
-
-                Console.WriteLine(degreeX+" "+degreeY);
-
                 if(isCameraRotate)
                 {
-                    Action.RotateCamera(degreeX, degreeY, degreeZ, scene);
+                    Console.WriteLine("CameraRotate");
+                    if(e.Y - pressDown.Y != 0 || e.X - pressDown.X != 0)
+                    {
+                        degreeX = (e.Y - pressDown.Y);
+                        degreeY = (e.X - pressDown.X);
+                        Action.RotateCamera(degreeX, degreeY, degreeZ, scene);
+                    }
+
                 }
                 else
                 {
-                    meshDegreeX = (e.Y - pressDown.Y)/20;
-                    meshDegreeY = (e.X - pressDown.X)/20;
-                    Action.RotateMesh(meshDegreeX, meshDegreeY, degreeZ, scene);
+                    Console.WriteLine("meshRotate");
+
+                    if(e.Y - pressDown.Y != 0 || e.X - pressDown.X != 0)
+                    {
+                        meshDegreeX = (e.Y - pressDown.Y) / 15.0f;
+                        meshDegreeY = (e.X - pressDown.X) / 15.0f;
+                        Action.RotateMesh(meshDegreeX, meshDegreeY, degreeZ, scene);
+                    }
                 }
 
                 preE.X = e.X;
@@ -261,13 +268,13 @@ namespace RenderingEngine
 
         private void lighting(object sender, EventArgs e)
         {
-            if(scene.light.IsEnable == false)
+            if(DirectionLight.IsEnable == false)
             {
-                scene.light.IsEnable = true;
+                DirectionLight.IsEnable = true;
             }
             else
             {
-                scene.light.IsEnable = false;
+                DirectionLight.IsEnable = false;
             }
 
             this.Invalidate();
@@ -279,30 +286,30 @@ namespace RenderingEngine
             float oriY = this.scene.camera.Position.Y;
             float oriZ = this.scene.camera.Position.Z;
 
-            if(keyData == Keys.D1)
+            if(keyData == Keys.L)
             {
-                if(scene.light.IsEnable)
+                if(DirectionLight.IsEnable)
                 {
-                    scene.light.IsEnable = false;
+                    DirectionLight.IsEnable = false;
                 }
                 else
                 {
-                    scene.light.IsEnable = true;
+                    DirectionLight.IsEnable = true;
                 }
             }
-            if(keyData == Keys.D2)
+            if(keyData == Keys.U)
             {
-                if (scene.light.IsAmLightEnable)
+                if (DirectionLight.IsAmLightEnable)
                 {
-                    scene.light.IsAmLightEnable = false;
+                    DirectionLight.IsAmLightEnable = false;
                 }
                 else
                 {
-                    scene.light.IsAmLightEnable = true;
+                    DirectionLight.IsAmLightEnable = true;
                 }
             }
 
-            if(keyData == Keys.Tab)
+            if(keyData == Keys.C)
             {
                 if(isCameraRotate)
                 {
@@ -317,28 +324,34 @@ namespace RenderingEngine
             if (keyData == Keys.W)
             {
                 MeshDirection.Z += MoveSpeed;
+                Action.Mesh_Move(MeshDirection.X, MeshDirection.Y, MeshDirection.Z, scene);
             }
             else if (keyData == Keys.S)
             {
                 MeshDirection.Z -= MoveSpeed;
+                Action.Mesh_Move(MeshDirection.X, MeshDirection.Y, MeshDirection.Z, scene);
             }
             else if (keyData == Keys.A)
             {
                 MeshDirection.X -= MoveSpeed;
+                Action.Mesh_Move(MeshDirection.X, MeshDirection.Y, MeshDirection.Z, scene);
             }
             else if (keyData == Keys.D)
             {
                 MeshDirection.X += MoveSpeed;
+                Action.Mesh_Move(MeshDirection.X, MeshDirection.Y, MeshDirection.Z, scene);
             }
             else if (keyData == Keys.Up)
             {
                 MeshDirection.Y += MoveSpeed;
+                Action.Mesh_Move(MeshDirection.X, MeshDirection.Y, MeshDirection.Z, scene);
             }
             else if (keyData == Keys.Down)
             {
                 MeshDirection.Y -= MoveSpeed;
+                Action.Mesh_Move(MeshDirection.X, MeshDirection.Y, MeshDirection.Z, scene);
             }
-            Action.Mesh_Move(MeshDirection.X, MeshDirection.Y, MeshDirection.Z, scene);
+
             this.Invalidate();
             return true;
         }

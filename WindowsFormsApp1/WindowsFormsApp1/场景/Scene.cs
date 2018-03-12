@@ -59,9 +59,9 @@ namespace RenderingEngine
 
         public void InitLight()
         {
-            this.light = new DirectionLight(new Vector4( 0 , 5, 0, 1), new Color4(255, 255, 0));
-            this.light.IsEnable = true;
-            this.light.IsAmLightEnable = true;
+            this.light = new DirectionLight(new Vector4( 0 , 5, -5, 1), new Color4(255, 255, 255));
+            DirectionLight.IsEnable = true;
+            DirectionLight.IsAmLightEnable = true;
         }
 
     }

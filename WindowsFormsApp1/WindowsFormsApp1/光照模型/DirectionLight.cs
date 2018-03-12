@@ -54,9 +54,9 @@ namespace RenderingEngine
 
         public static float KD = 0.4f;
 
-		public const double StartKD = 0.5f;
+		public const double StartKD = 1.0f;
 
-		public const double MaxKD = 3.0f;
+		public const double MaxKD = 1.0f;
 
 		//光源位置
         public static Vector4 LightPos { get; set; }
@@ -71,30 +71,19 @@ namespace RenderingEngine
         */
 
 		// 
-		private double kd;
+        private static double kd;
 
-		public double Kd
-		{
-			get
-			{
-				return this.kd;
-			}
+        public static double Kd  ;
 
-			set
-			{
-				this.kd = value * MaxKD;
-			}
-		}
-
-		public bool IsEnable { get; set; }
-        public bool IsAmLightEnable { get; set; }
+        public static bool IsEnable { get; set; }
+        public static bool IsAmLightEnable { get; set; }
 
 		//初始化光源
         public DirectionLight(Vector4 pos, Color4 color)
         {
 			LightPos = pos;
 		    LightColor = color;
-			this.kd = MaxKD * StartKD;
+            kd = MaxKD * StartKD;
         }
 
         //计算光照强度
@@ -104,24 +93,25 @@ namespace RenderingEngine
         }
 
 		// 光线的方向点积法线方向
-        public float ComputeNDotL(Vector4 pos, Vector4 normal)
+        public static float ComputeNDotL(Vector4 pos, Vector4 normal)
 		{
-			var lightDirection = LightPos - pos;
-			normal.Normalize();
-			//lightDirection.Normalize();
+            var lightDirection = LightPos - pos;
+            normal.Normalize();
+            //Console.WriteLine(normal.Length());
+			lightDirection.Normalize();
             //float t = lightDirection.CosUV(normal);
-            float t = Vector4.Dot(lightDirection,normal);
+            float t = Vector4.Dot(normal,lightDirection);
             return MathUtil.Clamp01(t);
 		}
 
 		// 漫反射光照颜色
-		public Color4 GetDiffuseColor(float nDotl)
+        public static Color4 GetDiffuseColor(float nDotl)
 		{
 			return LightColor * (nDotl * kd);
 		}
 
 		// 加上环境光
-		public Color4 GetFinalLightColor(float NDotl)
+        public static Color4 GetFinalLightColor(float NDotl)
 		{
 			Color4 diffuse = GetDiffuseColor(NDotl);
             Color4 final = diffuse;
@@ -134,15 +124,23 @@ namespace RenderingEngine
 			return final;
 		}
 
-        public static  Color4 GetFinalLightColor(Vector4 pos, Vector4 normal, Color4 oriColor)
+        public static  Color4 GetFinalLightColor( Vector4 normal, Color4 oriColor)
         {
-            if(oriColor.red == 0 && oriColor.green == 0 && oriColor.blue == 0)
-            {
-                Console.WriteLine("gggggg");  
-            }
-            Color4 final =  AmbientColor +oriColor* Math.Abs(Vector4.Dot(LightPos - pos, normal))*KD;
-            return final;
+            float dt;
+            Color4 light;
 
+            //Color4 color = new Color4(255, 255, 255);
+            if(IsEnable)
+            {
+                dt = ComputeNDotL(normal, normal);
+                light = GetFinalLightColor(dt);
+                Color4 final = oriColor * light;
+                return final;
+            }
+            else
+            {
+                return oriColor;
+            }
         }
     }
 }

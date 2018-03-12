@@ -199,8 +199,8 @@ namespace RenderingEngine
             float y = y0;
             //顶点位置和法线方向与 光线方向的点积  
             // 顶点的实际颜色 = 光线方向 点积 法线方向 * 光的颜色* 本身颜色
-            float nDotL1 = scene.light.ComputeNDotL(v1.Position, v1.Normal);
-            float nDotL2 = scene.light.ComputeNDotL(v2.Position, v2.Normal);
+            float nDotL1 = DirectionLight.ComputeNDotL(v1.Position, v1.Normal);
+            float nDotL2 = DirectionLight.ComputeNDotL(v2.Position, v2.Normal);
 
             for (int i = 1; i <= steps; i++)
             {
@@ -208,10 +208,10 @@ namespace RenderingEngine
                 Color4 vertexColor = new Color4(0, 0, 0);
                 Color4 lightColor = new Color4(0, 0, 0);
 
-                if (scene.light.IsEnable)
+                if (DirectionLight.IsEnable)
                 {
-                    Color4 c1 = scene.light.GetFinalLightColor(nDotL1);
-                    Color4 c2 = scene.light.GetFinalLightColor(nDotL2);
+                    Color4 c1 = DirectionLight.GetFinalLightColor(nDotL1);
+                    Color4 c2 = DirectionLight.GetFinalLightColor(nDotL2);
                     lightColor = MathUtil.ColorInterp(c1, c2, ratio);
                 }
 
@@ -412,8 +412,8 @@ namespace RenderingEngine
             Vector4 point2 = v2.ScreenSpacePosition;
             //顶点位置和法线方向与 光线方向的点积  
             // 顶点的实际颜色 = 光线方向 点积 法线方向 * 光的颜色* 本身颜色
-            float nDotL1 = scene.light.ComputeNDotL(v1.Position, v1.Normal);
-            float nDotL2 = scene.light.ComputeNDotL(v2.Position, v2.Normal);
+            float nDotL1 = DirectionLight.ComputeNDotL(v1.Position, v1.Normal);
+            float nDotL2 = DirectionLight.ComputeNDotL(v2.Position, v2.Normal);
             float z1 = point1.Z;
             float z2 = point2.Z;
 
@@ -428,10 +428,10 @@ namespace RenderingEngine
                 Color4 vertexColor = new Color4(0, 0, 0);
                 Color4 lightColor = new Color4(0, 0, 0);
                 float ratio = (float)(i / steps);
-                if (scene.light.IsEnable)
+                if (DirectionLight.IsEnable)
                 {
-                    Color4 c1 = scene.light.GetFinalLightColor(nDotL1);
-                    Color4 c2 = scene.light.GetFinalLightColor(nDotL2);
+                    Color4 c1 = DirectionLight.GetFinalLightColor(nDotL1);
+                    Color4 c2 = DirectionLight.GetFinalLightColor(nDotL2);
                     lightColor = MathUtil.ColorInterp(c1, c2, ratio);
                 }
 

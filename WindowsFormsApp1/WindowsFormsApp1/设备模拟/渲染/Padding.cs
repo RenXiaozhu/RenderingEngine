@@ -233,12 +233,12 @@ namespace RenderingEngine
                         }
                         else
                         {
-                            if (scene.light.IsEnable)
+                            if (DirectionLight.IsEnable)
                             {
-                                float nDotLA1V1 = scene.light.ComputeNDotL(a1.v1.nowPos, a1.v1.nowNormal);
-                                float nDotLA1V2 = scene.light.ComputeNDotL(a1.v2.nowPos, a1.v2.nowNormal);
-                                float nDotLA2V1 = scene.light.ComputeNDotL(a2.v1.nowPos, a2.v1.nowNormal);
-                                float nDotLA2V2 = scene.light.ComputeNDotL(a2.v2.nowPos, a2.v2.nowNormal);
+                                float nDotLA1V1 = DirectionLight.ComputeNDotL(a1.v1.nowPos, a1.v1.nowNormal);
+                                float nDotLA1V2 = DirectionLight.ComputeNDotL(a1.v2.nowPos, a1.v2.nowNormal);
+                                float nDotLA2V1 = DirectionLight.ComputeNDotL(a2.v1.nowPos, a2.v1.nowNormal);
+                                float nDotLA2V2 = DirectionLight.ComputeNDotL(a2.v2.nowPos, a2.v2.nowNormal);
 
                                 nDotL1 = MathUtil.Interp(nDotLA1V1, nDotLA1V2, r1);
                                 nDotL2 = MathUtil.Interp(nDotLA2V1, nDotLA2V2, r2);
@@ -246,7 +246,7 @@ namespace RenderingEngine
                                 float nDotL = MathUtil.Interp(nDotL1, nDotL2, r3);
                                 //Console.WriteLine(nDotL1+" "+ nDotL2+" " + nDotL);
                                 final = device.Tex2D(uv.X, uv.Y, scene.mesh.texture);
-                                final = final * scene.light.GetFinalLightColor(nDotL);
+                                final = final * DirectionLight.GetFinalLightColor(nDotL);
                             }
                             else
                             {

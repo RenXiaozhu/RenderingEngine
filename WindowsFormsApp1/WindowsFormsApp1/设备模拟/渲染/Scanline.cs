@@ -50,16 +50,16 @@ namespace RenderingEngine
 
                 if (scene.renderState == Scene.RenderState.GouraduShading)
                 {
-                    if (scene.light.IsEnable)
+                    if (DirectionLight.IsEnable)
                     {
-                        float nDotLA1V1 = scene.light.ComputeNDotL(v1.nowPos, v1.nowNormal);
-                        float nDotLA1V2 = scene.light.ComputeNDotL(v2.nowPos, v2.nowNormal);
-                        float nDotLA2V1 = scene.light.ComputeNDotL(v3.nowPos, v3.nowNormal);
-                        float nDotLA2V2 = scene.light.ComputeNDotL(v4.nowPos, v4.nowNormal);
+                        float nDotLA1V1 = DirectionLight.ComputeNDotL(v1.nowPos, v1.nowNormal);
+                        float nDotLA1V2 = DirectionLight.ComputeNDotL(v2.nowPos, v2.nowNormal);
+                        float nDotLA2V1 = DirectionLight.ComputeNDotL(v3.nowPos, v3.nowNormal);
+                        float nDotLA2V2 = DirectionLight.ComputeNDotL(v4.nowPos, v4.nowNormal);
                         float nDotL1 = MathUtil.Interp(nDotLA1V1, nDotLA1V2, gradient1);
                         float nDotL2 = MathUtil.Interp(nDotLA2V1, nDotLA2V2, gradient2);
                         float nDotL = MathUtil.Interp(nDotL1, nDotL2, gradient);
-                        final = scene.light.GetFinalLightColor(nDotL);
+                        final = DirectionLight.GetFinalLightColor(nDotL);
                     }
                     else
                     {
@@ -263,14 +263,14 @@ namespace RenderingEngine
             Vertex C = vv[2];
 
             //Console.WriteLine(a1.v1.Position +" " + a1.v1.Normal);
-            float nDotLA1V1 = scene.light.ComputeNDotL(A.nowPos, A.nowNormal);
-            A.lightColor = A.Color * scene.light.GetFinalLightColor(nDotLA1V1);
+            float nDotLA1V1 = DirectionLight.ComputeNDotL(A.nowPos, A.nowNormal);
+            A.lightColor = A.Color * DirectionLight.GetFinalLightColor(nDotLA1V1);
 
-            float nDotLA1V2 = scene.light.ComputeNDotL(B.nowPos, B.nowNormal);
-            B.lightColor = B.Color * scene.light.GetFinalLightColor(nDotLA1V2);
+            float nDotLA1V2 = DirectionLight.ComputeNDotL(B.nowPos, B.nowNormal);
+            B.lightColor = B.Color * DirectionLight.GetFinalLightColor(nDotLA1V2);
 
-            float nDotLA2V1 = scene.light.ComputeNDotL(C.nowPos, C.nowNormal);
-            C.lightColor = C.Color * scene.light.GetFinalLightColor(nDotLA2V1);
+            float nDotLA2V1 = DirectionLight.ComputeNDotL(C.nowPos, C.nowNormal);
+            C.lightColor = C.Color * DirectionLight.GetFinalLightColor(nDotLA2V1);
 
 
             float ay = A.ScreenSpacePosition.Y;
@@ -460,12 +460,12 @@ namespace RenderingEngine
                 float z2 = MathUtil.Interp(screenA2V1.Z, screenA2V2.Z, r2);
 
                 float nDotLA1V1 = 0, nDotLA1V2 = 0, nDotLA2V1 = 0, nDotLA2V2 = 0, nDotL1 = 0, nDotL2 = 0;
-                if(scene.light.IsEnable)
+                if(DirectionLight.IsEnable)
                 {
-                     nDotLA1V1 = scene.light.ComputeNDotL(a1.v1.nowPos, a1.v1.nowNormal);
-                     nDotLA1V2 = scene.light.ComputeNDotL(a1.v2.nowPos, a1.v2.nowNormal);
-                     nDotLA2V1 = scene.light.ComputeNDotL(a2.v1.nowPos, a2.v1.nowNormal);
-                     nDotLA2V2 = scene.light.ComputeNDotL(a2.v2.nowPos, a2.v2.nowNormal);
+                    nDotLA1V1 = DirectionLight.ComputeNDotL(a1.v1.nowPos, a1.v1.nowNormal);
+                    nDotLA1V2 = DirectionLight.ComputeNDotL(a1.v2.nowPos, a1.v2.nowNormal);
+                    nDotLA2V1 = DirectionLight.ComputeNDotL(a2.v1.nowPos, a2.v1.nowNormal);
+                    nDotLA2V2 = DirectionLight.ComputeNDotL(a2.v2.nowPos, a2.v2.nowNormal);
                     // 双线性插值系数
 
                     nDotL1 = MathUtil.Interp(nDotLA1V1, nDotLA1V2, r1);
@@ -508,12 +508,12 @@ namespace RenderingEngine
                                     }
                                     else
                                     {
-                                        if (scene.light.IsEnable)
+                                        if (DirectionLight.IsEnable)
                                         {
                                             float nDotL = MathUtil.Interp(nDotL1, nDotL2, r3);
                                             //Console.WriteLine(nDotL1+" "+ nDotL2+" " + nDotL);
                                             final = device.Tex2D(uv.X, uv.Y, scene.mesh.texture);
-                                            final = final * scene.light.GetFinalLightColor(nDotL);
+                                            final = final * DirectionLight.GetFinalLightColor(nDotL);
                                         }
                                         else
                                         {
@@ -553,36 +553,15 @@ namespace RenderingEngine
             Vertex B = vt.Vertices[1];
             Vertex C = vt.Vertices[2];
 
-            if (scene.light.IsEnable)
-            {
-                //Console.WriteLine(a1.v1.Position +" " + a1.v1.Normal);
 
-                float nDotLA1V1 = scene.light.ComputeNDotL(A.nowPos, A.nowNormal);
-                Color4 a = scene.light.GetFinalLightColor(nDotLA1V1);
-                A.lightColor = A.Color * a;
-
-                float nDotLA1V2 = scene.light.ComputeNDotL(B.nowPos, B.nowNormal);
-                Color4 b = scene.light.GetFinalLightColor(nDotLA1V2);
-                B.lightColor = B.Color * b;
-
-                float nDotLA2V1 = scene.light.ComputeNDotL(C.nowPos, C.nowNormal);
-                Color4 c = scene.light.GetFinalLightColor(nDotLA2V1);
-                C.lightColor = C.Color * c;
-
-                DrawNormalTriangle(vt, a, b, c);
-            }
-            else
-            {
-                A.lightColor = new Color4(A.Color.red, A.Color.green, A.Color.blue);
-                B.lightColor = new Color4(B.Color.red, B.Color.green, B.Color.blue);
-                C.lightColor = new Color4(C.Color.red, C.Color.green, C.Color.blue);
-                DrawNormalTriangle(vt, new Color4(0, 0, 0), new Color4(0, 0, 0), new Color4(0, 0, 0));
-            }
-
+            //A.lightColor = new Color4(A.Color.red, A.Color.green, A.Color.blue);
+            //B.lightColor = new Color4(B.Color.red, B.Color.green, B.Color.blue);
+            //C.lightColor = new Color4(C.Color.red, C.Color.green, C.Color.blue);
+            DrawNormalTriangle(vt, scene);
         }
 
         // 三角形扫描
-        public void DrawNormalTriangle(VertexTriangle vt, Color4 lightA, Color4 lightB, Color4 lightC)
+        public void DrawNormalTriangle(VertexTriangle vt,Scene scene)
         {
             Vertex[] vv = GetList(vt.Vertices);
 
@@ -605,17 +584,22 @@ namespace RenderingEngine
             float bz = p2.Z;
             float cz = p3.Z;
 
-            Color4 color1 = v1.lightColor;
-            Color4 color2 = v2.lightColor;
-            Color4 color3 = v3.lightColor;
+            Color4 color1 = v1.Color;
+            Color4 color2 = v2.Color;
+            Color4 color3 = v3.Color;
+
+            Vector4 normal1 = v1.nowNormal;
+            Vector4 normal2 = v2.nowNormal;
+            Vector4 normal3 = v3.nowNormal;
+
 
             if (ay == by)
             {
-                DrawTopTriangle(v1, v2, v3);
+                DrawTopTriangle(v1, v2, v3,scene);
             }
             else if (by == cy)
             {
-                DrawBottomTriangle(v1, v2, v3);
+                DrawBottomTriangle(v1, v2, v3,scene);
             }
             else
             {
@@ -624,6 +608,7 @@ namespace RenderingEngine
                     Vertex newVt = new Vertex();
 
                     float y1 = (by - ay) / (cy - ay);
+
                     y1 = MathUtil.Clamp01(y1);
 
                     float x = MathUtil.Interp(ax, cx, y1);
@@ -636,17 +621,21 @@ namespace RenderingEngine
 
                     newVt.lightColor = c;
 
+                    newVt.Color = c;
+
+                    newVt.nowNormal = MathUtil.Vector4Interp(normal1, normal3, y1);
+
                     if ((int)bx > (int)cx)
                     {
-                        DrawBottomTriangle(v1, newVt, v2);
+                        DrawBottomTriangle(v1, newVt, v2,scene);
 
-                        DrawTopTriangle(newVt, v2, v3);
+                        DrawTopTriangle(newVt, v2, v3,scene);
                     }
                     else
                     {
-                        DrawBottomTriangle(v1, v2, newVt);
+                        DrawBottomTriangle(v1, v2, newVt,scene);
 
-                        DrawTopTriangle(v2, newVt, v3);
+                        DrawTopTriangle(v2, newVt, v3,scene);
                     }
                 }
                 else if (ax == bx)
@@ -667,17 +656,21 @@ namespace RenderingEngine
 
                     newVt.lightColor = c;
 
+                    newVt.Color = c;
+
+                    newVt.nowNormal = MathUtil.Vector4Interp(normal1, normal3, y1);
+       
                     if (cx < bx)
                     {
-                        DrawBottomTriangle(v1, newVt, v2);
+                        DrawBottomTriangle(v1, newVt, v2,scene);
 
-                        DrawTopTriangle(newVt, v2, v3);
+                        DrawTopTriangle(newVt, v2, v3,scene);
                     }
                     else
                     {
-                        DrawBottomTriangle(v1, v2, newVt);
+                        DrawBottomTriangle(v1, v2, newVt,scene);
 
-                        DrawTopTriangle(v2, newVt, v3);
+                        DrawTopTriangle(v2, newVt, v3,scene);
                     }
                 }
                 else if (bx == cx)
@@ -699,17 +692,21 @@ namespace RenderingEngine
 
                     newVt.lightColor = c;
 
+                    newVt.Color = c;
+
+                    newVt.nowNormal = MathUtil.Vector4Interp(normal1, normal3, y1);
+              
                     if (ax < bx)
                     {
-                        DrawBottomTriangle(v1, newVt, v2);
+                        DrawBottomTriangle(v1, newVt, v2,scene);
 
-                        DrawTopTriangle(newVt, v2, v3);
+                        DrawTopTriangle(newVt, v2, v3,scene);
                     }
                     else
                     {
-                        DrawBottomTriangle(v1, v2, newVt);
+                        DrawBottomTriangle(v1, v2, newVt,scene);
 
-                        DrawTopTriangle(v2, newVt, v3);
+                        DrawTopTriangle(v2, newVt, v3,scene);
                     }
                 }
                 else
@@ -730,6 +727,10 @@ namespace RenderingEngine
 
                     newVt.lightColor = c;
 
+                    newVt.Color = c;
+
+                    newVt.nowNormal = MathUtil.Vector4Interp(normal1, normal3, y1);
+
                     // 计算线条的方向  
                     float dP1P2, dP1P3;
 
@@ -747,29 +748,29 @@ namespace RenderingEngine
 
                     if (dP1P2 > dP1P3)
                     {
-                        DrawBottomTriangle(v1, newVt, v2);
+                        DrawBottomTriangle(v1, newVt, v2,scene);
 
-                        DrawTopTriangle(newVt, v2, v3);
+                        DrawTopTriangle(newVt, v2, v3,scene);
                     }
                     else
                     {
-                        DrawBottomTriangle(v1, v2, newVt);
+                        DrawBottomTriangle(v1, v2, newVt,scene);
 
-                        DrawTopTriangle(v2, newVt, v3);
+                        DrawTopTriangle(v2, newVt, v3,scene);
                     }
                 }
             }
         }
 
-        public void DrawTopTriangle(Vertex v1, Vertex v2, Vertex v3)
+        public void DrawTopTriangle(Vertex v1, Vertex v2, Vertex v3, Scene scene)
         {
             Vector4 p1 = v1.ScreenSpacePosition;
             Vector4 p2 = v2.ScreenSpacePosition;
             Vector4 p3 = v3.ScreenSpacePosition;
 
-            Color4 color1 = v1.lightColor;
-            Color4 color2 = v2.lightColor;
-            Color4 color3 = v3.lightColor;
+            Color4 color1 = v1.Color;
+            Color4 color2 = v2.Color;
+            Color4 color3 = v3.Color;
 
             float ax = p1.X;
             float bx = p2.X;
@@ -782,12 +783,17 @@ namespace RenderingEngine
             float bz = p2.Z;
             float cz = p3.Z;
 
+            Vector4 normal1 = v1.nowNormal;
+            Vector4 normal2 = v2.nowNormal;
+            Vector4 normal3 = v3.nowNormal;
+
             if (bx == cx)
             {
                 for (int y = (int)ay; y <= (int)cy; y++)
                 {
                     float y1 = (float)(y - ay) / (float)(cy - ay);
                     float y2 = (float)(y - by) / (float)(cy - by);
+
                     y1 = MathUtil.Clamp01(y1);
                     y2 = MathUtil.Clamp01(y2);
 
@@ -800,15 +806,31 @@ namespace RenderingEngine
                     Color4 c1 = MathUtil.ColorInterp(color1, color3, y1);
                     Color4 c2 = MathUtil.ColorInterp(color2, color3, y2);
 
+                    Vector4 n1 = MathUtil.Vector4Interp(normal1, normal3, y1);
+                    Vector4 n2 = MathUtil.Vector4Interp(normal2, normal3, y2);
+
                     for (int x = x0; x <= x1; x++)
                     {
                         float r3 = (float)(x - x0) / (float)(x1 - x0);
+
                         r3 = MathUtil.Clamp01(r3);
+
                         float z = MathUtil.Interp(z1, z2, r3);
 
-                        Color4 final = MathUtil.ColorInterp(c1, c2, r3);
+                        Color4 c3 = MathUtil.ColorInterp(c1, c2, r3);
 
-                        device.DrawPoint(new Vector4(x, y, z, 0), final);
+                        Vector4 pos = new Vector4(x, y, z, 0);
+
+                        Vector4 n3 = MathUtil.Vector4Interp(n1, n2, r3);
+
+                        final = DirectionLight.GetFinalLightColor(n3, c3);
+
+                        //if(x == x0 || x == x1)
+                        //{
+                        //    device.DrawPoint(pos + n3*10, new Color4(255, 0, 0));
+                        //}
+                        device.DrawPoint(pos, final);
+
                     }
                 }
 
@@ -831,6 +853,9 @@ namespace RenderingEngine
                     Color4 c1 = MathUtil.ColorInterp(color1, color3, y1);
                     Color4 c2 = MathUtil.ColorInterp(color2, color3, y2);
 
+                    Vector4 n1 = MathUtil.Vector4Interp(normal1, normal3, y1);
+                    Vector4 n2 = MathUtil.Vector4Interp(normal2, normal3, y2);
+
                     for (int x = x0; x < x1; x++)
                     {
                         float r3 = (float)(x - x0) / (float)(x1 - x0);
@@ -839,9 +864,19 @@ namespace RenderingEngine
 
                         float z = MathUtil.Interp(z1, z2, r3);
 
-                        Color4 final = MathUtil.ColorInterp(c1, c2, r3);
+                        Color4 c3 = MathUtil.ColorInterp(c1, c2, r3);
 
-                        device.DrawPoint(new Vector4(x, y, z, 0), final);
+                        Vector4 pos = new Vector4(x, y, z, 0);
+
+                        Vector4 n3 = MathUtil.Vector4Interp(n1, n2, r3);
+
+                        final = DirectionLight.GetFinalLightColor(n3, c3);
+
+                        device.DrawPoint(pos, final);
+                        //if (x == x0 || x == x1)
+                        //{
+                        //    device.DrawPoint(pos + n3*10, new Color4(255, 0, 0));
+                        //}
                     }
                 }
             }
@@ -864,6 +899,10 @@ namespace RenderingEngine
                     Color4 c1 = MathUtil.ColorInterp(color1, color3, y1);
                     Color4 c2 = MathUtil.ColorInterp(color2, color3, y2);
 
+                    Vector4 n1 = MathUtil.Vector4Interp(normal1, normal3, y1);
+
+                    Vector4 n2 = MathUtil.Vector4Interp(normal2, normal3, y2);
+                    
                     for (float x = x0; x < x1; x++)
                     {
                         float r3 = (float)(x - x0) / (float)(x1 - x0);
@@ -872,23 +911,34 @@ namespace RenderingEngine
 
                         float z = MathUtil.Interp(z1, z2, r3);
 
-                        Color4 final = MathUtil.ColorInterp(c1, c2, r3);
+                        Color4 c3 = MathUtil.ColorInterp(c1, c2, r3);
 
-                        device.DrawPoint(new Vector4(x, (int)y, z, 0), final);
+                        Vector4 pos = new Vector4(x, y, z, 0);
+                      
+                        Vector4 n3 = MathUtil.Vector4Interp(n1, n2, r3);
+
+                        final = DirectionLight.GetFinalLightColor(n3, c3);
+
+                        device.DrawPoint(pos, final);
+
+                        //if (x == x0 || x == x1)
+                        //{
+                        //    device.DrawPoint(pos + n3*10, new Color4(255, 0, 0));
+                        //}
                     }
                 }
             }
         }
 
-        public void DrawBottomTriangle(Vertex v1, Vertex v2, Vertex v3)
+        public void DrawBottomTriangle(Vertex v1, Vertex v2, Vertex v3 ,Scene scene)
         {
             Vector4 p1 = v1.ScreenSpacePosition;
             Vector4 p2 = v2.ScreenSpacePosition;
             Vector4 p3 = v3.ScreenSpacePosition;
 
-            Color4 color1 = v1.lightColor;
-            Color4 color2 = v2.lightColor;
-            Color4 color3 = v3.lightColor;
+            Color4 color1 = v1.Color;
+            Color4 color2 = v2.Color;
+            Color4 color3 = v3.Color;
 
             float ax = p1.X;
             float bx = p2.X;
@@ -900,6 +950,10 @@ namespace RenderingEngine
             float az = p1.Z;
             float bz = p2.Z;
             float cz = p3.Z;
+
+            Vector4 normal1 = v1.nowNormal;
+            Vector4 normal2 = v2.nowNormal;
+            Vector4 normal3 = v3.nowNormal;
 
             if (ax == bx)
             {
@@ -920,6 +974,9 @@ namespace RenderingEngine
                     Color4 c1 = MathUtil.ColorInterp(color1, color2, y1);
                     Color4 c2 = MathUtil.ColorInterp(color1, color3, y2);
 
+                    Vector4 n1 = MathUtil.Vector4Interp(normal1, normal2, y1);
+                    Vector4 n2 = MathUtil.Vector4Interp(normal1, normal3, y2);
+
                     for (int x = x0; x < x1; x++)
                     {
                         float r3 = (float)(x - x0) / (float)(x1 - x0);
@@ -928,9 +985,19 @@ namespace RenderingEngine
 
                         float z = MathUtil.Interp(z1, z2, r3);
 
-                        Color4 final = MathUtil.ColorInterp(c1, c2, r3);
+                        Color4 c3 = MathUtil.ColorInterp(c1, c2, r3);
 
-                        device.DrawPoint(new Vector4(x, y, z, 0), final);
+                        Vector4 pos = new Vector4(x, y, z, 0);
+
+                        Vector4 n3 = MathUtil.Vector4Interp(n1, n2, r3);
+
+                        final = DirectionLight.GetFinalLightColor(n3, c3);
+
+                        device.DrawPoint(pos, final);
+                        //if (x == x0 || x == x1)
+                        //{
+                        //    device.DrawPoint(pos + n3*10, new Color4(255, 0, 0));
+                        //}
                     }
                 }
 
@@ -953,18 +1020,30 @@ namespace RenderingEngine
                     Color4 c1 = MathUtil.ColorInterp(color1, color2, y1);
                     Color4 c2 = MathUtil.ColorInterp(color1, color3, y2);
 
+                    Vector4 n1 = MathUtil.Vector4Interp(normal1, normal2, y1);
+                    Vector4 n2 = MathUtil.Vector4Interp(normal1, normal3, y2);
+
                     for (int x = x0; x < x1; x++)
                     {
-
                         float r3 = (float)(x - x0) / (float)(x1 - x0);
 
                         r3 = MathUtil.Clamp01(r3);
 
                         float z = MathUtil.Interp(z1, z2, r3);
 
-                        Color4 final = MathUtil.ColorInterp(c1, c2, r3);
+                        Color4 c3 = MathUtil.ColorInterp(c1, c2, r3);
 
-                        device.DrawPoint(new Vector4(x, y, z, 0), final);
+                        Vector4 pos = new Vector4(x, y, z, 0);
+
+                        Vector4 n3 = MathUtil.Vector4Interp(n1, n2, r3);
+
+                        final = DirectionLight.GetFinalLightColor(n3, c3);
+
+                        device.DrawPoint(pos, final);
+                        //if (x == x0 || x == x1)
+                        //{
+                        //    device.DrawPoint(pos + n3*10, new Color4(255, 0, 0));
+                        //}
                     }
                 }
             }
@@ -987,6 +1066,9 @@ namespace RenderingEngine
                     Color4 c1 = MathUtil.ColorInterp(color1, color2, y1);
                     Color4 c2 = MathUtil.ColorInterp(color1, color3, y2);
 
+                    Vector4 n1 = MathUtil.Vector4Interp(normal1, normal2, y1);
+                    Vector4 n2 = MathUtil.Vector4Interp(normal1, normal3, y2);
+
                     for (int x = x0; x < x1; x++)
                     {
                         float r3 = (float)(x - x0) / (float)(x1 - x0);
@@ -995,9 +1077,19 @@ namespace RenderingEngine
 
                         float z = MathUtil.Interp(z1, z2, r3);
 
-                        Color4 final = MathUtil.ColorInterp(c1, c2, r3);
+                        Color4 c3 = MathUtil.ColorInterp(c1, c2, r3);
 
-                        device.DrawPoint(new Vector4(x, y, z, 0), final);
+                        Vector4 pos = new Vector4(x, y, z, 0);
+
+                        Vector4 n3 = MathUtil.Vector4Interp(n1, n2, r3);
+
+                        final = DirectionLight.GetFinalLightColor(n3, c3);
+
+                        device.DrawPoint(pos, final);
+                        //if (x == x0 || x == x1)
+                        //{
+                        //    device.DrawPoint(pos + n3*10, new Color4(255, 0, 0));
+                        //}
                     }
                 }
             }

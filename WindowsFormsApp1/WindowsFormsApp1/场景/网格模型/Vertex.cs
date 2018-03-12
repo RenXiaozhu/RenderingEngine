@@ -60,8 +60,10 @@ namespace RenderingEngine
         {
             this.Position = pos;
             this.nowPos = pos;
+            this.nowPos = pos;
             this.Normal = normal;
             this.nowNormal = normal;
+            this.nowNormal.Normalize();
             this.UV = uv;
             this.Color = col;
            // this.lightColor = col;

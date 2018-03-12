@@ -50,7 +50,7 @@ namespace RenderingEngine
                 Vertex vt = Vertices[i];
                 //vt.nowNormal = rotation.ApplY(vt.Normal);
                 //vt.nowNormal.Normalize();
-                vt.nowPos = Move.ApplY(vt.Position);
+                vt.nowPos = Move.ApplY(vt.nowPos);
             }
         }
 
