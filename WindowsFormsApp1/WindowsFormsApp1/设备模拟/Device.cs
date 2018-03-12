@@ -156,8 +156,11 @@ namespace RenderingEngine
         public Color4 Tex2D(float u, float v, Texture texture)
         {
             // 如果不将uv坐标进行 1 - u ；1 - v；图像将是倒置的
-            int x = Math.Abs((int)((1f - u) * texture.GetWidth()) % texture.GetWidth());
-            int y = Math.Abs((int)((1f - v) * texture.GetHeight()) % texture.GetHeight());
+            int Width_ = texture.GetWidth();
+            int Height_ = texture.GetHeight();
+            BitmapData data = texture.GetBmData();
+            int x = Math.Abs((int)((1f - u) * Width_) % Width_);
+            int y = Math.Abs((int)((1f - v) * Height_) % Height_);
 
             byte r = 0;
             byte g = 0;
@@ -165,8 +168,8 @@ namespace RenderingEngine
 
             unsafe
             {
-                byte* ptr = (byte *)texture.GetBmData().Scan0;
-                byte* row = ptr + (y * texture.GetBmData().Stride);
+                byte* ptr = (byte *)data.Scan0;
+                byte* row = ptr + (y * data.Stride);
                 b = row[x * 3];
                 g = row[x * 3 + 1];
                 r = row[x * 3 + 2];
