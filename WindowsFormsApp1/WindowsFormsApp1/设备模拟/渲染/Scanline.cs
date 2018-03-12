@@ -333,14 +333,7 @@ namespace RenderingEngine
             Vertex C = vt.Vertices[2];
 
             //Console.WriteLine(a1.v1.Position +" " + a1.v1.Normal);
-            float nDotLA1V1 = scene.light.ComputeNDotL(A.nowPos, A.nowNormal);
-            A.lightColor = A.Color * scene.light.GetFinalLightColor(nDotLA1V1);
-
-            float nDotLA1V2 = scene.light.ComputeNDotL(B.nowPos, B.nowNormal);
-            B.lightColor = B.Color * scene.light.GetFinalLightColor(nDotLA1V2);
-
-            float nDotLA2V1 = scene.light.ComputeNDotL(C.nowPos, C.nowNormal);
-            C.lightColor = C.Color * scene.light.GetFinalLightColor(nDotLA2V1);
+         
 
 
             //float nDotLA2V2 = scene.light.ComputeNDotL(a2.v2.nowPos, a2.v2.nowNormal);
@@ -416,7 +409,6 @@ namespace RenderingEngine
              */
             AEL = new Edge();
 
-            // 从ymin开始扫描填充
 
             oriVt.PreCalWeight();
 
@@ -431,13 +423,104 @@ namespace RenderingEngine
                 Edge a1 = (Edge)AEL.nextEdge.Clone();
                 Edge a2 = (Edge)AEL.nextEdge.nextEdge.Clone();
 
+                // 从ymin开始扫描填充
+
+
+                /*
+                 * 记过排序后的边传入连续两条边 相交的情况只有两种钝角三角形 和锐角三角形
+                 * x 从小到大
+                 *            
+                 *        /\    /\
+                 *       /  \  /  \
+                 *      /    \/    \_________
+                 *     x1    x3 x4
+                 * 1. x左右分开
+                 * 2. x相同 以斜率排序
+                 * 
+                */
+
+                /* 双线性插值算法
+                 * 
+                 * 
+                */
+                Vector4 screenA1V1 = a1.v1.ScreenSpacePosition;
+                Vector4 screenA1V2 = a1.v2.ScreenSpacePosition;
+                Vector4 screenA2V1 = a2.v1.ScreenSpacePosition;
+                Vector4 screenA2V2 = a2.v2.ScreenSpacePosition;
+
+                // 第一次插值算出交点的颜色系数
+                float r1 = ((float)i - screenA1V1.Y) / (float)(screenA1V2.Y - screenA1V1.Y);
+                float r2 = ((float)i - screenA2V1.Y) / (float)(screenA2V2.Y - screenA2V1.Y);
+
+                r1 = MathUtil.Clamp01(r1);
+                r2 = MathUtil.Clamp01(r2);
+
+                // 像素点深度插值
+                float z1 = MathUtil.Interp(screenA1V1.Z, screenA1V2.Z, r1);
+                float z2 = MathUtil.Interp(screenA2V1.Z, screenA2V2.Z, r2);
+
+                float nDotLA1V1 = scene.light.ComputeNDotL(a1.v1.nowPos, a1.v1.nowNormal);
+                float nDotLA1V2 = scene.light.ComputeNDotL(a1.v2.nowPos, a1.v2.nowNormal);
+                float nDotLA2V1 = scene.light.ComputeNDotL(a2.v1.nowPos, a2.v1.nowNormal);
+                float nDotLA2V2 = scene.light.ComputeNDotL(a2.v2.nowPos, a2.v2.nowNormal);
+                // 双线性插值系数
+                float nDotL1 = 0, nDotL2 = 0;
+                nDotL1 = MathUtil.Interp(nDotLA1V1, nDotLA1V2, r1);
+                nDotL2 = MathUtil.Interp(nDotLA2V1, nDotLA2V2, r2);
+                //float z3 = 0;
+               
+                //float z = vt.GetInterValue(z1, z2, z3);
+
                 // 横向填充
                 while (a1 != null && a2 != null)
                 {
                     for (int x = (int)AEL.nextEdge.x; x < (int)AEL.nextEdge.nextEdge.x; x++)
                     {
-                        Padding.x = x;
-                        Padding.GouraudColor(scene, device, i, a1, a2, oriVt, vt, isworld);
+
+                        float r3 = MathUtil.Clamp01(((float)x - a1.x) / (a2.x - a1.x));
+                        //float r3 = (float)(x - Math.Floor(a1.x)) / (a2.x - a1.x);    
+                        float z = MathUtil.Interp(z1, z2, r3);
+
+                        switch (scene.renderState)
+                        {
+
+                            case Scene.RenderState.WireFrame:
+                                {
+                                }
+                                break;
+                            case Scene.RenderState.GouraduShading:
+                                {
+
+                                }
+                                break;
+                            case Scene.RenderState.TextureMapping:
+                                {
+                                    oriVt.CalWeight(new Vector4(x, i, 0, 0));
+                                    Vector4 uv = oriVt.GetInterUV();
+                                    if (isworld)
+                                    {
+                                        //final = device.Tex2D(uv.X, uv.Y, scene.worldMap.texture);
+                                    }
+                                    else
+                                    {
+                                        if (scene.light.IsEnable)
+                                        {
+
+                                            float nDotL = MathUtil.Interp(nDotL1, nDotL2, r3);
+                                            //Console.WriteLine(nDotL1+" "+ nDotL2+" " + nDotL);
+                                            final = device.Tex2D(uv.X, uv.Y, scene.mesh.texture);
+                                            final = final * scene.light.GetFinalLightColor(nDotL);
+                                        }
+                                        else
+                                        {
+                                            final = device.Tex2D(uv.X, uv.Y, scene.mesh.texture);
+                                        }
+                                    }
+
+                                }
+                                break;
+                        }
+                        device.DrawPoint(new Vector4(x, i, z, 0), final);
                     }
 
                     if (a2.nextEdge != null)

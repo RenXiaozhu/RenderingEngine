@@ -164,7 +164,7 @@ namespace RenderingEngine
 
         }
 
-        public static void GouraudColor(Scene scene,Device device, int i, Edge a1, Edge a2,VertexTriangle orivt ,VertexTriangle vt, bool isworld)
+        public static void GouraudColor(Scene scene,Device device, int i, Edge a1, Edge a2,VertexTriangle orivt ,VertexTriangle vt, bool isworld )
         {
             Color4 final = new Color4();
             /*
