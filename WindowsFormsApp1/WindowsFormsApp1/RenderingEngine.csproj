@@ -115,6 +115,11 @@
     <Compile Include="设备模拟\渲染\Padding.cs" />
     <Compile Include="设备模拟\渲染\EdgeTable.cs" />
     <Compile Include="场景\网格模型\Face.cs" />
+    <Compile Include="设备模拟\渲染\DrawTriangle.cs" />
+    <Compile Include="场景\网格模型\World.cs" />
+    <Compile Include="场景\网格模型\MeshBase.cs" />
+    <Compile Include="设备模拟\动作\CameraAction.cs" />
+    <Compile Include="设备模拟\3D场景转换\Angle.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
