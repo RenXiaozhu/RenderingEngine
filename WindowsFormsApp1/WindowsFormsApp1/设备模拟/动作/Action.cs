@@ -59,5 +59,11 @@ namespace RenderingEngine
             CATransform.InitMVPMatrix(scene);
         }
 
+        public static void Mesh_Move(float dx,float dy,float dz,Scene scene)
+        {
+            scene.mesh.Action_Move(dx, dy, dz);
+            CATransform.InitMVPMatrix(scene);
+        }
+
     }
 }

@@ -62,7 +62,7 @@ namespace RenderingEngine
         public static Vector4 LightPos { get; set; }
 
 		//光源颜色
-        public static Color4 LoghtColor { get; set; }
+        public static Color4 LightColor { get; set; }
 
         /* 环境光 + 漫反射
          * 
@@ -87,12 +87,13 @@ namespace RenderingEngine
 		}
 
 		public bool IsEnable { get; set; }
+        public bool IsAmLightEnable { get; set; }
 
 		//初始化光源
         public DirectionLight(Vector4 pos, Color4 color)
         {
 			LightPos = pos;
-		    LoghtColor = color;
+		    LightColor = color;
 			this.kd = MaxKD * StartKD;
         }
 
@@ -116,14 +117,20 @@ namespace RenderingEngine
 		// 漫反射光照颜色
 		public Color4 GetDiffuseColor(float nDotl)
 		{
-			return LoghtColor * (nDotl * kd);
+			return LightColor * (nDotl * kd);
 		}
 
 		// 加上环境光
 		public Color4 GetFinalLightColor(float NDotl)
 		{
 			Color4 diffuse = GetDiffuseColor(NDotl);
-			Color4 final = diffuse + DirectionLight.AmbientColor;
+            Color4 final = diffuse;
+           
+            if(IsAmLightEnable)
+            {
+                final = final + DirectionLight.AmbientColor;
+            }
+
 			return final;
 		}
 

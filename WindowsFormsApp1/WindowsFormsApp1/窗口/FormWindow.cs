@@ -24,11 +24,17 @@ namespace RenderingEngine
         private float degreeX = 0;
         private float degreeY = 0;
         private float degreeZ = 0;
+
+        private float meshDegreeX = 0;
+        private float meshDegreeY = 0;
+        private float meshDegreeZ = 0;
         private float MoveSpeed = 0.5f;
         private const float RotateSpeed = 3f;
         private float angle = 0;
         private Point preE;
         private bool isUp = false;
+        private bool isCameraRotate = true;
+        private Vector4 MeshDirection = new Vector4(0,0,0,0);
 
         public FormWindow()
         {
@@ -92,7 +98,16 @@ namespace RenderingEngine
 
                 Console.WriteLine(degreeX+" "+degreeY);
 
-                Action.RotateCamera(degreeX, degreeY, degreeZ, scene);
+                if(isCameraRotate)
+                {
+                    Action.RotateCamera(degreeX, degreeY, degreeZ, scene);
+                }
+                else
+                {
+                    meshDegreeX = (e.Y - pressDown.Y)/20;
+                    meshDegreeY = (e.X - pressDown.X)/20;
+                    Action.RotateMesh(meshDegreeX, meshDegreeY, degreeZ, scene);
+                }
 
                 preE.X = e.X;
                 preE.Y = e.Y;
@@ -146,32 +161,7 @@ namespace RenderingEngine
             }
         }
 
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            float oriX = this.scene.camera.Position.X;
-            float oriY = this.scene.camera.Position.Y;
-            float oriZ = this.scene.camera.Position.Z;
-            if (keyData == Keys.W)
-            {
-                Action.TranslateCamera( 0,  0, MoveSpeed, scene);
-            }
-            else if (keyData == Keys.S)
-            {
-                Action.TranslateCamera(oriX, 0, -MoveSpeed, scene);
-            }
-            else if (keyData == Keys.A)
-            {
-                degreeX+= RotateSpeed;
-                Action.RotateCamera(0,angle,0,scene);
-            }
-            else if (keyData == Keys.D)
-            {
-                angle -= RotateSpeed;
-                Action.RotateCamera(0,angle,0,scene);
-            }
-            this.Invalidate();
-            return true;
-        }
+
 
         // Wire Frame
         private void WireFrame(object sender, EventArgs e)
@@ -281,6 +271,76 @@ namespace RenderingEngine
             }
 
             this.Invalidate();
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            float oriX = this.scene.camera.Position.X;
+            float oriY = this.scene.camera.Position.Y;
+            float oriZ = this.scene.camera.Position.Z;
+
+            if(keyData == Keys.D1)
+            {
+                if(scene.light.IsEnable)
+                {
+                    scene.light.IsEnable = false;
+                }
+                else
+                {
+                    scene.light.IsEnable = true;
+                }
+            }
+            if(keyData == Keys.D2)
+            {
+                if (scene.light.IsAmLightEnable)
+                {
+                    scene.light.IsAmLightEnable = false;
+                }
+                else
+                {
+                    scene.light.IsAmLightEnable = true;
+                }
+            }
+
+            if(keyData == Keys.Tab)
+            {
+                if(isCameraRotate)
+                {
+                    isCameraRotate = false;
+                }
+                else
+                {
+                    isCameraRotate = true;
+                }
+            }
+
+            if (keyData == Keys.W)
+            {
+                MeshDirection.Z += MoveSpeed;
+            }
+            else if (keyData == Keys.S)
+            {
+                MeshDirection.Z -= MoveSpeed;
+            }
+            else if (keyData == Keys.A)
+            {
+                MeshDirection.X -= MoveSpeed;
+            }
+            else if (keyData == Keys.D)
+            {
+                MeshDirection.X += MoveSpeed;
+            }
+            else if (keyData == Keys.Up)
+            {
+                MeshDirection.Y += MoveSpeed;
+            }
+            else if (keyData == Keys.Down)
+            {
+                MeshDirection.Y -= MoveSpeed;
+            }
+            Action.Mesh_Move(MeshDirection.X, MeshDirection.Y, MeshDirection.Z, scene);
+            this.Invalidate();
+            return true;
         }
     }
 }
