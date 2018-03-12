@@ -292,7 +292,8 @@ namespace RenderingEngine
             float u = GetInterValue(u1, u2, u3);
             float v = GetInterValue(v1, v2, v3);
             float w = GetInterValue(w1, w2, w3);
-            return new Vector4(u / w, v / w, 0, 0);
+            float tmp = 1 / w;
+            return new Vector4(u * tmp, v * tmp, 0, 0);
         }
 
         public Color4 GetInterColor()
