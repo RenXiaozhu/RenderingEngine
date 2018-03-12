@@ -459,14 +459,19 @@ namespace RenderingEngine
                 float z1 = MathUtil.Interp(screenA1V1.Z, screenA1V2.Z, r1);
                 float z2 = MathUtil.Interp(screenA2V1.Z, screenA2V2.Z, r2);
 
-                float nDotLA1V1 = scene.light.ComputeNDotL(a1.v1.nowPos, a1.v1.nowNormal);
-                float nDotLA1V2 = scene.light.ComputeNDotL(a1.v2.nowPos, a1.v2.nowNormal);
-                float nDotLA2V1 = scene.light.ComputeNDotL(a2.v1.nowPos, a2.v1.nowNormal);
-                float nDotLA2V2 = scene.light.ComputeNDotL(a2.v2.nowPos, a2.v2.nowNormal);
-                // 双线性插值系数
-                float nDotL1 = 0, nDotL2 = 0;
-                nDotL1 = MathUtil.Interp(nDotLA1V1, nDotLA1V2, r1);
-                nDotL2 = MathUtil.Interp(nDotLA2V1, nDotLA2V2, r2);
+                float nDotLA1V1 = 0, nDotLA1V2 = 0, nDotLA2V1 = 0, nDotLA2V2 = 0, nDotL1 = 0, nDotL2 = 0;
+                if(scene.light.IsEnable)
+                {
+                     nDotLA1V1 = scene.light.ComputeNDotL(a1.v1.nowPos, a1.v1.nowNormal);
+                     nDotLA1V2 = scene.light.ComputeNDotL(a1.v2.nowPos, a1.v2.nowNormal);
+                     nDotLA2V1 = scene.light.ComputeNDotL(a2.v1.nowPos, a2.v1.nowNormal);
+                     nDotLA2V2 = scene.light.ComputeNDotL(a2.v2.nowPos, a2.v2.nowNormal);
+                    // 双线性插值系数
+
+                    nDotL1 = MathUtil.Interp(nDotLA1V1, nDotLA1V2, r1);
+                    nDotL2 = MathUtil.Interp(nDotLA2V1, nDotLA2V2, r2);
+                }
+               
                 //float z3 = 0;
                
                 //float z = vt.GetInterValue(z1, z2, z3);
@@ -505,7 +510,6 @@ namespace RenderingEngine
                                     {
                                         if (scene.light.IsEnable)
                                         {
-
                                             float nDotL = MathUtil.Interp(nDotL1, nDotL2, r3);
                                             //Console.WriteLine(nDotL1+" "+ nDotL2+" " + nDotL);
                                             final = device.Tex2D(uv.X, uv.Y, scene.mesh.texture);
