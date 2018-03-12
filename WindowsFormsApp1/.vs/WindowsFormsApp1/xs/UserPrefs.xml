@@ -1,27 +1,29 @@
 ﻿<Properties StartupConfiguration="{690D7A0E-D67C-403A-B2AE-A2F7FF827320}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="WindowsFormsApp1/场景/网格模型/Triangle.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="WindowsFormsApp1/设备模拟/3D场景转换/MathUtil.cs">
     <Files>
-      <File FileName="WindowsFormsApp1/场景/网格模型/World.cs" Line="279" Column="10" />
-      <File FileName="WindowsFormsApp1/场景/网格模型/MeshBase.cs" Line="16" Column="46" />
-      <File FileName="WindowsFormsApp1/场景/网格模型/Mesh.cs" Line="288" Column="10" />
-      <File FileName="WindowsFormsApp1/场景/Scene.cs" Line="50" Column="139" />
-      <File FileName="WindowsFormsApp1/窗口/FormWindow.cs" Line="95" Column="30" />
-      <File FileName="WindowsFormsApp1/设备模拟/Device.cs" Line="296" Column="17" />
+      <File FileName="WindowsFormsApp1/场景/网格模型/World.cs" Line="107" Column="59" />
+      <File FileName="WindowsFormsApp1/场景/网格模型/MeshBase.cs" Line="5" Column="27" />
+      <File FileName="WindowsFormsApp1/场景/网格模型/Mesh.cs" Line="53" Column="49" />
+      <File FileName="WindowsFormsApp1/场景/Scene.cs" Line="50" Column="31" />
+      <File FileName="WindowsFormsApp1/窗口/FormWindow.cs" Line="327" Column="92" />
+      <File FileName="WindowsFormsApp1/设备模拟/Device.cs" Line="279" Column="1" />
       <File FileName="WindowsFormsApp1/设备模拟/3D场景转换/CATransform.cs" Line="27" Column="52" />
       <File FileName="WindowsFormsApp1/设备模拟/3D场景转换/MatrixTransform.cs" Line="557" Column="21" />
-      <File FileName="WindowsFormsApp1/场景/网格模型/Vertex.cs" Line="1" Column="1" />
+      <File FileName="WindowsFormsApp1/场景/网格模型/Vertex.cs" Line="62" Column="1" />
       <File FileName="WindowsFormsApp1/窗口/Program.cs" Line="18" Column="1" />
-      <File FileName="WindowsFormsApp1/设备模拟/渲染/Scanline.cs" Line="440" Column="39" />
-      <File FileName="WindowsFormsApp1/设备模拟/渲染/Padding.cs" Line="232" Column="29" />
-      <File FileName="WindowsFormsApp1/场景/纹理/Texture.cs" Line="10" Column="15" />
-      <File FileName="WindowsFormsApp1/设备模拟/动作/Action.cs" Line="40" Column="52" />
+      <File FileName="WindowsFormsApp1/设备模拟/渲染/Scanline.cs" Line="664" Column="47" />
+      <File FileName="WindowsFormsApp1/设备模拟/渲染/Padding.cs" Line="262" Column="62" />
+      <File FileName="WindowsFormsApp1/场景/纹理/Texture.cs" Line="39" Column="14" />
+      <File FileName="WindowsFormsApp1/设备模拟/动作/Action.cs" Line="64" Column="1" />
       <File FileName="WindowsFormsApp1/相机模型/Camera.cs" Line="118" Column="10" />
-      <File FileName="WindowsFormsApp1/光照模型/DirectionLight.cs" Line="123" Column="17" />
+      <File FileName="WindowsFormsApp1/光照模型/DirectionLight.cs" Line="100" Column="17" />
       <File FileName="WindowsFormsApp1/设备模拟/动作/CameraAction.cs" Line="385" Column="16" />
       <File FileName="WindowsFormsApp1/设备模拟/3D场景转换/Angle.cs" Line="15" Column="24" />
       <File FileName="WindowsFormsApp1/设备模拟/3D场景转换/Vector4.cs" Line="1" Column="1" />
       <File FileName="WindowsFormsApp1/窗口/FormWindow.Designer.cs" Line="275" Column="54" />
-      <File FileName="WindowsFormsApp1/场景/网格模型/Triangle.cs" Line="1" Column="1" />
+      <File FileName="WindowsFormsApp1/场景/网格模型/Triangle.cs" Line="210" Column="36" />
+      <File FileName="Source Not Found" />
+      <File FileName="WindowsFormsApp1/设备模拟/3D场景转换/MathUtil.cs" Line="49" Column="9" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
@@ -31,8 +33,6 @@
       <Catchpoint enabled="false" exceptionName="System.Exception" includeSubclasses="True" />
       <Breakpoint file="/Users/wangao/Documents/workSpace/RenderingEngine/WindowsFormsApp1/WindowsFormsApp1/设备模拟/渲染/Color4.cs" relfile="WindowsFormsApp1/设备模拟/渲染/Color4.cs" line="50" column="1" />
       <Breakpoint file="/Users/wangao/Documents/workSpace/RenderingEngine/WindowsFormsApp1/WindowsFormsApp1/设备模拟/渲染/Scanline.cs" relfile="WindowsFormsApp1/设备模拟/渲染/Scanline.cs" line="49" column="1" />
-      <Breakpoint file="/Users/wangao/Documents/workSpace/RenderingEngine/WindowsFormsApp1/WindowsFormsApp1/窗口/FormWindow.cs" relfile="WindowsFormsApp1/窗口/FormWindow.cs" line="114" column="1" />
-      <Breakpoint file="/Users/wangao/Documents/workSpace/RenderingEngine/WindowsFormsApp1/WindowsFormsApp1/窗口/FormWindow.cs" relfile="WindowsFormsApp1/窗口/FormWindow.cs" line="111" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
