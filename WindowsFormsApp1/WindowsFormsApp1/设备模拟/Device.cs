@@ -246,11 +246,11 @@ namespace RenderingEngine
             if (!ShouldBackFaceCull(oriVt))
             {
                 //this.scanLine.ProcessScanLine(vt, oriVt, scene);
-                if(scene.renderState == Scene.RenderState.TextureMapping)
+                if(scene.renderState == Scene.RenderState.WireFrame)
                 {
                     this.scanLine.ProcessScanLine(vt, oriVt, scene,isWorld);
                 }
-                if(scene.renderState == Scene.RenderState.GouraduShading)
+                else
                 {
                     this.scanLine.ScanLine_new(vt, oriVt, scene);
                 }
