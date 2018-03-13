@@ -26,8 +26,7 @@ namespace RenderingEngine
             Matrix4x4 model = scale *rotation * translate;
             Matrix4x4 view = scene.camera.FPSView();
             Matrix4x4 projection = scene.camera.Perspective();
-            Matrix4x4 mvp = model * view;
-				mvp = mvp * projection;
+            Matrix4x4 mvp = model * view  * projection;
 
 			MVPMatrix = mvp;
 

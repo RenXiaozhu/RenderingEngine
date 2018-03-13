@@ -35,7 +35,7 @@ namespace RenderingEngine
         public static void RotateCamera(float degreeX, float degreeY, float degreeZ,Scene scene)
         {
             Matrix4x4 rotateNew = new Matrix4x4();
-            rotateNew.SetRotate(degreeX/100, degreeY/100, degreeZ/100);
+            rotateNew.SetRotate(degreeX*0.02f, degreeY*0.02f, degreeZ*0.02f);
             Matrix4x4 rotate = scene.camera.rotate;
             scene.camera.rotate = rotate *rotateNew;
             //scene.camera.Position = rotate.ApplY(scene.camera.Position);

@@ -31,9 +31,10 @@ namespace RenderingEngine
         {
             get
             {
-                Vector4 n = new Vector4(this.X, this.Y, this.Z, this.W);
-                n.Normalize();
-                return n;
+					Vector4 n = new Vector4(this.X, this.Y, this.Z, this.W);
+					n.Normalize();
+					return n;
+				return Normalized;
             }
         }
 

@@ -62,8 +62,8 @@ namespace RenderingEngine
             this.nowPos = pos;
             this.nowPos = pos;
             this.Normal = normal;
-            this.nowNormal = normal;
-            this.nowNormal.Normalize();
+            this.nowNormal = normal.Normalized;
+            //this.nowNormal.Normalize();
             this.UV = uv;
             this.Color = col;
            // this.lightColor = col;

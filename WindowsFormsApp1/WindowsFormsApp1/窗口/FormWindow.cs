@@ -102,7 +102,6 @@ namespace RenderingEngine
                         degreeY = (e.X - pressDown.X);
                         Action.RotateCamera(degreeX, degreeY, degreeZ, scene);
                     }
-
                 }
                 else
                 {
@@ -110,8 +109,8 @@ namespace RenderingEngine
 
                     if(e.Y - pressDown.Y != 0 || e.X - pressDown.X != 0)
                     {
-                        meshDegreeX = (e.Y - pressDown.Y) / 15.0f;
-                        meshDegreeY = (e.X - pressDown.X) / 15.0f;
+                        meshDegreeX = (e.Y - pressDown.Y) / 15.0f ;
+                        meshDegreeY = (e.X - pressDown.X) / 15.0f ;
                         Action.RotateMesh(meshDegreeX, meshDegreeY, degreeZ, scene);
                     }
                 }
@@ -167,8 +166,6 @@ namespace RenderingEngine
                 isUp = false;
             }
         }
-
-
 
         // Wire Frame
         private void WireFrame(object sender, EventArgs e)
@@ -232,32 +229,6 @@ namespace RenderingEngine
         {
             this.Close();
         }
-
-        private void rotate(object sender, EventArgs e)
-        {
-
-		}
-
-		private void rotate_right(object sender, EventArgs e)
-        {
-            degreeY += RotateSpeed;
-
-            Action.RotateMesh(degreeX, degreeY, 0, scene);
-
-            this.Invalidate();
-        }
-
-        private void tranlate(object sender, EventArgs e)
-        {
-            MoveSpeed += 0.5f;
-            Action.TranslateCamera(0,0,0.5f,scene);
-            this.Invalidate();
-        }
-
-        private void translate_right(object sender, EventArgs e)
-        {
-
-		}
 
 		private void lighting(object sender, EventArgs e)
         {

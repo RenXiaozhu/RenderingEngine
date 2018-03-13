@@ -69,8 +69,9 @@ namespace RenderingEngine
 
         public Matrix4x4 FPSView()
         {
-            float pitch = this.Pitch * (float)Math.PI / 180;
-            float yaw = this.Yaw * (float)Math.PI / 180;
+			float dt = 1.0f / 180;
+            float pitch = this.Pitch * (float)Math.PI *dt;
+            float yaw = this.Yaw * (float)Math.PI * dt;
 
             float cosPitch = (float)Math.Cos(pitch);
             float sinPitch = (float)Math.Sin(pitch);
@@ -108,11 +109,12 @@ namespace RenderingEngine
         {
             Matrix4x4 proj = new Matrix4x4();
             float fax = 1.0f / (float)Math.Tan(this.fov * 0.5f);
+			float zd = 1.0f/(zf - zn);
             proj.SetZero();
             proj.M[0, 0] = (float)(fax / aspect);
             proj.M[1, 1] = (float)(fax);
-            proj.M[2, 2] = zf / (zf - zn);
-            proj.M[3, 2] = -zn * zf / (zf - zn);
+            proj.M[2, 2] = zf*zd;
+            proj.M[3, 2] = -zn * zf*zd;
             proj.M[2, 3] = 1;
             return proj;
         }

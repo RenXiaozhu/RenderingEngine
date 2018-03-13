@@ -805,10 +805,16 @@ namespace RenderingEngine
                     float z1 = MathUtil.Interp(az, cz, y1);
                     float z2 = bz;
 
-                    Color4 c1 = MathUtil.ColorInterp(color1, color3, y1);
-                    Color4 c2 = MathUtil.ColorInterp(color2, color3, y2);
+					Color4 c1 = new Color4();
+					Color4 c2 = new Color4();
 
-                    Vector4 n1 = new Vector4(0, 0, 0, 0);
+					if (scene.renderState == Scene.RenderState.GouraduShading)
+					{
+						c1 = MathUtil.ColorInterp(color1, color3, y1);
+						c2 = MathUtil.ColorInterp(color2, color3, y2);
+					}
+
+					Vector4 n1 = new Vector4(0, 0, 0, 0);
                     Vector4 n2 = new Vector4(0, 0, 0, 0);
 
                     if (DirectionLight.IsEnable)
@@ -891,10 +897,16 @@ namespace RenderingEngine
                     float z1 = MathUtil.Interp(az, cz, y1);
                     float z2 = MathUtil.Interp(bz, cz, y2);
 
-                    Color4 c1 = MathUtil.ColorInterp(color1, color3, y1);
-                    Color4 c2 = MathUtil.ColorInterp(color2, color3, y2);
+					Color4 c1 = new Color4();
+					Color4 c2 = new Color4();
 
-                    Vector4 n1 = new Vector4(0, 0, 0, 0);
+					if (scene.renderState == Scene.RenderState.GouraduShading)
+					{
+						c1 = MathUtil.ColorInterp(color1, color3, y1);
+						c2 = MathUtil.ColorInterp(color2, color3, y2);
+					}
+
+					Vector4 n1 = new Vector4(0, 0, 0, 0);
                     Vector4 n2 = new Vector4(0, 0, 0, 0);
 
                     if (DirectionLight.IsEnable)
@@ -942,9 +954,14 @@ namespace RenderingEngine
                     float z1 = MathUtil.Interp(az, cz, y1);
                     float z2 = MathUtil.Interp(bz, cz, y2);
 
-                    Color4 c1 = MathUtil.ColorInterp(color1, color3, y1);
-                    Color4 c2 = MathUtil.ColorInterp(color2, color3, y2);
+                    Color4 c1 = new Color4();
+                    Color4 c2 =new Color4();
 
+					if (scene.renderState == Scene.RenderState.GouraduShading)
+					{
+						 c1 = MathUtil.ColorInterp(color1, color3, y1);
+						 c2 = MathUtil.ColorInterp(color2, color3, y2);
+					}
                     Vector4 n1 = new Vector4(0, 0, 0, 0);
                     Vector4 n2 = new Vector4(0, 0, 0, 0);
 
@@ -978,6 +995,7 @@ namespace RenderingEngine
                                     if (DirectionLight.IsEnable)
                                     {
                                         Vector4 n3 = MathUtil.Vector4Interp(n1, n2, r3);
+
                                         final = DirectionLight.GetFinalLightColor(n3, c3);
                                     }
                                     else
@@ -1054,9 +1072,13 @@ namespace RenderingEngine
                     float z1 = az;
                     float z2 = MathUtil.Interp(az, cz, y2);
 
-                    Color4 c1 = MathUtil.ColorInterp(color1, color2, y1);
-                    Color4 c2 = MathUtil.ColorInterp(color1, color3, y2);
-
+                    Color4 c1 = new Color4();
+                    Color4 c2 = new Color4();
+					if (scene.renderState == Scene.RenderState.GouraduShading)
+					{
+						 c1 = MathUtil.ColorInterp(color1, color2, y1);
+						 c2 = MathUtil.ColorInterp(color1, color3, y2);
+					}
                     Vector4 n1 = new Vector4(0, 0, 0, 0);
                     Vector4 n2 = new Vector4(0, 0, 0, 0);
 
@@ -1090,6 +1112,7 @@ namespace RenderingEngine
                                     if (DirectionLight.IsEnable)
                                     {
                                         Vector4 n3 = MathUtil.Vector4Interp(n1, n2, r3);
+
                                         final = DirectionLight.GetFinalLightColor(n3, c3);
                                     }
                                     else
@@ -1102,13 +1125,13 @@ namespace RenderingEngine
                                 {
                                     oriVt.CalWeight(pos);
 
-                                    Vector4 n3 = MathUtil.Vector4Interp(n1, n2, r3);
-
                                     Vector4 uv = oriVt.GetInterUV();
 
                                     if (DirectionLight.IsEnable)
                                     {
-                                        Color4 c = device.Tex2D(uv.X, uv.Y, scene.mesh.texture);
+										Vector4 n3 = MathUtil.Vector4Interp(n1, n2, r3);
+
+										Color4 c = device.Tex2D(uv.X, uv.Y, scene.mesh.texture);
 
                                         final = DirectionLight.GetFinalLightColor(n3, c);
                                     }
@@ -1139,10 +1162,15 @@ namespace RenderingEngine
                     float z1 = MathUtil.Interp(az, bz, y1);
                     float z2 = MathUtil.Interp(az, cz, y2);
 
-                    Color4 c1 = MathUtil.ColorInterp(color1, color2, y1);
-                    Color4 c2 = MathUtil.ColorInterp(color1, color3, y2);
+					Color4 c1 = new Color4();
+					Color4 c2 = new Color4();
+					if (scene.renderState == Scene.RenderState.GouraduShading)
+					{
+						c1 = MathUtil.ColorInterp(color1, color2, y1);
+						c2 = MathUtil.ColorInterp(color1, color3, y2);
+					}
 
-                    Vector4 n1 = new Vector4(0, 0, 0, 0);
+					Vector4 n1 = new Vector4(0, 0, 0, 0);
                     Vector4 n2 = new Vector4(0, 0, 0, 0);
 
                     if (DirectionLight.IsEnable)
@@ -1224,10 +1252,15 @@ namespace RenderingEngine
                     float z1 = MathUtil.Interp(az, bz, y1);
                     float z2 = MathUtil.Interp(bz, cz, y2);
 
-                    Color4 c1 = MathUtil.ColorInterp(color1, color2, y1);
-                    Color4 c2 = MathUtil.ColorInterp(color1, color3, y2);
+					Color4 c1 = new Color4();
+					Color4 c2 = new Color4();
 
-                    Vector4 n1 = new Vector4(0, 0, 0, 0);
+					if (scene.renderState == Scene.RenderState.GouraduShading)
+					{
+						c1 = MathUtil.ColorInterp(color1, color2, y1);
+						c2 = MathUtil.ColorInterp(color1, color3, y2);
+					}
+					Vector4 n1 = new Vector4(0, 0, 0, 0);
                     Vector4 n2 = new Vector4(0, 0, 0, 0);
 
                     if(DirectionLight.IsEnable)

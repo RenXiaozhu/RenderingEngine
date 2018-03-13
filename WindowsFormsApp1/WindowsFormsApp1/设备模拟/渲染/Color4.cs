@@ -24,9 +24,10 @@ namespace RenderingEngine
 
 		public static Color4 operator *(Color4 c1, Color4 c2)
 		{
-			float r = (c1.red / 255f) * (c2.red / 255f);
-			float g = (c1.green / 255f) * (c2.green / 255f);
-			float b = (c1.blue / 255f) * (c2.blue / 255f);
+			float t = 1.0f / 255.0f;
+			float r = (c1.red*t) * (c2.red *t);
+			float g = (c1.green*t) * (c2.green *t);
+			float b = (c1.blue*t) * (c2.blue *t);
 			return new Color4((byte)(r * 255), (byte)(g * 255), (byte)(b * 255));
 		}
 

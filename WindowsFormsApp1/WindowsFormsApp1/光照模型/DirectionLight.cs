@@ -81,7 +81,7 @@ namespace RenderingEngine
 		//初始化光源
         public DirectionLight(Vector4 pos, Color4 color)
         {
-			LightPos = pos;
+			LightPos = pos.Normalized;
 		    LightColor = color;
             kd = MaxKD * StartKD;
         }
@@ -95,19 +95,20 @@ namespace RenderingEngine
 		// 光线的方向点积法线方向
         public static float ComputeNDotL(Vector4 pos, Vector4 normal)
 		{
-            var lightDirection = LightPos - pos;
-            normal.Normalize();
+			//LightPos.Normalize();
+            //var lightDirection = LightPos - pos;
+           // normal.Normalize();
             //Console.WriteLine(normal.Length());
-			lightDirection.Normalize();
+			//lightDirection.Normalize();
             //float t = lightDirection.CosUV(normal);
-            float t = Vector4.Dot(normal,lightDirection);
+            float t = Vector4.Dot(normal,LightPos);
             return MathUtil.Clamp01(t);
 		}
 
 		// 漫反射光照颜色
         public static Color4 GetDiffuseColor(float nDotl)
 		{
-			return LightColor * (nDotl * kd);
+			return LightColor * nDotl;
 		}
 
 		// 加上环境光
@@ -116,10 +117,10 @@ namespace RenderingEngine
 			Color4 diffuse = GetDiffuseColor(NDotl);
             Color4 final = diffuse;
            
-            if(IsAmLightEnable)
-            {
-                final = final + DirectionLight.AmbientColor;
-            }
+          //  if(IsAmLightEnable)
+          //  {
+				//final = final;// + DirectionLight.AmbientColor;
+           // }
 
 			return final;
 		}
@@ -128,7 +129,6 @@ namespace RenderingEngine
         {
             float dt;
             Color4 light;
-
             //Color4 color = new Color4(255, 255, 255);
             if(IsEnable)
             {

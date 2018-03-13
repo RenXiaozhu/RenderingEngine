@@ -10,6 +10,11 @@ namespace RenderingEngine
 	{
         public static float Clamp01(float t)
         {
+			if (t < 0)
+				return 0;
+			if (t > 1)
+				return 1;
+			return t;
             if (t.CompareTo(0) < 0) return 0;
             else if (t.CompareTo(1) > 0) return 1;
             return t;
