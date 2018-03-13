@@ -235,15 +235,10 @@ namespace RenderingEngine
 
         private void rotate(object sender, EventArgs e)
         {
-      
-            degreeY -= RotateSpeed;
-           
-            Action.RotateMesh(degreeX, degreeY,0 , scene);
 
-            this.Invalidate();
-        }
+		}
 
-        private void rotate_right(object sender, EventArgs e)
+		private void rotate_right(object sender, EventArgs e)
         {
             degreeY += RotateSpeed;
 
@@ -261,12 +256,10 @@ namespace RenderingEngine
 
         private void translate_right(object sender, EventArgs e)
         {
-            MoveSpeed -= 0.5f;
-            Action.TranslateCamera(0, 0, -0.5f, scene);
-            this.Invalidate();
-        }
 
-        private void lighting(object sender, EventArgs e)
+		}
+
+		private void lighting(object sender, EventArgs e)
         {
             if(DirectionLight.IsEnable == false)
             {
@@ -355,5 +348,48 @@ namespace RenderingEngine
             this.Invalidate();
             return true;
         }
-    }
+
+		private void AmBtn_right_Click(object sender, EventArgs e)
+		{
+			if (DirectionLight.IsAmLightEnable)
+			{
+				DirectionLight.IsAmLightEnable = false;
+			}
+			else
+			{
+				DirectionLight.IsAmLightEnable = true;
+			}
+			this.Invalidate();
+		}
+
+		private void CameraRotateBtn_Click(object sender, EventArgs e)
+		{
+			isCameraRotate = true;
+			this.Invalidate();
+		}
+
+		private void MeshRotateBtn_right_Click(object sender, EventArgs e)
+		{
+			isCameraRotate = false;
+			this.Invalidate();
+		}
+
+		private void UVBtn_Click(object sender, EventArgs e)
+		{
+			scene.renderState = Scene.RenderState.TextureMapping;
+			this.Invalidate();
+		}
+
+		private void GouraudBtn_Click(object sender, EventArgs e)
+		{
+			scene.renderState = Scene.RenderState.GouraduShading;
+			this.Invalidate();
+		}
+
+		private void WireFrameBtn_Click(object sender, EventArgs e)
+		{
+			scene.renderState = Scene.RenderState.WireFrame;
+			this.Invalidate();
+		}
+	}
 }

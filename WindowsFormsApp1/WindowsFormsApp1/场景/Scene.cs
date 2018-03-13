@@ -47,13 +47,13 @@ namespace RenderingEngine
 
         void InitMesh()
         {
-            this.mesh = new Mesh("Cube",@"/Users/wangao/Documents/workSpace/RenderingEngine/WindowsFormsApp1/WindowsFormsApp1/textures/map.jpg");
+            this.mesh = new Mesh("Cube", @"C:\Users\Administrator\Desktop\111\RenderingEngine\RenderingEngine\WindowsFormsApp1\WindowsFormsApp1\textures\map.jpg");
 
         }
 
         void InitWorldMap()
         {
-            this.worldMap = new World("World", @"/Users/wangao/Documents/workSpace/RenderingEngine/WindowsFormsApp1/WindowsFormsApp1/textures/map.jpg");
+            this.worldMap = new World("World", @"C:\Users\Administrator\Desktop\111\RenderingEngine\RenderingEngine\WindowsFormsApp1\WindowsFormsApp1\textures\map.jpg");
            
         }
 

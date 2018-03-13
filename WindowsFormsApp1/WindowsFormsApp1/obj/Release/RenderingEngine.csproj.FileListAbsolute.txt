@@ -1,0 +1,4 @@
+C:\Users\Administrator\Desktop\111\RenderingEngine\RenderingEngine\WindowsFormsApp1\WindowsFormsApp1\obj\Release\RenderingEngine.Properties.Resources.resources
+C:\Users\Administrator\Desktop\111\RenderingEngine\RenderingEngine\WindowsFormsApp1\WindowsFormsApp1\obj\Release\RenderingEngine.FormWindow.resources
+C:\Users\Administrator\Desktop\111\RenderingEngine\RenderingEngine\WindowsFormsApp1\WindowsFormsApp1\obj\Release\RenderingEngine.csproj.GenerateResource.Cache
+C:\Users\Administrator\Desktop\111\RenderingEngine\RenderingEngine\WindowsFormsApp1\WindowsFormsApp1\obj\Release\RenderingEngine.csproj.CoreCompileInputs.cache

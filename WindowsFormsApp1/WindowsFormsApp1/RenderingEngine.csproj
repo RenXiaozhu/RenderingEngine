@@ -47,7 +47,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject></StartupObject>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -137,17 +138,16 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="相机模型\" />
-    <Folder Include="光照模型\" />
-    <Folder Include="设备模拟\" />
-    <Folder Include="场景\" />
-    <Folder Include="场景\纹理\" />
-    <Folder Include="场景\网格模型\" />
-    <Folder Include="设备模拟\裁剪\" />
-    <Folder Include="设备模拟\3D场景转换\" />
-    <Folder Include="设备模拟\渲染\" />
-    <Folder Include="窗口\" />
-    <Folder Include="设备模拟\动作\" />
+    <None Include="Resources\11.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\light.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\lightbulb_on1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\22_副本.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
