@@ -428,7 +428,13 @@ namespace RenderingEngine
             this.SetIdentity();
         }
 
-        public static Matrix4x4 operator +(Matrix4x4 a, Matrix4x4 b)
+		public Matrix4x4(Matrix4x4 mt)
+		{
+			M = new float[4, 4];
+			M = (float[,])mt.M.Clone();
+			this.SetIdentity();
+		}
+		public static Matrix4x4 operator +(Matrix4x4 a, Matrix4x4 b)
         {
             Matrix4x4 t = new Matrix4x4();
             for (int i = 0; i < 4; i++)
@@ -493,6 +499,36 @@ namespace RenderingEngine
             t.W = X * this.M[0, 3] + Y * this.M[1, 3] + Z * this.M[2, 3] + W * this.M[3, 3];
             return t;
         }
+
+		public Matrix4x4 Back()
+		{
+			Matrix4x4 mt = new Matrix4x4(this);
+
+			float temp1 = mt.M[1, 0];
+			mt.M[1, 0] = mt.M[0, 1];
+			mt.M[0, 1] = temp1;
+
+			float temp2 = mt.M[2, 0];
+			mt.M[2, 0] = mt.M[0, 2];
+			mt.M[0, 2] = temp2;
+
+			float temp3 = mt.M[3, 0];
+			mt.M[3, 0] = mt.M[0, 3];
+			mt.M[0, 3] = temp3;
+
+			float temp4 = mt.M[2, 1];
+			mt.M[2, 1] = mt.M[1, 2];
+			mt.M[1, 2] = temp4;
+
+			float temp5 = mt.M[3, 1];
+			mt.M[3, 1] = mt.M[1, 3];
+			mt.M[1, 3] = temp5;
+
+			float temp6 = mt.M[3, 2];
+			mt.M[3, 2] = mt.M[2, 3];
+			mt.M[2, 3] = temp6;
+			return mt;
+		}
 
         public void SetIdentity()
         {

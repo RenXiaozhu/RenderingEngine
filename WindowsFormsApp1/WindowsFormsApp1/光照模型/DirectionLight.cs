@@ -117,10 +117,10 @@ namespace RenderingEngine
 			Color4 diffuse = GetDiffuseColor(NDotl);
             Color4 final = diffuse;
            
-          //  if(IsAmLightEnable)
-          //  {
-				//final = final;// + DirectionLight.AmbientColor;
-           // }
+            if(IsAmLightEnable)
+            {
+				final = final+ DirectionLight.AmbientColor;
+            }
 
 			return final;
 		}

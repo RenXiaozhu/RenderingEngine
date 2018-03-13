@@ -369,8 +369,8 @@ namespace RenderingEngine
                             {
                                 Vector4 viewPortA = this.ViewPort(start.ClipSpacePosition);
                                 Vector4 viewPortB = this.ViewPort(vtList[i].Vertices[j].ClipSpacePosition);
-                                DrawLine(start, vtList[i].Vertices[j], viewPortA, viewPortB, scene);
-                                //DrawDDALine(start, vtList[i].Vertices[j]);
+                               // DrawLine(start, vtList[i].Vertices[j], viewPortA, viewPortB, scene);
+                                DrawDDALine(start, vtList[i].Vertices[j]);
                                 start = vtList[i].Vertices[j];
                             }
                         }

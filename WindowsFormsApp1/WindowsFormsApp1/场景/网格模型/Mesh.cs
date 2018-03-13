@@ -36,9 +36,9 @@ namespace RenderingEngine
             for (int i = 0; i < Vertices.Length; i++)
             {
                 Vertex vt = Vertices[i];
-                vt.nowNormal = rotation.ApplY(vt.nowNormal);
-                vt.nowNormal.Normalize();
-                vt.nowPos = rotation.ApplY(vt.nowPos);
+               vt.nowNormal = rotation.ApplY(vt.nowNormal);
+               vt.nowNormal.Normalize();
+                //vt.nowPos = rotation.ApplY(vt.nowPos);
             }
         }
 

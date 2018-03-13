@@ -33,7 +33,7 @@ namespace RenderingEngine
         private float angle = 0;
         private Point preE;
         private bool isUp = false;
-        private bool isCameraRotate = true;
+        private bool isCameraRotate = false;
         private Vector4 MeshDirection = new Vector4(0,0,0,0);
 
         public FormWindow()
@@ -96,25 +96,21 @@ namespace RenderingEngine
                 if(isCameraRotate)
                 {
                     Console.WriteLine("CameraRotate");
-                    if(e.Y - pressDown.Y != 0 || e.X - pressDown.X != 0)
-                    {
-                        degreeX = (e.Y - pressDown.Y);
-                        degreeY = (e.X - pressDown.X);
-                        Action.RotateCamera(degreeX, degreeY, degreeZ, scene);
-                    }
+          
+                        degreeX = (e.Y - preE.Y);
+                        degreeY = (e.X - preE.X);
+                        Action.RotateCamera(degreeX, degreeY, degreeZ, scene ,isCameraRotate);
                 }
                 else
                 {
                     Console.WriteLine("meshRotate");
-
-                    if(e.Y - pressDown.Y != 0 || e.X - pressDown.X != 0)
-                    {
-                        meshDegreeX = (e.Y - pressDown.Y) / 15.0f ;
-                        meshDegreeY = (e.X - pressDown.X) / 15.0f ;
-                        Action.RotateMesh(meshDegreeX, meshDegreeY, degreeZ, scene);
-                    }
+						
+						degreeX = (e.Y - preE.Y)  ;
+						degreeY = (e.X - preE.X) ;
+                        Action.RotateMesh(degreeX, degreeY, degreeZ, scene,false);
                 }
-
+				meshDegreeX += degreeX;
+				meshDegreeY += degreeY;
                 preE.X = e.X;
                 preE.Y = e.Y;
 
@@ -177,7 +173,6 @@ namespace RenderingEngine
         // Gouraud Shading
         private void gouraudShading(object sender, EventArgs e)
         {
-
             this.scene.renderState = Scene.RenderState.GouraduShading;
             this.Invalidate();
         }
@@ -185,11 +180,8 @@ namespace RenderingEngine
         // Texture Mapping
         private void textureMapping(object sender, EventArgs e)
         {
-
             this.scene.renderState = Scene.RenderState.TextureMapping;
-
             this.Invalidate();
-
         }
 
         // Lighting

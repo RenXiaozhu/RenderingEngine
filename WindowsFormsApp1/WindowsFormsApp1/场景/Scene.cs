@@ -32,7 +32,7 @@ namespace RenderingEngine
             InitMesh();
             InitWorldMap();
 			InitLight();
-			CATransform.InitMVPMatrix(this);
+			CATransform.InitMVPMatrix(this,false);
         }
 
         void InitCamera(int width, int height)
@@ -61,7 +61,7 @@ namespace RenderingEngine
         {
             this.light = new DirectionLight(new Vector4( 1 , 1, -1, 1), new Color4(255, 255, 255));
             DirectionLight.IsEnable = true;
-            DirectionLight.IsAmLightEnable = true;
+            DirectionLight.IsAmLightEnable = false;
         }
 
     }
