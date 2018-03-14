@@ -139,7 +139,7 @@ namespace RenderingEngine
             val.X = (1.0f + x.X) * GetWidth() * 0.5f;
             val.Y = (1.0f - x.Y) * GetHeight() * 0.5f;
             val.Z = x.Z;
-            val.W = 1.0f;
+            val.W =x.W;
             return val;
         }
 
@@ -243,7 +243,7 @@ namespace RenderingEngine
 
         private void DrawTriangle(VertexTriangle vt, VertexTriangle oriVt, Scene scene,bool isWorld)
         {
-            if (!ShouldBackFaceCull(oriVt))
+            if (!ShouldBackFaceCull(vt))
             {
                 //this.scanLine.ProcessScanLine(vt, oriVt, scene);
                 if(scene.renderState == Scene.RenderState.WireFrame)
@@ -252,7 +252,7 @@ namespace RenderingEngine
                 }
                 else
                 {
-                    this.scanLine.ScanLine_new(vt, oriVt, scene);
+                    this.scanLine.ScanLine_new(vt,oriVt, scene);
                 }
 
                 //this.scanLine.StartScanLine(vt,oriVt,scene);
@@ -306,7 +306,9 @@ namespace RenderingEngine
                 Vertex vertexC;
 
                 Triangle t1 = face.t_1;
+
                 scene.worldMap.PrePareUV(face);
+
                 vertexA = scene.worldMap.Vertices[t1.a];
 
                 vertexB = scene.worldMap.Vertices[t1.b];
@@ -350,6 +352,7 @@ namespace RenderingEngine
                     clip = new HodgmanClip(this);
                     clip.HodgmanPolygonClip((HodgmanClip.Boundary)i, clipMin, clipMax, pIn.ToArray());
                     pIn = clip.GetOutputList();
+
                 }
                 List<VertexTriangle> vtList = this.MakeTriangle(pIn);
                 VertexTriangle oriVt = new VertexTriangle(vertexA, vertexB, vertexC);
@@ -361,7 +364,7 @@ namespace RenderingEngine
                     //DrawLine(vertexB, vertexC, pixelB, pixelC, scene);
                     for (int i = 0; i < vtList.Count; i++)
                     {
-                        if (!ShouldBackFaceCull(oriVt))
+                        if (!ShouldBackFaceCull(vtList[i]))
                         {
                             int length = vtList[i].Vertices.Length;
                             Vertex start = vtList[i].Vertices[length - 1];
@@ -378,12 +381,11 @@ namespace RenderingEngine
                 }
                 else
                 {
-
                     // 填充三角形                   bv gf      
                     for (int i = 0; i < vtList.Count; i++)
                     {
-                        //Console.WriteLine(vtList.Count);
-                        DrawTriangle(vtList[i], oriVt, scene ,isWorld);
+						//Console.WriteLine(vtList.Count);
+						DrawTriangle(vtList[i], oriVt, scene ,isWorld);
                         //DrawTriangle(vtList[i]);
                     }
                 }

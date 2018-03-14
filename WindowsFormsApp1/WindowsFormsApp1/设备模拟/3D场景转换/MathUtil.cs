@@ -39,7 +39,7 @@ namespace RenderingEngine
             val.X = Interp(x1.X, x2.X, t);
             val.Y = Interp(x1.Y, x2.Y, t);
             val.Z = Interp(x1.Z, x2.Z, t);
-            val.W = 1.0f;
+            val.W =1.0f;
             return val;
         }
 

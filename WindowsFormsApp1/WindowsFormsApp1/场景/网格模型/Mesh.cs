@@ -85,12 +85,12 @@ namespace RenderingEngine
 
             faces = new Face[]{
                 new Face(triangles[0],triangles[1],Face.FaceType.Front),
-                new Face(triangles[2],triangles[3],Face.FaceType.Right),
-                new Face(triangles[4],triangles[5],Face.FaceType.Left),
-                new Face(triangles[6],triangles[7],Face.FaceType.Behind),
-                new Face(triangles[8],triangles[9],Face.FaceType.Up),
-                new Face(triangles[10],triangles[11],Face.FaceType.Below)
-            };
+				new Face(triangles[2],triangles[3],Face.FaceType.Right),
+				new Face(triangles[4],triangles[5],Face.FaceType.Left),
+				new Face(triangles[6],triangles[7],Face.FaceType.Behind),
+				new Face(triangles[8],triangles[9],Face.FaceType.Up),
+				new Face(triangles[10],triangles[11],Face.FaceType.Below)
+			};
         }
 
         public void GetVertices()
@@ -142,25 +142,25 @@ namespace RenderingEngine
                     {
                         Triangle t1 = face.t_1;
                         vertexA = Vertices[t1.a];
-                        vertexA.UV = new Vector4(0, 0, 0, 0);
+                        vertexA.UV = new Vector4(0, 0, 0, 1);
 
                         vertexB = Vertices[t1.b];
-                        vertexB.UV = new Vector4(1, 0, 0, 0);
+                        vertexB.UV = new Vector4(1, 0, 0, 1);
 
                         vertexC = Vertices[t1.c];
-                        vertexC.UV = new Vector4(0, 1, 0, 0);
+                        vertexC.UV = new Vector4(0, 1, 0, 1);
 
 
 
                         Triangle t2 = face.t_2;
                         vertexA = Vertices[t2.a];
-                        vertexA.UV = new Vector4(1, 1, 0, 0);
+                        vertexA.UV = new Vector4(1, 1, 0, 1);
 
                         vertexB = Vertices[t2.b];
-                        vertexB.UV = new Vector4(0, 1, 0, 0);
+                        vertexB.UV = new Vector4(0, 1, 0, 1);
 
                         vertexC = Vertices[t2.c];
-                        vertexC.UV = new Vector4(1, 0, 0, 0);
+                        vertexC.UV = new Vector4(1, 0, 0, 1);
 
                     }
                     break;
@@ -168,46 +168,46 @@ namespace RenderingEngine
                     {
                         Triangle t1 = face.t_1;
                         vertexA = Vertices[t1.a];
-                        vertexA.UV = new Vector4(0, 0, 0, 0);
+                        vertexA.UV = new Vector4(0, 0, 0, 1);
 
                         vertexB = Vertices[t1.b];
-                        vertexB.UV = new Vector4(1, 0, 0, 0);
+                        vertexB.UV = new Vector4(1, 0, 0, 1);
 
                         vertexC = Vertices[t1.c];
-                        vertexC.UV = new Vector4(0, 1, 0, 0);
+                        vertexC.UV = new Vector4(0, 1, 0, 1);
 
                         Triangle t2 = face.t_2;
                         vertexA = Vertices[t2.a];
-                        vertexA.UV = new Vector4(1, 1, 0, 0);
+                        vertexA.UV = new Vector4(1, 1, 0, 1);
 
                         vertexB = Vertices[t2.b];
-                        vertexB.UV = new Vector4(0, 1, 0, 0);
+                        vertexB.UV = new Vector4(0, 1, 0, 1);
 
                         vertexC = Vertices[t2.c];
-                        vertexC.UV = new Vector4(1, 0, 0, 0);
+                        vertexC.UV = new Vector4(1, 0, 0, 1);
                     }
                     break;
                 case Face.FaceType.Right:
                     {
                         Triangle t1 = face.t_1;
                         vertexA = Vertices[t1.a];
-                        vertexA.UV = new Vector4(0, 0, 0, 0);
+                        vertexA.UV = new Vector4(0, 0, 0, 1);
 
                         vertexB = Vertices[t1.b];
-                        vertexB.UV = new Vector4(1, 0, 0, 0);
+                        vertexB.UV = new Vector4(1, 0, 0, 1);
 
                         vertexC = Vertices[t1.c];
-                        vertexC.UV = new Vector4(0, 1, 0, 0);
+                        vertexC.UV = new Vector4(0, 1, 0, 1);
 
                         Triangle t2 = face.t_2;
                         vertexA = Vertices[t2.a];
-                        vertexA.UV = new Vector4(1, 1, 0, 0);
+                        vertexA.UV = new Vector4(1, 1, 0, 1);
 
                         vertexB = Vertices[t2.b];
-                        vertexB.UV = new Vector4(0, 1, 0, 0);
+                        vertexB.UV = new Vector4(0, 1, 0, 1);
 
                         vertexC = Vertices[t2.c];
-                        vertexC.UV = new Vector4(1, 0, 0, 0);
+                        vertexC.UV = new Vector4(1, 0, 0, 1);
 
                     }
                     break;
@@ -215,24 +215,24 @@ namespace RenderingEngine
                     {
                         Triangle t1 = face.t_1;
                         vertexA = Vertices[t1.a];
-                        vertexA.UV = new Vector4(0, 0, 0, 0);
+                        vertexA.UV = new Vector4(0, 0, 0, 1);
 
                         vertexB = Vertices[t1.b];
-                        vertexB.UV = new Vector4(1, 0, 0, 0);
+                        vertexB.UV = new Vector4(1, 0, 0, 1);
 
                         vertexC = Vertices[t1.c];
-                        vertexC.UV = new Vector4(0, 1, 0, 0);
+                        vertexC.UV = new Vector4(0, 1, 0, 1);
 
 
                         Triangle t2 = face.t_2;
                         vertexA = Vertices[t2.a];
-                        vertexA.UV = new Vector4(1, 1, 0, 0);
+                        vertexA.UV = new Vector4(1, 1, 0, 1);
 
                         vertexB = Vertices[t2.b];
-                        vertexB.UV = new Vector4(0, 1, 0, 0);
+                        vertexB.UV = new Vector4(0, 1, 0, 1);
 
                         vertexC = Vertices[t2.c];
-                        vertexC.UV = new Vector4(1, 0, 0, 0);
+                        vertexC.UV = new Vector4(1, 0, 0, 1);
 
                     }
                     break;
@@ -240,23 +240,23 @@ namespace RenderingEngine
                     {
                         Triangle t1 = face.t_1;
                         vertexA = Vertices[t1.a];
-                        vertexA.UV = new Vector4(0, 0, 0, 0);
+                        vertexA.UV = new Vector4(0, 0, 0, 1);
 
                         vertexB = Vertices[t1.b];
-                        vertexB.UV = new Vector4(1, 0, 0, 0);
+                        vertexB.UV = new Vector4(1, 0, 0, 1);
 
                         vertexC = Vertices[t1.c];
-                        vertexC.UV = new Vector4(0, 1, 0, 0);
+                        vertexC.UV = new Vector4(0, 1, 0, 1);
 
                         Triangle t2 = face.t_2;
                         vertexA = Vertices[t2.a];
-                        vertexA.UV = new Vector4(1, 1, 0, 0);
+                        vertexA.UV = new Vector4(1, 1, 0, 1);
 
                         vertexB = Vertices[t2.b];
-                        vertexB.UV = new Vector4(0, 1, 0, 0);
+                        vertexB.UV = new Vector4(0, 1, 0, 1);
 
                         vertexC = Vertices[t2.c];
-                        vertexC.UV = new Vector4(1, 0, 0, 0);
+                        vertexC.UV = new Vector4(1, 0, 0, 1);
 
                     }
                     break;
@@ -264,23 +264,23 @@ namespace RenderingEngine
                     {
                         Triangle t1 = face.t_1;
                         vertexA = Vertices[t1.a];
-                        vertexA.UV = new Vector4(0, 0, 0, 0);
+                        vertexA.UV = new Vector4(0, 0, 0, 1);
 
                         vertexB = Vertices[t1.b];
-                        vertexB.UV = new Vector4(1, 0, 0, 0);
+                        vertexB.UV = new Vector4(1, 0, 0, 1);
 
                         vertexC = Vertices[t1.c];
-                        vertexC.UV = new Vector4(0, 1, 0, 0);
+                        vertexC.UV = new Vector4(0, 1, 0, 1);
 
                         Triangle t2 = face.t_2;
                         vertexA = Vertices[t2.a];
-                        vertexA.UV = new Vector4(1, 1, 0, 0);
+                        vertexA.UV = new Vector4(1, 1, 0, 1);
 
                         vertexB = Vertices[t2.b];
-                        vertexB.UV = new Vector4(0, 1, 0, 0);
+                        vertexB.UV = new Vector4(0, 1, 0, 1);
 
                         vertexC = Vertices[t2.c];
-                        vertexC.UV = new Vector4(1, 0, 0, 0);
+                        vertexC.UV = new Vector4(1, 0, 0, 1);
 
                     }
                     break;

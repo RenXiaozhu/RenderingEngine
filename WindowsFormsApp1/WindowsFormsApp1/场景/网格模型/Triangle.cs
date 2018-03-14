@@ -186,9 +186,9 @@ namespace RenderingEngine
             v2 = Vertices[1].UV.Y / Vertices[1].ClipSpacePosition.W;
             v3 = Vertices[2].UV.Y / Vertices[2].ClipSpacePosition.W;
             //透视校正
-            w1 = 1f / Vertices[0].ClipSpacePosition.W;
-            w2 = 1f / Vertices[1].ClipSpacePosition.W;
-            w3 = 1f / Vertices[2].ClipSpacePosition.W;
+            w1 = 1.0f / Vertices[0].ClipSpacePosition.W;
+            w2 = 1.0f / Vertices[1].ClipSpacePosition.W;
+            w3 = 1.0f / Vertices[2].ClipSpacePosition.W;
 
             //l1 = (p2 - p3).Length();
             //l2 = (p3 - p1).Length();
@@ -270,7 +270,8 @@ namespace RenderingEngine
             float n = (p.Y - p1.Y);
             this.b2 = (float)(b * n - d * m) / (float)dn1;
             this.b3 = (float)(a * n - c * m) / (float)dn2;
-
+			this.b2 = MathUtil.Clamp01(b2);
+			this.b3 = MathUtil.Clamp01(b3);
         }
 
         //求得重心坐标后将UV坐标带入
@@ -292,7 +293,7 @@ namespace RenderingEngine
             float u = GetInterValue(u1, u2, u3);
             float v = GetInterValue(v1, v2, v3);
             float w = GetInterValue(w1, w2, w3);
-            float tmp = 1 / w;
+            float tmp = 1.0f / w;
             return new Vector4(u * tmp, v * tmp, 0, 0);
         }
 

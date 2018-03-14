@@ -72,7 +72,7 @@
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-			this.menuStrip1.Size = new System.Drawing.Size(719, 25);
+			this.menuStrip1.Size = new System.Drawing.Size(484, 25);
 			this.menuStrip1.TabIndex = 0;
 			this.menuStrip1.Text = "menuStrip1";
 			// 
@@ -218,7 +218,7 @@
 			this.GouraudBtn.AutoSize = true;
 			this.GouraudBtn.BackColor = this.BackColor;
 			this.GouraudBtn.ForeColor = System.Drawing.SystemColors.Desktop;
-			this.GouraudBtn.Location = new System.Drawing.Point(619, 382);
+			this.GouraudBtn.Location = new System.Drawing.Point(392, 143);
 			this.GouraudBtn.Margin = new System.Windows.Forms.Padding(0);
 			this.GouraudBtn.Name = "GouraudBtn";
 			this.GouraudBtn.Size = new System.Drawing.Size(77, 25);
@@ -232,7 +232,7 @@
 			this.AmBtn_right.AutoSize = true;
 			this.AmBtn_right.BackColor = this.BackColor;
 			this.AmBtn_right.ForeColor = System.Drawing.SystemColors.Desktop;
-			this.AmBtn_right.Location = new System.Drawing.Point(619, 595);
+			this.AmBtn_right.Location = new System.Drawing.Point(392, 356);
 			this.AmBtn_right.Margin = new System.Windows.Forms.Padding(0);
 			this.AmBtn_right.Name = "AmBtn_right";
 			this.AmBtn_right.Size = new System.Drawing.Size(77, 25);
@@ -246,7 +246,7 @@
 			this.CameraRotateBtn.AutoSize = true;
 			this.CameraRotateBtn.BackColor = this.BackColor;
 			this.CameraRotateBtn.ForeColor = System.Drawing.SystemColors.Desktop;
-			this.CameraRotateBtn.Location = new System.Drawing.Point(619, 539);
+			this.CameraRotateBtn.Location = new System.Drawing.Point(392, 300);
 			this.CameraRotateBtn.Name = "CameraRotateBtn";
 			this.CameraRotateBtn.Size = new System.Drawing.Size(77, 25);
 			this.CameraRotateBtn.TabIndex = 2;
@@ -259,7 +259,7 @@
 			this.MeshRotateBtn_right.AutoSize = true;
 			this.MeshRotateBtn_right.BackColor = this.BackColor;
 			this.MeshRotateBtn_right.ForeColor = System.Drawing.SystemColors.Desktop;
-			this.MeshRotateBtn_right.Location = new System.Drawing.Point(619, 485);
+			this.MeshRotateBtn_right.Location = new System.Drawing.Point(392, 246);
 			this.MeshRotateBtn_right.Name = "MeshRotateBtn_right";
 			this.MeshRotateBtn_right.Size = new System.Drawing.Size(77, 25);
 			this.MeshRotateBtn_right.TabIndex = 3;
@@ -273,7 +273,7 @@
 			this.LightBtn.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.LightBtn.BackColor = this.BackColor;
 			this.LightBtn.Image = global::RenderingEngine.Properties.Resources._22_副本;
-			this.LightBtn.Location = new System.Drawing.Point(634, 645);
+			this.LightBtn.Location = new System.Drawing.Point(407, 406);
 			this.LightBtn.Margin = new System.Windows.Forms.Padding(0);
 			this.LightBtn.Name = "LightBtn";
 			this.LightBtn.Size = new System.Drawing.Size(46, 46);
@@ -286,7 +286,7 @@
 			this.WireFrameBtn.AutoSize = true;
 			this.WireFrameBtn.BackColor = this.BackColor;
 			this.WireFrameBtn.ForeColor = System.Drawing.SystemColors.Desktop;
-			this.WireFrameBtn.Location = new System.Drawing.Point(619, 331);
+			this.WireFrameBtn.Location = new System.Drawing.Point(392, 92);
 			this.WireFrameBtn.Margin = new System.Windows.Forms.Padding(0);
 			this.WireFrameBtn.Name = "WireFrameBtn";
 			this.WireFrameBtn.Size = new System.Drawing.Size(77, 25);
@@ -300,7 +300,7 @@
 			this.UVBtn.AutoSize = true;
 			this.UVBtn.BackColor = this.BackColor;
 			this.UVBtn.ForeColor = System.Drawing.SystemColors.Desktop;
-			this.UVBtn.Location = new System.Drawing.Point(619, 432);
+			this.UVBtn.Location = new System.Drawing.Point(392, 193);
 			this.UVBtn.Name = "UVBtn";
 			this.UVBtn.Size = new System.Drawing.Size(77, 25);
 			this.UVBtn.TabIndex = 6;
@@ -313,7 +313,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.WindowText;
-			this.ClientSize = new System.Drawing.Size(719, 700);
+			this.ClientSize = new System.Drawing.Size(484, 461);
 			this.Controls.Add(this.UVBtn);
 			this.Controls.Add(this.WireFrameBtn);
 			this.Controls.Add(this.GouraudBtn);

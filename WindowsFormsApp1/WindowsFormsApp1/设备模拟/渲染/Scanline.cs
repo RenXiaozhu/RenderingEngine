@@ -111,7 +111,117 @@ namespace RenderingEngine
             float ax = A.ScreenSpacePosition.X;
             float bx = B.ScreenSpacePosition.X;
             float cx = C.ScreenSpacePosition.X;
-            if (ay < by && ay < cy)
+
+			if (ay == by)
+			{
+				if (cy < ay)
+				{
+					vt[0] = C;
+					if (ax < bx)
+					{
+						vt[1] = A;
+						vt[2] = B;
+					}
+					else
+					{
+						vt[1] = B;
+						vt[2] = A;
+					}
+				}
+				else
+				{
+					vt[2] = C;
+					if (ax < bx)
+					{
+						vt[0] = A;
+						vt[1] = B;
+					}
+					else
+					{
+						vt[0] = B;
+						vt[1] = A;
+					}
+				}
+				if (vt[0] == null)
+				{
+
+				}
+				return vt;
+			}
+
+			if (ay == cy)
+			{
+				if (by < ay)
+				{
+					vt[0] = B;
+					if (ax < cx)
+					{
+						vt[1] = A;
+						vt[2] = C;
+					}
+					else
+					{
+						vt[1] = C;
+						vt[2] = A;
+					}
+				}
+				else
+				{
+					vt[2] = B;
+					if (ax < cx)
+					{
+						vt[0] = A;
+						vt[1] = C;
+					}
+					else
+					{
+						vt[0] = C;
+						vt[1] = A;
+					}
+				}
+				if (vt[0] == null)
+				{
+
+				}
+				return vt;
+			}
+			if (by == cy)
+			{
+				if (ay < cy)
+				{
+					vt[0] = A;
+					if (cx < bx)
+					{
+						vt[1] = C;
+						vt[2] = B;
+					}
+					else
+					{
+						vt[1] = B;
+						vt[2] = C;
+					}
+				}
+				else
+				{
+					vt[2] = A;
+					if (bx < cx)
+					{
+						vt[0] = B;
+						vt[1] = C;
+					}
+					else
+					{
+						vt[0] = C;
+						vt[1] = B;
+					}
+				}
+				if (vt[0] == null)
+				{
+
+				}
+				return vt;
+			}
+			if (ay < by && ay < cy)
             {
                 vt[0] = A;
                 if (by < cy)
@@ -128,16 +238,16 @@ namespace RenderingEngine
             if (by < cy && by < ay)
             {
                 vt[0] = B;
-                if (ay < cy)
-                {
-                    vt[1] = A;
-                    vt[2] = C;
-                }
-                else
-                {
-                    vt[1] = C;
-                    vt[2] = A;
-                }
+				if (ay < cy)
+				{
+					vt[1] = A;
+					vt[2] = C;
+				}
+				else
+				{
+					vt[1] = C;
+					vt[2] = A;
+				}
             }
 
             if (cy < by && cy < ay)
@@ -154,101 +264,10 @@ namespace RenderingEngine
                     vt[2] = B;
                 }
             }
+			if (vt[0] == null)
+			{
 
-            if (ay == by)
-            {
-                if (cy < ay)
-                {
-                    vt[0] = C;
-                    if (ax < bx)
-                    {
-                        vt[1] = A;
-                        vt[2] = B;
-                    }
-                    else
-                    {
-                        vt[1] = B;
-                        vt[2] = A;
-                    }
-                }
-                else
-                {
-                    vt[2] = C;
-                    if (ax < bx)
-                    {
-                        vt[0] = A;
-                        vt[1] = B;
-                    }
-                    else
-                    {
-                        vt[0] = B;
-                        vt[1] = A;
-                    }
-                }
-            }
-
-            if (ay == cy)
-            {
-                if (by < ay)
-                {
-                    vt[0] = B;
-                    if (ax < cx)
-                    {
-                        vt[1] = A;
-                        vt[2] = C;
-                    }
-                    else
-                    {
-                        vt[1] = C;
-                        vt[2] = A;
-                    }
-                }
-                else
-                {
-                    vt[2] = B;
-                    if (ax < cx)
-                    {
-                        vt[0] = A;
-                        vt[1] = C;
-                    }
-                    else
-                    {
-                        vt[0] = C;
-                        vt[1] = A;
-                    }
-                }
-            }
-            if (by == cy)
-            {
-                if (ay < cy)
-                {
-                    vt[0] = A;
-                    if (cx < bx)
-                    {
-                        vt[1] = C;
-                        vt[2] = B;
-                    }
-                    else
-                    {
-                        vt[1] = B;
-                        vt[2] = C;
-                    }
-                }
-                else
-                {
-                    vt[2] = A;
-                    if (bx < cx)
-                    {
-                        vt[0] = B;
-                        vt[1] = C;
-                    }
-                    else
-                    {
-                        vt[0] = C;
-                        vt[1] = B;
-                    }
-                }
-            }
+			}
             return vt;
         }
 
@@ -547,7 +566,7 @@ namespace RenderingEngine
         }
 
 
-        public void ScanLine_new(VertexTriangle vt, VertexTriangle orit, Scene scene)
+        public void ScanLine_new(VertexTriangle vt,VertexTriangle orit, Scene scene)
         {
             Vertex A = vt.Vertices[0];
             Vertex B = vt.Vertices[1];
@@ -557,18 +576,19 @@ namespace RenderingEngine
             //A.lightColor = new Color4(A.Color.red, A.Color.green, A.Color.blue);
             //B.lightColor = new Color4(B.Color.red, B.Color.green, B.Color.blue);
             //C.lightColor = new Color4(C.Color.red, C.Color.green, C.Color.blue);
-            DrawNormalTriangle(vt, scene);
+            DrawNormalTriangle(vt,orit, scene);
         }
 
         // 三角形扫描
-        public void DrawNormalTriangle(VertexTriangle vt,Scene scene)
+        public void DrawNormalTriangle(VertexTriangle vt,VertexTriangle orit,Scene scene)
         {
             Vertex[] vv = GetList(vt.Vertices);
 
             Vertex v1 = vv[0];
             Vertex v2 = vv[1];
             Vertex v3 = vv[2];
-
+			if (v1 == null)
+				return;
             Vector4 p1 = v1.ScreenSpacePosition;
             Vector4 p2 = v2.ScreenSpacePosition;
             Vector4 p3 = v3.ScreenSpacePosition;
@@ -592,14 +612,13 @@ namespace RenderingEngine
             Vector4 normal2 = v2.nowNormal;
             Vector4 normal3 = v3.nowNormal;
 
-
             if (ay == by)
             {
-                DrawTopTriangle(v1, v2, v3,scene,vt);
+                DrawTopTriangle(v1, v2, v3,scene,vt,orit);
             }
             else if (by == cy)
             {
-                DrawBottomTriangle(v1, v2, v3,scene,vt);
+                DrawBottomTriangle(v1, v2, v3,scene,vt,orit);
             }
             else
             {
@@ -625,17 +644,19 @@ namespace RenderingEngine
 
                     newVt.nowNormal = MathUtil.Vector4Interp(normal1, normal3, y1);
 
-                    if ((int)bx > (int)cx)
-                    {
-                        DrawBottomTriangle(v1, newVt, v2,scene,vt);
+					newVt.UV = MathUtil.Vector4Interp(v1.UV, v3.UV, y1);
 
-                        DrawTopTriangle(newVt, v2, v3,scene,vt);
+					if ((int)bx > (int)cx)
+                    {
+                        DrawBottomTriangle(v1, newVt, v2,scene,vt,orit);
+
+                        DrawTopTriangle(newVt, v2, v3,scene,vt,orit);
                     }
                     else
                     {
-                        DrawBottomTriangle(v1, v2, newVt,scene,vt);
+                        DrawBottomTriangle(v1, v2, newVt,scene,vt,orit);
 
-                        DrawTopTriangle(v2, newVt, v3,scene,vt);
+                        DrawTopTriangle(v2, newVt, v3,scene,vt,orit);
                     }
                 }
                 else if (ax == bx)
@@ -659,18 +680,20 @@ namespace RenderingEngine
                     newVt.Color = c;
 
                     newVt.nowNormal = MathUtil.Vector4Interp(normal1, normal3, y1);
-       
-                    if (cx < bx)
-                    {
-                        DrawBottomTriangle(v1, newVt, v2,scene,vt);
 
-                        DrawTopTriangle(newVt, v2, v3,scene,vt);
+					newVt.UV = MathUtil.Vector4Interp(v1.UV, v3.UV, y1);
+
+					if (cx < bx)
+                    {
+                        DrawBottomTriangle(v1, newVt, v2,scene,vt,orit);
+
+                        DrawTopTriangle(newVt, v2, v3,scene,vt,orit);
                     }
                     else
                     {
-                        DrawBottomTriangle(v1, v2, newVt,scene,vt);
+                        DrawBottomTriangle(v1, v2, newVt,scene,vt,orit);
 
-                        DrawTopTriangle(v2, newVt, v3,scene,vt);
+                        DrawTopTriangle(v2, newVt, v3,scene,vt,orit);
                     }
                 }
                 else if (bx == cx)
@@ -695,18 +718,20 @@ namespace RenderingEngine
                     newVt.Color = c;
 
                     newVt.nowNormal = MathUtil.Vector4Interp(normal1, normal3, y1);
-              
-                    if (ax < bx)
-                    {
-                        DrawBottomTriangle(v1, newVt, v2,scene,vt);
 
-                        DrawTopTriangle(newVt, v2, v3,scene,vt);
+					newVt.UV = MathUtil.Vector4Interp(v1.UV, v3.UV, y1);
+
+					if (ax < bx)
+                    {
+                        DrawBottomTriangle(v1, newVt, v2,scene,vt,orit);
+
+                        DrawTopTriangle(newVt, v2, v3,scene,vt,orit);
                     }
                     else
                     {
-                        DrawBottomTriangle(v1, v2, newVt,scene,vt);
+                        DrawBottomTriangle(v1, v2, newVt,scene,vt,orit);
 
-                        DrawTopTriangle(v2, newVt, v3,scene,vt);
+                        DrawTopTriangle(v2, newVt, v3,scene,vt,orit);
                     }
                 }
                 else
@@ -731,6 +756,8 @@ namespace RenderingEngine
 
                     newVt.nowNormal = MathUtil.Vector4Interp(normal1, normal3, y1);
 
+					newVt.UV = MathUtil.Vector4Interp(v1.UV, v3.UV, y1);
+
                     // 计算线条的方向  
                     float dP1P2, dP1P3;
 
@@ -748,21 +775,21 @@ namespace RenderingEngine
 
                     if (dP1P2 > dP1P3)
                     {
-                        DrawBottomTriangle(v1, newVt, v2,scene,vt);
+                        DrawBottomTriangle(v1, newVt, v2,scene,vt,orit);
 
-                        DrawTopTriangle(newVt, v2, v3,scene,vt);
+                        DrawTopTriangle(newVt, v2, v3,scene,vt,orit);
                     }
                     else
                     {
-                        DrawBottomTriangle(v1, v2, newVt,scene,vt);
+                        DrawBottomTriangle(v1, v2, newVt,scene,vt,orit);
 
-                        DrawTopTriangle(v2, newVt, v3,scene,vt);
+                        DrawTopTriangle(v2, newVt, v3,scene,vt,orit);
                     }
                 }
             }
         }
 
-        public void DrawTopTriangle(Vertex v1, Vertex v2, Vertex v3, Scene scene, VertexTriangle oriVt)
+        public void DrawTopTriangle(Vertex v1, Vertex v2, Vertex v3, Scene scene,VertexTriangle vt, VertexTriangle oriVt)
         {
             Vector4 p1 = v1.ScreenSpacePosition;
             Vector4 p2 = v2.ScreenSpacePosition;
@@ -877,7 +904,6 @@ namespace RenderingEngine
                                 break;
                         }
                         device.DrawPoint(pos, final);
-
                     }
                 }
 
@@ -923,19 +949,54 @@ namespace RenderingEngine
 
                         float z = MathUtil.Interp(z1, z2, r3);
 
-                        Color4 c3 = MathUtil.ColorInterp(c1, c2, r3);
+                        //Color4 c3 = MathUtil.ColorInterp(c1, c2, r3);
 
-                        Vector4 pos = new Vector4(x, y, z, 0);
+						Vector4 pos = new Vector4(x, y, z, 0);
 
-                        Vector4 n3 = new Vector4(0, 0, 0, 0);
+						switch (scene.renderState)
+						{
+							case Scene.RenderState.WireFrame:
+								{ }
+								break;
+							case Scene.RenderState.GouraduShading:
+								{
+									Color4 c3 = MathUtil.ColorInterp(c1, c2, r3);
 
-                        if (DirectionLight.IsEnable)
-                        {
-                            n3 = MathUtil.Vector4Interp(n1, n2, r3);
-                        }
+									if (DirectionLight.IsEnable)
+									{
+										Vector4 n3 = MathUtil.Vector4Interp(n1, n2, r3);
 
-                        Goudraud(pos, n3, c3, scene, oriVt);
-                    }
+										final = DirectionLight.GetFinalLightColor(n3, c3);
+									}
+									else
+									{
+										final = c3;
+									}
+								}
+								break;
+							case Scene.RenderState.TextureMapping:
+								{
+									oriVt.CalWeight(pos);
+
+									Vector4 n3 = MathUtil.Vector4Interp(n1, n2, r3);
+
+									Vector4 uv = oriVt.GetInterUV();
+
+									if (DirectionLight.IsEnable)
+									{
+										Color4 c = device.Tex2D(uv.X, uv.Y, scene.mesh.texture);
+
+										final = DirectionLight.GetFinalLightColor(n3, c);
+									}
+									else
+									{
+										final = device.Tex2D(uv.X, uv.Y, scene.mesh.texture);
+									}
+								}
+								break;
+						}
+						device.DrawPoint(pos, final);
+					}
                 }
             }
             else
@@ -1031,7 +1092,7 @@ namespace RenderingEngine
             }
         }
 
-        public void DrawBottomTriangle(Vertex v1, Vertex v2, Vertex v3 ,Scene scene,VertexTriangle oriVt)
+        public void DrawBottomTriangle(Vertex v1, Vertex v2, Vertex v3 ,Scene scene, VertexTriangle vt, VertexTriangle oriVt)
         {
             Vector4 p1 = v1.ScreenSpacePosition;
             Vector4 p2 = v2.ScreenSpacePosition;
