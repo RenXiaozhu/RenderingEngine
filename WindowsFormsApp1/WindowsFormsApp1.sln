@@ -6,9 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RenderingEngine", "WindowsFormsApp1\RenderingEngine.csproj", "{690D7A0E-D67C-403A-B2AE-A2F7FF827320}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3C795D6E-3E31-4BC4-96FC-0C1DDD100825}"
-	ProjectSection(SolutionItems) = preProject
-		WindowsFormsApp1\Class1.cs = WindowsFormsApp1\Class1.cs
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

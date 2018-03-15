@@ -27,12 +27,9 @@ namespace RenderingEngine
 
         private float meshDegreeX = 0;
         private float meshDegreeY = 0;
-        private float meshDegreeZ = 0;
         private float MoveSpeed = 0.5f;
         private const float RotateSpeed = 3f;
-        private float angle = 0;
         private Point preE;
-        private bool isUp = false;
         private bool isCameraRotate = false;
         private Vector4 MeshDirection = new Vector4(0,0,0,0);
 
@@ -129,28 +126,14 @@ namespace RenderingEngine
             {
                 MoveSpeed += 0.5f;
                Action.TranslateCamera( 0, 0, -0.5f,scene);
-                //MoveSpeed += 0.5f;
-                //Action.UpdateCameraPitch((float)MoveSpeed,scene);
-                //Action.UpdateCameraYaw(MoveSpeed, scene);
             }
             else
             {
                 MoveSpeed -= 0.5f;
-                //Action.UpdateCameraPitch((float)MoveSpeed, scene);
-                //Action.UpdateCameraYaw(MoveSpeed,scene);
                 Action.TranslateCamera(0, 0,  0.5f, scene);
             }
 
             this.Invalidate();
-        }
-
-        private void FormWindow_MouseUp(object sender, MouseEventArgs e)
-        {
-            if(e.Button == System.Windows.Forms.MouseButtons.Left)
-            {
-                pressUp = new Point(e.X, e.Y);
-                isUp = true;
-            }
         }
 
         private void FormWindow_MouseDown(object sender, MouseEventArgs e)
@@ -159,7 +142,6 @@ namespace RenderingEngine
             {
                 pressDown = new Point(e.X, e.Y);
                 preE = new Point(e.X, e.Y);
-                isUp = false;
             }
         }
 
@@ -181,39 +163,6 @@ namespace RenderingEngine
         private void textureMapping(object sender, EventArgs e)
         {
             this.scene.renderState = Scene.RenderState.TextureMapping;
-            this.Invalidate();
-        }
-
-        // Lighting
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            //this.textureMappingToolStripMenuItem.Visible = checkBox1.Checked;
-            //this.hScrollBar1.Value = (int)(DirectionalLight.STARTKD * this.hScrollBar1.Maximum);
-            //this.scene.light.IsEnable = checkBox1.Checked;
-            //this.Invalidate();
-        }
-
-        private void hScrollBar1_Scroll(object sender, ScrollEventArgs e)
-        {
-            //float ratio = (float)this.hScrollBar1.Value / (float)this.hScrollBar1.Maximum;
-            //this.scene.light.Kd = ratio;
-           
-            //this.Invalidate();
-        }
-
-        private void Blank(object sender, EventArgs e)
-        {
-            ToolStripDropDownItem item = (ToolStripDropDownItem)sender;
-            if(item.Text == "Blank")
-            {
-                item.Text = "cancel blank";
-                this.device.isShowBackFace = false;
-            }
-            else
-            {
-                item.Text = "Blank";
-                this.device.isShowBackFace = true;
-            }
             this.Invalidate();
         }
 

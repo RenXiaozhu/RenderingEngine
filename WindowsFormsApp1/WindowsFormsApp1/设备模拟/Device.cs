@@ -70,22 +70,7 @@ namespace RenderingEngine
             }
         }
 
-        public void PutPixel(int x, int y, float z, Color4 color)
-        {
-            // 利用深度消除不需要显示的像素
-            // 当新像素的深度大于原像素深度时，显示原有像素，新像素被抛弃
-            int index = (x + y * GetWidth());
-            if (depthBuffer[index] < z) return;
-            depthBuffer[index] = z;
-            unsafe
-            {
-                byte* ptr = (byte*)(this.bmData.Scan0);
-                byte* row = ptr + (y * this.bmData.Stride);
-                row[x * 3] = color.blue;
-                row[x * 3 + 1] = color.green;
-                row[x * 3 + 2] = color.red;
-            }
-        }
+       
 
         private Vector4 Project(Vector4 coord, Matrix4x4 mvp)
         {
@@ -245,16 +230,17 @@ namespace RenderingEngine
         {
             if (!ShouldBackFaceCull(vt))
             {
-                //this.scanLine.ProcessScanLine(vt, oriVt, scene);
+				//边表
                 if(scene.renderState == Scene.RenderState.WireFrame)
                 {
                     this.scanLine.ProcessScanLine(vt, oriVt, scene,isWorld);
                 }
                 else
-                {
+                {//三角形扫描
                     this.scanLine.ScanLine_new(vt,oriVt, scene);
                 }
-
+				
+				//重心法填充
                 //this.scanLine.StartScanLine(vt,oriVt,scene);
                 //this.scanLine.StartScanTriangle(vt,oriVt,scene);
             }
@@ -286,7 +272,7 @@ namespace RenderingEngine
 
                 vertexC = scene.mesh.Vertices[t1.c];
 
-                renderTriangle(vertexA, vertexB, vertexC, matrixMVP,false);
+               // renderTriangle(vertexA, vertexB, vertexC, matrixMVP,false);
 
                 Triangle t2 = face.t_2;
 
@@ -296,7 +282,7 @@ namespace RenderingEngine
 
                 vertexC = scene.mesh.Vertices[t2.c];
 
-                renderTriangle(vertexA, vertexB, vertexC, matrixMVP,false);
+              //  renderTriangle(vertexA, vertexB, vertexC, matrixMVP,false);
             }
 
             foreach (var face in scene.worldMap.faces)
@@ -315,7 +301,7 @@ namespace RenderingEngine
 
                 vertexC = scene.worldMap.Vertices[t1.c];
 
-                //renderTriangle(vertexA, vertexB, vertexC, matrixMVP,true);
+                renderTriangle(vertexA, vertexB, vertexC, matrixMVP,true);
 
                 Triangle t2 = face.t_2;
 
@@ -325,7 +311,7 @@ namespace RenderingEngine
 
                 vertexC = scene.worldMap.Vertices[t2.c];
 
-                //renderTriangle(vertexA, vertexB, vertexC, matrixMVP,true);
+                renderTriangle(vertexA, vertexB, vertexC, matrixMVP,true);
             }
 
         }
@@ -360,8 +346,6 @@ namespace RenderingEngine
                 if (scene.renderState == Scene.RenderState.WireFrame)
                 {
                     // 画线框, 需要vertex的normal,pos,color
-                    //DrawLine(vertexA, vertexB, pixelA, pixelB, scene);
-                    //DrawLine(vertexB, vertexC, pixelB, pixelC, scene);
                     for (int i = 0; i < vtList.Count; i++)
                     {
                         if (!ShouldBackFaceCull(vtList[i]))
@@ -384,9 +368,7 @@ namespace RenderingEngine
                     // 填充三角形                   bv gf      
                     for (int i = 0; i < vtList.Count; i++)
                     {
-						//Console.WriteLine(vtList.Count);
 						DrawTriangle(vtList[i], oriVt, scene ,isWorld);
-                        //DrawTriangle(vtList[i]);
                     }
                 }
         }
@@ -419,7 +401,6 @@ namespace RenderingEngine
             float z1 = point1.Z;
             float z2 = point2.Z;
 
-
             double px = point1.X;
             double py = point1.Y;
             double steps = Math.Max(Math.Abs(m), Math.Abs(n));
@@ -430,6 +411,7 @@ namespace RenderingEngine
                 Color4 vertexColor = new Color4(0, 0, 0);
                 Color4 lightColor = new Color4(0, 0, 0);
                 float ratio = (float)(i / steps);
+
                 if (DirectionLight.IsEnable)
                 {
                     Color4 c1 = DirectionLight.GetFinalLightColor(nDotL1);
@@ -440,16 +422,11 @@ namespace RenderingEngine
                 vertexColor = MathUtil.ColorInterp(v1.Color, v2.Color, ratio);
 
                 float z = MathUtil.Interp(z1, z2, ratio);
-                //PutPixel((int)x, (int)(y + 0.5), color);
                 DrawPoint(new Vector4((int)px, (int)(py + 0.5), z, 0), vertexColor + lightColor);
                 px += xt;
                 py += yt;
             }
         }
-                              
-
-                 
-
         
         // 直线段中点算法
         public void DrawMidPointLine(Vector2 point1, Vector2 point2, Color4 color)
@@ -554,7 +531,6 @@ namespace RenderingEngine
                 if (d <= 0)
                 {
                     d += 4 * squarea * (2 * y + 3);
-
                 }
                 else
                 {
@@ -564,17 +540,33 @@ namespace RenderingEngine
                 y-=1;
                 EllipsePoints(x, y, color);
             }
-
         }
 
         //画像素点
+		//直接操作的是像素图
         public void PutPixel(int x,int y, Color4 finalColor)
         {
             Color color = Color.FromArgb(finalColor.red, finalColor.blue, finalColor.green);
-
             this.bmp.SetPixel(x, y, color);
         }
 
-
+		//画像素点
+		//直接操作的是位图
+		public void PutPixel(int x, int y, float z, Color4 color)
+		{
+			// 利用深度消除不需要显示的像素
+			// 当新像素的深度大于原像素深度时，显示原有像素，新像素被抛弃
+			int index = (x + y * GetWidth());
+			if (depthBuffer[index] < z) return;
+			depthBuffer[index] = z;
+			unsafe
+			{
+				byte* ptr = (byte*)(this.bmData.Scan0);
+				byte* row = ptr + (y * this.bmData.Stride);
+				row[x * 3] = color.blue;
+				row[x * 3 + 1] = color.green;
+				row[x * 3 + 2] = color.red;
+			}
+		}
 	}
 }
