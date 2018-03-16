@@ -71,9 +71,6 @@ namespace RenderingEngine
                     col = MathUtil.ColorInterp(v1.Color, v2.Color, m1);
                     normal = MathUtil.Vector4Interp(v1.nowNormal, v2.nowNormal, m1);
 					uv = MathUtil.Vector4Interp(v1.UV, v2.UV, m1);
-					//uv.W = MathUtil.Interp(v1.UV.W, v2.UV.W, m1);
-					//uv.X = uv.X *uv.W;
-					//uv.Y = uv.Y *uv.W;
 					break;
                 case Boundary.Right:
                     clipPos.X = wMax.X;
@@ -83,9 +80,6 @@ namespace RenderingEngine
                     col = MathUtil.ColorInterp(v1.Color, v2.Color, m2);
                     normal = MathUtil.Vector4Interp(v1.nowNormal, v2.nowNormal, m2);
 					uv = MathUtil.Vector4Interp(v1.UV, v2.UV, m2);
-					//uv.X = uv.X *uv.W;
-					//uv.Y = uv.Y *uv.W;
-					//uv.W = MathUtil.Interp(v1.UV.W, v2.UV.W, m2);
 					break;
                 case Boundary.Bottom:
                     clipPos.Y = wMin.Y;
@@ -95,9 +89,6 @@ namespace RenderingEngine
                     col = MathUtil.ColorInterp(v1.Color, v2.Color, m3);
                     normal = MathUtil.Vector4Interp(v1.nowNormal, v2.nowNormal, m3);
 					uv = MathUtil.Vector4Interp(v1.UV, v2.UV, m3);
-					//uv.W = MathUtil.Interp(v1.UV.W, v2.UV.W, m3);
-					//uv.X = uv.X *uv.W;
-					//uv.Y = uv.Y *uv.W;
 					break;
                 case Boundary.Top:
                     clipPos.Y = wMax.Y;
@@ -107,9 +98,6 @@ namespace RenderingEngine
                     col = MathUtil.ColorInterp(v1.Color, v2.Color, m4);
                     normal = MathUtil.Vector4Interp(v1.nowNormal, v2.nowNormal, m4);
 					uv = MathUtil.Vector4Interp(v1.UV, v2.UV, m4);
-					//uv.W = MathUtil.Interp(v1.UV.W, v2.UV.W, m4);
-					//uv.X = uv.X * uv.W;
-					//uv.Y = uv.Y *uv.W;
 					break;
                 case Boundary.Behind:
                     clipPos.Z = wMin.Z;
@@ -119,9 +107,6 @@ namespace RenderingEngine
                     col = MathUtil.ColorInterp(v1.Color, v2.Color, m5);
                     normal = MathUtil.Vector4Interp(v1.nowNormal, v2.nowNormal, m5);
 					uv = MathUtil.Vector4Interp(v1.UV, v2.UV, m5);
-					//uv.W = MathUtil.Interp(v1.UV.W, v2.UV.W, m5);
-					//uv.X = uv.X * uv.W;
-					//uv.Y = uv.Y *uv.W;
 					break;
                 case Boundary.Front:
                     clipPos.Z = wMax.Z;
@@ -131,9 +116,6 @@ namespace RenderingEngine
                     col = MathUtil.ColorInterp(v1.Color, v2.Color, m6);
                     normal = MathUtil.Vector4Interp(v1.nowNormal, v2.nowNormal, m6);
 					uv = MathUtil.Vector4Interp(v1.UV, v2.UV, m6);
-					//uv.W = MathUtil.Interp(v1.UV.W, v2.UV.W, m6);
-					//uv.X = uv.X *uv.W;
-					//uv.Y = uv.Y * clipPos.W;
 					break;
             }
 

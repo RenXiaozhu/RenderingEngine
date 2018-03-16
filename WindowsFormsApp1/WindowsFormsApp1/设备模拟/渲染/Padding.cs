@@ -132,18 +132,17 @@ namespace RenderingEngine
             Vertex B = vt.Vertices[1];
             Vertex C = vt.Vertices[2];
 
-            //Console.WriteLine(a1.v1.Position +" " + a1.v1.Normal);
-            //float nDotLA1V1 = scene.light.ComputeNDotL(A.nowPos, A.nowNormal);
-            //A.lightColor = A.Color * scene.light.GetFinalLightColor(nDotLA1V1);
+			float nDotLA1V1 = DirectionLight.ComputeNDotL(A.nowPos, A.nowNormal);
+			A.lightColor = A.Color * DirectionLight.GetFinalLightColor(nDotLA1V1);
 
-            //float nDotLA1V2 = scene.light.ComputeNDotL(B.nowPos, B.nowNormal);
-            //B.lightColor = B.Color * scene.light.GetFinalLightColor(nDotLA1V2);
+			float nDotLA1V2 = DirectionLight.ComputeNDotL(B.nowPos, B.nowNormal);
+			B.lightColor = B.Color * DirectionLight.GetFinalLightColor(nDotLA1V2);
 
-            //float nDotLA2V1 = scene.light.ComputeNDotL(C.nowPos, C.nowNormal);
-            //C.lightColor = C.Color * scene.light.GetFinalLightColor(nDotLA2V1);
+			float nDotLA2V1 = DirectionLight.ComputeNDotL(C.nowPos, C.nowNormal);
+			C.lightColor = C.Color * DirectionLight.GetFinalLightColor(nDotLA2V1);
 
 
-            float ay = A.ScreenSpacePosition.Y;
+			float ay = A.ScreenSpacePosition.Y;
             float by = B.ScreenSpacePosition.Y;
             float cy = C.ScreenSpacePosition.Y;
             float ax = A.ScreenSpacePosition.X;
@@ -159,9 +158,7 @@ namespace RenderingEngine
             }
             else
             {
-                //Console.WriteLine(j+ " " + i);
             }
-
         }
 
         public static void GouraudColor(Scene scene,Device device, int i, Edge a1, Edge a2,VertexTriangle orivt ,VertexTriangle vt, bool isworld )
@@ -211,17 +208,10 @@ namespace RenderingEngine
             switch (scene.renderState)
             {
                 
-                case Scene.RenderState.WireFrame:
-                    {
-                        
-                       
-
-                    }
+                case Scene.RenderState.WireFrame: { }
                     break;
                 case Scene.RenderState.GouraduShading:
-                    {
-                        
-                    }
+					{ }
                     break;
                 case Scene.RenderState.TextureMapping:
                     {
@@ -252,59 +242,12 @@ namespace RenderingEngine
                             {
                                 final = device.Tex2D(uv.X, uv.Y, scene.mesh.texture);
                             }
-
-
                         }
-
                     }
                     break;
             }
             device.DrawPoint(new Vector4(x, i, z, 0), final);
 
-        }
-
-        public static void GetYmin(List<Vector4> vt)
-        {
-            for (int i = 0; i < vt.Count - 1; i+=1)
-            {
-                for (int j = i + 1; j < vt.Count - i; j+=1)
-                {
-                    if(vt[i].Y > vt[j].Y)
-                    {
-                        Vector4 tmp = vt[i];
-                        vt[i] = vt[j];
-                        vt[j] = tmp;
-                    }
-                }
-            }
-        }
-
-        // 求交点 A B x坐标
-        public static float[] GetCrossPoint(float[] yy)
-        {
-            float[] xx = new float[2];
-
-            float y1 = yy[0];
-            float y2 = yy[1];
-            float y3 = yy[2];
-            float x1 = yy[3];
-            float x2 = yy[4];
-            float x3 = yy[5];
-      
-            float ytmp = y2 - y1;
-            float xtmp = x1 - x2;
-
-            float yt = y2 - y;
-
-            xx[0] = x2 + xtmp * yt / ytmp;
-
-            ytmp = y3 - y1;
-            xtmp = x3 - x1;
-
-            yt = y3 - y;
-
-            xx[1] = x1 + xtmp * yt / ytmp;
-            return  xx;
         }
     }
 }

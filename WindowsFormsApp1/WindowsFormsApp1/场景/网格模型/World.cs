@@ -50,12 +50,12 @@ namespace RenderingEngine
             };
 
             faces = new Face[]{
-                //new Face(triangles[0],triangles[1],Face.FaceType.Front),
-                //new Face(triangles[2],triangles[3],Face.FaceType.Right),
-                //new Face(triangles[4],triangles[5],Face.FaceType.Left),
-                //new Face(triangles[6],triangles[7],Face.FaceType.Behind),
-                //new Face(triangles[8],triangles[9],Face.FaceType.Up),
-                new Face(triangles[10],triangles[11],Face.FaceType.Below)
+				new Face(triangles[0],triangles[1],Face.FaceType.Front),
+				new Face(triangles[2],triangles[3],Face.FaceType.Right),
+				new Face(triangles[4],triangles[5],Face.FaceType.Left),
+				new Face(triangles[6],triangles[7],Face.FaceType.Behind),
+				new Face(triangles[8],triangles[9],Face.FaceType.Up),
+				new Face(triangles[10],triangles[11],Face.FaceType.Below)
             };
         }
 
@@ -68,33 +68,19 @@ namespace RenderingEngine
                 new Vertex(new Vector4(-2, -2, -2, 1), new Vector4(-1, -1, -1, 1), new Vector4(1, 0, 0, 0), new Color4(0, 0, 0)),
 
                 new Vertex(new Vector4(-2, 2, -2, 1), new Vector4(-1, 1, -1, 1), new Vector4(0, 0, 0, 0), new Color4( 0, 255, 0)),
-                //new Vertex(new Vector4(-1, 1, -1, 1), new Vector4(-1, 0, 0, 1), new Vector4(1, 1, 0, 0), new Color4( 0, 255, 0)),
-                //new Vertex(new Vector4(-1, 1, -1, 1), new Vector4(0, 0, -1, 1), new Vector4(0, 1, 0, 0), new Color4( 0, 255, 0)),
 
                 new Vertex(new Vector4(2, 2, -2, 1), new Vector4(1, 1, -1, 1), new Vector4(0, 1, 0, 0), new Color4( 255, 255, 0)),
-                //new Vertex(new Vector4(1, 1, -1, 1), new Vector4(1, 0, 0, 1), new Vector4(0, 1, 0, 0), new Color4(255, 255, 0)),
-                //new Vertex(new Vector4(1, 1, -1, 1), new Vector4(0, 0, -1, 1), new Vector4(1, 1, 0, 0), new Color4(255, 255, 0)),
 
                 new Vertex(new Vector4(2, -2, -2, 1), new Vector4(1, -1, -1, 1), new Vector4(1, 1, 0, 0), new Color4(255, 0, 0)),
-                //new Vertex(new Vector4(1, -1, -1, 1), new Vector4(1, 0, 0, 1),  new Vector4(0, 0, 0, 0), new Color4(255, 0, 0)),
-                //new Vertex(new Vector4(1, -1, -1, 1), new Vector4(0, 0, -1, 1), new Vector4(1, 0, 0, 0), new Color4(255, 0, 0)),
 
                 new Vertex(new Vector4(-2, -2, 2, 1), new Vector4(-1, -1, 1, 1), new Vector4(1, 1, 0, 0), new Color4(0, 0, 255)),
-                //new Vertex(new Vector4(-1, -1, 1, 1), new Vector4(-1, 0, 0, 1), new Vector4(0, 0, 0, 0), new Color4(0, 0, 255)),
-                //new Vertex(new Vector4(-1, -1, 1, 1), new Vector4(0, 0, 1, 1), new Vector4(0, 0, 0, 0), new Color4(0, 0, 255)),
 
                 new Vertex(new Vector4(-2, 2, 2, 1), new Vector4(-1, 1, 1, 1), new Vector4(0, 1, 0, 0), new Color4(0, 255, 255)),
-                //new Vertex(new Vector4(-1, 1, 1, 1), new Vector4(-1, 0, 0, 1), new Vector4(0, 1, 0, 0), new Color4(40, 55, 255)),
-                //new Vertex(new Vector4(-1, 1, 1, 1), new Vector4(0, 0, 1, 1), new Vector4(0, 1, 0, 0), new Color4(40, 55, 255)),
 
                 new Vertex(new Vector4(2, 2, 2, 1), new Vector4( 1, 1, 1, 1), new Vector4( 0, 0, 0, 0), new Color4(255, 255, 255)),
-                //new Vertex(new Vector4(1, 1, 1, 1), new Vector4(1, 0, 0, 1), new Vector4(1, 1, 0, 0), new Color4(255, 100, 100)),
-                //new Vertex(new Vector4(1, 1, 1, 1), new Vector4(0, 0, 1, 1), new Vector4(1, 1, 0, 0), new Color4(255, 100, 100)),
-
+  
                 new Vertex(new Vector4(2, -2, 2 , 1), new Vector4(1, -1, 1, 1), new Vector4(1, 0, 0, 0), new Color4(255, 0, 255))
-                //new Vertex(new Vector4(1, -1, 1, 1), new Vector4(1, 0, 0, 1), new Vector4(1, 0, 0, 0), new Color4(255, 0, 255)),
-                //new Vertex(new Vector4(1, -1, 1, 1), new Vector4(0, 0, 1, 1), new Vector4(1, 0, 0, 0), new Color4(255, 0, 255)),
-
+    
             };
 		}
 
@@ -116,8 +102,6 @@ namespace RenderingEngine
             for (int i = 0; i < Vertices.Length; i++)
             {
                 Vertex vt = Vertices[i];
-                //vt.nowNormal = rotation.ApplY(vt.Normal);
-                //vt.nowNormal.Normalize();
                 vt.nowPos = Move.ApplY(vt.nowPos);
             }
         }

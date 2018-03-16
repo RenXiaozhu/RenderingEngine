@@ -14,7 +14,7 @@ namespace RenderingEngine
         private Edge AEL;
         private int height;
         private Color4 final;
-        private VertexTriangle nowVt;
+
         public ScanLine(Device device)
         {
             this.device = device;
@@ -27,76 +27,7 @@ namespace RenderingEngine
             final = new Color4(255, 255, 255);
         }
 
-        #region 简单scanline
-        public void ProcessScanLineAd(int y, Vertex v1, Vertex v2, Vertex v3, Vertex v4, Scene scene)
-        {
-            var pa = v1.ScreenSpacePosition;
-            var pb = v2.ScreenSpacePosition;
-            var pc = v3.ScreenSpacePosition;
-            var pd = v4.ScreenSpacePosition;
-            var gradient1 = pa.Y != pb.Y ? (y - pa.Y) / (pb.Y - pa.Y) : 1;
-            var gradient2 = pc.Y != pd.Y ? (y - pc.Y) / (pd.Y - pc.Y) : 1;
-
-            int sx = (int)MathUtil.Interp(pa.X, pb.X, gradient1);
-            int ex = (int)MathUtil.Interp(pc.X, pd.X, gradient2);
-
-            float z1 = MathUtil.Interp(pa.Z, pb.Z, gradient1);
-            float z2 = MathUtil.Interp(pc.Z, pd.Z, gradient2);
-
-            for (var x = sx; x < ex; x++)
-            {
-                float gradient = (x - sx) / (float)(ex - sx);
-                var z = MathUtil.Interp(z1, z2, gradient);
-
-                if (scene.renderState == Scene.RenderState.GouraduShading)
-                {
-                    if (DirectionLight.IsEnable)
-                    {
-                        float nDotLA1V1 = DirectionLight.ComputeNDotL(v1.nowPos, v1.nowNormal);
-                        float nDotLA1V2 = DirectionLight.ComputeNDotL(v2.nowPos, v2.nowNormal);
-                        float nDotLA2V1 = DirectionLight.ComputeNDotL(v3.nowPos, v3.nowNormal);
-                        float nDotLA2V2 = DirectionLight.ComputeNDotL(v4.nowPos, v4.nowNormal);
-                        float nDotL1 = MathUtil.Interp(nDotLA1V1, nDotLA1V2, gradient1);
-                        float nDotL2 = MathUtil.Interp(nDotLA2V1, nDotLA2V2, gradient2);
-                        float nDotL = MathUtil.Interp(nDotL1, nDotL2, gradient);
-                        final = DirectionLight.GetFinalLightColor(nDotL);
-                    }
-                    else
-                    {
-                        Color4 c1 = MathUtil.ColorInterp(v1.Color, v2.Color, gradient1);
-                        Color4 c2 = MathUtil.ColorInterp(v3.Color, v4.Color, gradient2);
-                        Color4 c3 = MathUtil.ColorInterp(c1, c2, gradient);
-                        //vt.CalWeight(s1, s2, s3, new Vector4(x, i, 0, 0));
-                        //Color4 c3 = vt.GetInterColor();
-                        final = c3;
-                    }
-                }
-                else if (scene.renderState == Scene.RenderState.TextureMapping)
-                {
-                    float w11 = v1.ClipSpacePosition.W;
-                    float w12 = v2.ClipSpacePosition.W;
-                    float w21 = v3.ClipSpacePosition.W;
-                    float w22 = v4.ClipSpacePosition.W;
-                    // 通过裁剪空间坐标插值算出 当前点的UV坐标；‘
-                    float uu1 = MathUtil.Interp(v1.UV.X / w11, v2.UV.X / w12, gradient1);
-                    float vv1 = MathUtil.Interp(v1.UV.Y / w11, v2.UV.Y / w12, gradient1);
-                    float uu2 = MathUtil.Interp(v3.UV.X / w21, v4.UV.X / w22, gradient2);
-                    float vv2 = MathUtil.Interp(v3.UV.Y / w21, v4.UV.Y / w22, gradient2);
-                    float w1 = MathUtil.Interp(1 / w11, 1 / w12, gradient1);
-                    float w2 = MathUtil.Interp(1 / w21, 1 / w22, gradient2);
-
-                    float w = MathUtil.Interp(w1, w2, gradient);
-                    float uu3 = MathUtil.Interp(uu1, uu2, gradient) / w;
-                    float vv3 = MathUtil.Interp(vv1, vv2, gradient) / w;
-
-                    final = this.device.Tex2D(uu3, vv3, scene.mesh.texture);
-                    //final = this.device.Tex2D(u / w, v / w, scene.mesh.texture);
-                }
-                this.device.DrawPoint(new Vector4(x, y, z, 0), final);
-            }
-        }
-        #endregion
-
+		//顶点排序
         public Vertex[] GetList(Vertex[] list)
         {
             Vertex A = list[0];
@@ -142,10 +73,6 @@ namespace RenderingEngine
 						vt[1] = A;
 					}
 				}
-				if (vt[0] == null)
-				{
-
-				}
 				return vt;
 			}
 
@@ -179,10 +106,7 @@ namespace RenderingEngine
 						vt[1] = A;
 					}
 				}
-				if (vt[0] == null)
-				{
 
-				}
 				return vt;
 			}
 			if (by == cy)
@@ -215,10 +139,7 @@ namespace RenderingEngine
 						vt[1] = B;
 					}
 				}
-				if (vt[0] == null)
-				{
 
-				}
 				return vt;
 			}
 			if (ay < by && ay < cy)
@@ -264,14 +185,14 @@ namespace RenderingEngine
                     vt[2] = B;
                 }
             }
-			if (vt[0] == null)
-			{
 
-			}
             return vt;
         }
 
-        // 重心坐标
+        /* 重心坐标填充
+		 * 填充效果明显，但基于精度问题，会有漏点
+		 * 切效率低，不建议使用
+		*/
         public void StartScanLine(VertexTriangle vt, VertexTriangle oriVt, Scene scene)
         {
             float yMin = this.height;
@@ -281,7 +202,6 @@ namespace RenderingEngine
             Vertex B = vv[1];
             Vertex C = vv[2];
 
-            //Console.WriteLine(a1.v1.Position +" " + a1.v1.Normal);
             float nDotLA1V1 = DirectionLight.ComputeNDotL(A.nowPos, A.nowNormal);
             A.lightColor = A.Color * DirectionLight.GetFinalLightColor(nDotLA1V1);
 
@@ -290,7 +210,6 @@ namespace RenderingEngine
 
             float nDotLA2V1 = DirectionLight.ComputeNDotL(C.nowPos, C.nowNormal);
             C.lightColor = C.Color * DirectionLight.GetFinalLightColor(nDotLA2V1);
-
 
             float ay = A.ScreenSpacePosition.Y;
             float by = B.ScreenSpacePosition.Y;
@@ -328,8 +247,6 @@ namespace RenderingEngine
             {
                 for (int x = (int)xMin; x < xMax; x++)
                 {
-                    //float r3 = (x - x1) / (x0 - x1);
-                    //vt.CalculateWeight(new Vector4(x,y,0,0));
 
                     float z = vt.GetInterValue(az, bz, cz);
 
@@ -337,13 +254,15 @@ namespace RenderingEngine
                 }
             }
         }
-        /* vt是裁剪后的三角形，
+        /* 边表法填充
+		 * 优点 扫描效率高，结构清晰
+		 * 缺点 光栅化时三角形斜边在水平情况下差值不均匀造成颜色区块
+		 * vt是裁剪后的三角形，
          * orivt是原始三角形,目的是在纹理映射的时候计算权重
          * 
          */
         public void ProcessScanLine(VertexTriangle vt, VertexTriangle oriVt, Scene scene, bool isworld)
         {
-            //DrawTriangle_new(vt, oriVt);
             int yMin = this.height;
             int yMax = 0;
 
@@ -351,12 +270,6 @@ namespace RenderingEngine
             Vertex B = vt.Vertices[1];
             Vertex C = vt.Vertices[2];
 
-            //Console.WriteLine(a1.v1.Position +" " + a1.v1.Normal);
-         
-
-
-            //float nDotLA2V2 = scene.light.ComputeNDotL(a2.v2.nowPos, a2.v2.nowNormal);
-            //a2.v2.lightColor = a2.v2.Color * scene.light.GetFinalLightColor(nDotLA2V2);
             /* 扫描线原理
              * 
              * 1. 求扫描线与多边形的交点
@@ -369,7 +282,6 @@ namespace RenderingEngine
              * 并将三角形的边以顶点坐标X的值从左往右(x 从小到大)填充
              * 在边表 ET[] 中对应三角形的Ymin处
             */
-
 
             Vertex[] vertices = vt.Vertices;
 
@@ -428,7 +340,6 @@ namespace RenderingEngine
              */
             AEL = new Edge();
 
-
             oriVt.PreCalWeight();
 
             for (int i = yMin; i < yMax; i++)
@@ -443,8 +354,6 @@ namespace RenderingEngine
                 Edge a2 = (Edge)AEL.nextEdge.nextEdge.Clone();
 
                 // 从ymin开始扫描填充
-
-
                 /*
                  * 记过排序后的边传入连续两条边 相交的情况只有两种钝角三角形 和锐角三角形
                  * x 从小到大
@@ -459,8 +368,8 @@ namespace RenderingEngine
                 */
 
                 /* 双线性插值算法
-                 * 
-                 * 
+                 * 斜边一次差值找出交点
+				 * 水平扫描差值找出当前点
                 */
                 Vector4 screenA1V1 = a1.v1.ScreenSpacePosition;
                 Vector4 screenA1V2 = a1.v2.ScreenSpacePosition;
@@ -490,31 +399,25 @@ namespace RenderingEngine
                     nDotL1 = MathUtil.Interp(nDotLA1V1, nDotLA1V2, r1);
                     nDotL2 = MathUtil.Interp(nDotLA2V1, nDotLA2V2, r2);
                 }
-               
-                //float z3 = 0;
-               
-                //float z = vt.GetInterValue(z1, z2, z3);
 
                 // 横向填充
                 while (a1 != null && a2 != null)
                 {
                     for (int x = (int)AEL.nextEdge.x; x < (int)AEL.nextEdge.nextEdge.x; x++)
                     {
-
                         float r3 = MathUtil.Clamp01(((float)x - a1.x) / (a2.x - a1.x));
-                        //float r3 = (float)(x - Math.Floor(a1.x)) / (a2.x - a1.x);    
                         float z = MathUtil.Interp(z1, z2, r3);
 
                         switch (scene.renderState)
                         {
-
                             case Scene.RenderState.WireFrame:
                                 {
                                 }
                                 break;
                             case Scene.RenderState.GouraduShading:
                                 {
-
+									//Padding.x = x;
+									//Padding.GouraudColor(scene,device,x,i,z,vt,oriVt);
                                 }
                                 break;
                             case Scene.RenderState.TextureMapping:
@@ -523,14 +426,13 @@ namespace RenderingEngine
                                     Vector4 uv = oriVt.GetInterUV();
                                     if (isworld)
                                     {
-                                        //final = device.Tex2D(uv.X, uv.Y, scene.worldMap.texture);
+                                        final = device.Tex2D(uv.X, uv.Y, scene.worldMap.texture);
                                     }
                                     else
                                     {
                                         if (DirectionLight.IsEnable)
                                         {
                                             float nDotL = MathUtil.Interp(nDotL1, nDotL2, r3);
-                                            //Console.WriteLine(nDotL1+" "+ nDotL2+" " + nDotL);
                                             final = device.Tex2D(uv.X, uv.Y, scene.mesh.texture);
                                             final = final * DirectionLight.GetFinalLightColor(nDotL);
                                         }
@@ -539,7 +441,6 @@ namespace RenderingEngine
                                             final = device.Tex2D(uv.X, uv.Y, scene.mesh.texture);
                                         }
                                     }
-
                                 }
                                 break;
                         }
@@ -565,21 +466,29 @@ namespace RenderingEngine
 
         }
 
-
+		//三角形扫描
         public void ScanLine_new(VertexTriangle vt,VertexTriangle orit, Scene scene)
         {
             Vertex A = vt.Vertices[0];
             Vertex B = vt.Vertices[1];
             Vertex C = vt.Vertices[2];
 
-
-            //A.lightColor = new Color4(A.Color.red, A.Color.green, A.Color.blue);
-            //B.lightColor = new Color4(B.Color.red, B.Color.green, B.Color.blue);
-            //C.lightColor = new Color4(C.Color.red, C.Color.green, C.Color.blue);
             DrawNormalTriangle(vt,orit, scene);
         }
 
-        // 三角形扫描
+        /* 三角形扫描
+		 * 搜索三角形光栅化
+		 * __________  top
+		 * \            /
+		 *   \        /
+		 *     \    /
+		 *       \/
+		 *          bottom
+		 *       /\
+		 *     /    \
+		 *   /        \
+		 *  ---------
+		 */
         public void DrawNormalTriangle(VertexTriangle vt,VertexTriangle orit,Scene scene)
         {
             Vertex[] vv = GetList(vt.Vertices);
@@ -858,8 +767,6 @@ namespace RenderingEngine
 
                         float z = MathUtil.Interp(z1, z2, r3);
 
-                        //Color4 c3 = MathUtil.ColorInterp(c1, c2, r3);
-
                         Vector4 pos = new Vector4(x, y, z, 0);
 
                         switch (scene.renderState)
@@ -950,8 +857,6 @@ namespace RenderingEngine
                         r3 = MathUtil.Clamp01(r3);
 
                         float z = MathUtil.Interp(z1, z2, r3);
-
-                        //Color4 c3 = MathUtil.ColorInterp(c1, c2, r3);
 
 						Vector4 pos = new Vector4(x, y, z, 0);
 
@@ -1396,48 +1301,5 @@ namespace RenderingEngine
                 }
             }
         }
-
-        public void Goudraud(Vector4 pos , Vector4 n3 , Color4 c3, Scene scene, VertexTriangle oriVt)
-        {
-            switch (scene.renderState)
-            {
-                case Scene.RenderState.WireFrame:{}
-                    break;
-                case Scene.RenderState.GouraduShading:
-                    {
-                        if (DirectionLight.IsEnable)
-                        {
-                            final = DirectionLight.GetFinalLightColor(n3, c3);
-                        }
-                        else
-                        {
-                            final = c3;
-                        }
-                    }
-                    break;
-                case Scene.RenderState.TextureMapping:
-                    {
-                        oriVt.CalWeight(pos);
-
-                        Vector4 uv = oriVt.GetInterUV();
-
-                        final = DirectionLight.GetFinalLightColor(n3, c3);
-
-                        if (DirectionLight.IsEnable)
-                        {
-                            Color4 c = device.Tex2D(uv.X, uv.Y, scene.mesh.texture);
-
-                            final = DirectionLight.GetFinalLightColor(n3, c);
-                        }
-                        else
-                        {
-                            final = device.Tex2D(uv.X, uv.Y, scene.mesh.texture);
-                        }
-                    }
-                    break;
-            }
-            device.DrawPoint(pos, final);
-        }
-
     }
 }

@@ -174,7 +174,6 @@ namespace RenderingEngine
 
             float h = (n1 + n2 + n3) / 2;
 
-
             area = (float)Math.Sqrt(h * (h - n1) * (h - n2) * (h - n3));
             ////公式的分母
             den = d * b + e * c;
@@ -190,15 +189,6 @@ namespace RenderingEngine
             w2 = 1.0f / Vertices[1].ClipSpacePosition.W;
             w3 = 1.0f / Vertices[2].ClipSpacePosition.W;
 
-            //l1 = (p2 - p3).Length();
-            //l2 = (p3 - p1).Length();
-            //l3 = (p2 - p1).Length();
-
-            //this.p2y_p3y = p2.Y - p3.Y;
-            //this.p3y_p1y = p3.Y - p1.Y;
-            //this.p3x_p2x = p3.X - p2.X;
-            //this.p1x_p3x = p1.X - p3.X;
-
         }
 
         public bool CalculateWeight(Vector4 p)
@@ -211,9 +201,6 @@ namespace RenderingEngine
             float dy2 = p.Y - p2.Y;
             float dx1 = p1.X - p.X;
             float dx2 = p2.X - p.X;
-
-            //b2 = (dy1 * c - d * dx1) / den;
-            //b3 = (dy2 * a - f * dx2) / den;
 
             Vector4 tp1 = p2 - p;
             Vector4 tp2 = p3 - p;
@@ -235,30 +222,24 @@ namespace RenderingEngine
             //float t2 = Vector4.Cross(tp3, tp2).Length() / 2;
             //float t3 = Vector4.Cross(tp3, tp1).Length() / 2;
 
-            //float a = t1 + t2 + t3;
-            //if(p.Y == p1.Y || p.Y == p2.Y || p.Y == p3.Y)
-            //{
-            //    return false; 
-            //}
-
-            //Console.WriteLine(a);
-            //if(a > area + 100)
-            //{
-            //    return false;
-            //}
-            //else
-            //{
+            float a = t1 + t2 + t3;
+;
+            if(a > area + 100)
+            {
+                return false;
+            }
+            else
+            {
                 b1 = t1 / area;
                 //b1 = MathUtil.Clamp01(b1);
                 b2 = t2 / area;
                 //b2 = MathUtil.Clamp01(b2);
                 b3 = t3 / area;
                 //b3 = MathUtil.Clamp01(b3);
-          
-               
+
                 this.nowpos = p;
                 return true;
-            //}
+            }
           
         }
 
@@ -312,24 +293,16 @@ namespace RenderingEngine
 		}
 		public Color4 GetInterColor()
         {
-            //Vector4 p1 = Vertices[0].ScreenSpacePosition;
-            //Vector4 p2 = Vertices[1].ScreenSpacePosition;
-            //Vector4 p3 = Vertices[2].ScreenSpacePosition;
 
             Vertex t1 = Vertices[0];
             Vertex t2 = Vertices[1];
             Vertex t3 = Vertices[2];
-            //double r1 = p2y_p3y * (p.X - p3.X) + p3x_p2x * (p.Y - p3.Y) * den;
-            //double r2 = p3y_p1y * (p.X - p3.X) + p1x_p3x * (p.Y - p3.Y) * den;
-            //double r3 = 1.0f - r1 - r2;
 
-      
             byte red = GetInterValue(t1.Color.red, t2.Color.red, t3.Color.red);
             byte green = GetInterValue(t1.Color.green, t2.Color.green, t3.Color.green);
             byte blue = GetInterValue(t1.Color.blue, t2.Color.blue, t3.Color.blue);
 
             Color4 c = new Color4(red, green, blue);
-            //Console.WriteLine(nowpos + " " + red + " " + green + " " + blue);
 
             return c;
         }

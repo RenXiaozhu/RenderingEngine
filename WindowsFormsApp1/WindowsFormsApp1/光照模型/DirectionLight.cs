@@ -86,22 +86,14 @@ namespace RenderingEngine
             kd = MaxKD * StartKD;
         }
 
-        //计算光照强度
-        private double Calightntensity(Vector4 L, Vector4 N)
-        {
-            return Ia * Ka + Ip * kd * (Vector4.Dot(L, N));
-        }
-
 		// 光线的方向点积法线方向
         public static float ComputeNDotL(Vector4 pos, Vector4 normal)
 		{
-			//LightPos.Normalize();
-            //var lightDirection = LightPos - pos;
-           // normal.Normalize();
-            //Console.WriteLine(normal.Length());
-			//lightDirection.Normalize();
-            //float t = lightDirection.CosUV(normal);
-            float t = Vector4.Dot(normal,LightPos);
+			/* 点光源
+			 * var lightDirection = LightPos - pos;
+			 * lightDirection.Normalize();
+			 */
+			float t = Vector4.Dot(normal,LightPos);
             return MathUtil.Clamp01(t);
 		}
 
@@ -121,7 +113,6 @@ namespace RenderingEngine
             {
 				final = final+ DirectionLight.AmbientColor;
             }
-
 			return final;
 		}
 
@@ -129,7 +120,6 @@ namespace RenderingEngine
         {
             float dt;
             Color4 light;
-            //Color4 color = new Color4(255, 255, 255);
             if(IsEnable)
             {
                 dt = ComputeNDotL(normal, normal);

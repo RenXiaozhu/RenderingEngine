@@ -6,6 +6,17 @@ using System.Threading.Tasks;
 
 namespace RenderingEngine
 {
+	public struct Vector2
+	{
+		public double x;
+		public double y;
+		public Vector2(double x, double y)
+			: this()
+		{
+			this.x = x;
+			this.y = y;
+		}
+	}
     public class Vector3
     {
         public double x;
@@ -263,35 +274,35 @@ namespace RenderingEngine
             vt.z = vt1.z + vt2.z;
             return vt;
         }
-        //2维矢量夹角cos值
-        public static double CosUV(Vector2 ut, Vector2 vt)
-        {
-            return (ut.x * vt.x + vt.y * ut.y) / (Math.Abs(Math.Sqrt(ut.x * ut.x + ut.y * ut.y)) * Math.Abs(Math.Sqrt(vt.x * vt.x + vt.y * vt.y)));
-        }
+        ////2维矢量夹角cos值
+        //public static double CosUV(Vector2 ut, Vector2 vt)
+        //{
+        //    return (ut.x * vt.x + vt.y * ut.y) / (Math.Abs(Math.Sqrt(ut.x * ut.x + ut.y * ut.y)) * Math.Abs(Math.Sqrt(vt.x * vt.x + vt.y * vt.y)));
+        //}
 
-        //2维矢量和
-        public static Vector2 VectorSum(Vector2 vt1, Vector2 vt2)
-        {
-            Vector2 vt = new Vector2();
-            vt.x = vt1.x + vt2.x;
-            vt.y = vt1.y + vt2.y;
-            return vt;
-        }
+        ////2维矢量和
+        //public static Vector2 VectorSum(Vector2 vt1, Vector2 vt2)
+        //{
+        //    Vector2 vt = new Vector2();
+        //    vt.x = vt1.x + vt2.x;
+        //    vt.y = vt1.y + vt2.y;
+        //    return vt;
+        //}
 
-        //2维数乘
-        public static Vector2 VectorMultiplyNum(int num, Vector2 vt)
-        {
-            Vector2 vct = new Vector2();
-            vct.x = vt.x * num;
-            vct.y = vt.y * num;
-            return vct;
-        }
+        ////2维数乘
+        //public static Vector2 VectorMultiplyNum(int num, Vector2 vt)
+        //{
+        //    Vector2 vct = new Vector2();
+        //    vct.x = vt.x * num;
+        //    vct.y = vt.y * num;
+        //    return vct;
+        //}
 
-        //2维矢量点积   几何意义表示 向量vt1在vt2上的投影长度
-        public static double VectorPointMultiply(Vector2 vt1, Vector2 vt2)
-        {
-            double vt = vt1.x * vt2.x + vt1.y * vt2.y;
-            return vt;
-        }
+        ////2维矢量点积   几何意义表示 向量vt1在vt2上的投影长度
+        //public static double VectorPointMultiply(Vector2 vt1, Vector2 vt2)
+        //{
+        //    double vt = vt1.x * vt2.x + vt1.y * vt2.y;
+        //    return vt;
+        //}
     }
 }

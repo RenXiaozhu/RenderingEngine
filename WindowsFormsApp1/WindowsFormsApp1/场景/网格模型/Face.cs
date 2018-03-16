@@ -29,8 +29,6 @@ namespace RenderingEngine
 
         public Face(Triangle t_1, Triangle t_2,FaceType type)
         {
-            //this.t1 = t1;
-            //this.t2 = t2;
             this.t_1 = t_1;
             this.t_2 = t_2;
             this.type = type;

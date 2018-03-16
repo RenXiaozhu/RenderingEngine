@@ -36,17 +36,6 @@ namespace RenderingEngine
         */
         public Vector4 UV { get; set; }
 
-        public Vector4 UV2 { get; set; }
-
-        public Vector4 UV3 { get; set; }
-
-        public Vector4 UV4 { get; set; }
-
-        public Vector4 UV5 { get; set; }
-
-        public Vector4 UV6 { get; set; }
-
-        public Vector4[] UVList;
         // 顶点颜色
         public Color4 Color { get; set; }
         //
