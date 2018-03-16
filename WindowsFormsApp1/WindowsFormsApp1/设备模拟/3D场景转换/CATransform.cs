@@ -48,7 +48,7 @@ namespace RenderingEngine
 			else
 			{
 
-				MeshRotation *= scene.mesh.rotation;
+				//MeshRotation *= scene.mesh.rotation;
 
 				 model = scale  * MeshRotation * translate;
 

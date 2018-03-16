@@ -54,12 +54,11 @@ namespace RenderingEngine
         void InitWorldMap()
         {
             this.worldMap = new World("World", @"C:\Users\Administrator\Desktop\111\RenderingEngine\RenderingEngine\WindowsFormsApp1\WindowsFormsApp1\textures\map.jpg");
-
         }
 
         public void InitLight()
         {
-            this.light = new DirectionLight(new Vector4( 1 , 1, -1, 1), new Color4(255, 255, 255));
+            this.light = new DirectionLight(new Vector4( 0 , 0, -1, 1), new Color4(255, 255, 255));
             DirectionLight.IsEnable = true;
             DirectionLight.IsAmLightEnable = false;
         }

@@ -286,7 +286,9 @@ namespace RenderingEngine
 
                 vertexC = scene.mesh.Vertices[t1.c];
 
-                renderTriangle(vertexA, vertexB, vertexC, matrixMVP,false);
+				//
+
+				renderTriangle(vertexA, vertexB, vertexC, matrixMVP,false);
 
                 Triangle t2 = face.t_2;
 

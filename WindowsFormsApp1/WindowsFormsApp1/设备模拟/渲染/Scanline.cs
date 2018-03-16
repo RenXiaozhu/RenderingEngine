@@ -869,12 +869,14 @@ namespace RenderingEngine
                                 break;
                             case Scene.RenderState.GouraduShading:
                                 {
-                                    Color4 c3 = MathUtil.ColorInterp(c1, c2, r3);
+									oriVt.CalWeight(pos);
+									Color4 c3 = MathUtil.ColorInterp(c1, c2, r3);
 
                                     if (DirectionLight.IsEnable)
                                     {
                                         Vector4 n3 = MathUtil.Vector4Interp(n1, n2, r3);
-                                        final = DirectionLight.GetFinalLightColor(n3, c3);
+										n3 = oriVt.GetNormal();
+										final = DirectionLight.GetFinalLightColor(n3, c3);
                                     }
                                     else
                                     {
@@ -893,8 +895,8 @@ namespace RenderingEngine
                                     if (DirectionLight.IsEnable)
                                     {
                                         Color4 c = device.Tex2D(uv.X, uv.Y, scene.mesh.texture);
-
-                                        final = DirectionLight.GetFinalLightColor(n3, c);
+										n3 = oriVt.GetNormal();
+										final = DirectionLight.GetFinalLightColor(n3, c);
                                     }
                                     else
                                     {
@@ -960,12 +962,13 @@ namespace RenderingEngine
 								break;
 							case Scene.RenderState.GouraduShading:
 								{
+									oriVt.CalWeight(pos);
 									Color4 c3 = MathUtil.ColorInterp(c1, c2, r3);
 
 									if (DirectionLight.IsEnable)
 									{
 										Vector4 n3 = MathUtil.Vector4Interp(n1, n2, r3);
-
+										n3 = oriVt.GetNormal();
 										final = DirectionLight.GetFinalLightColor(n3, c3);
 									}
 									else
@@ -985,7 +988,7 @@ namespace RenderingEngine
 									if (DirectionLight.IsEnable)
 									{
 										Color4 c = device.Tex2D(uv.X, uv.Y, scene.mesh.texture);
-
+										n3 = oriVt.GetNormal();
 										final = DirectionLight.GetFinalLightColor(n3, c);
 									}
 									else
@@ -1052,12 +1055,12 @@ namespace RenderingEngine
                             case Scene.RenderState.GouraduShading:
                                 {
                                     Color4 c3 = MathUtil.ColorInterp(c1, c2, r3);
-
+									oriVt.CalWeight(pos);
                                     if (DirectionLight.IsEnable)
                                     {
                                         Vector4 n3 = MathUtil.Vector4Interp(n1, n2, r3);
-
-                                        final = DirectionLight.GetFinalLightColor(n3, c3);
+										n3 = oriVt.GetNormal();
+										final = DirectionLight.GetFinalLightColor(n3, c3);
                                     }
                                     else
                                     {
@@ -1076,8 +1079,8 @@ namespace RenderingEngine
                                     if (DirectionLight.IsEnable)
                                     {
                                         Color4 c = device.Tex2D(uv.X, uv.Y, scene.mesh.texture);
-
-                                        final = DirectionLight.GetFinalLightColor(n3, c);
+										n3 = oriVt.GetNormal();
+										final = DirectionLight.GetFinalLightColor(n3, c);
                                     }
                                     else
                                     {
@@ -1168,12 +1171,13 @@ namespace RenderingEngine
                                 break;
                             case Scene.RenderState.GouraduShading:
                                 {
-                                    Color4 c3 = MathUtil.ColorInterp(c1, c2, r3);
-
+									oriVt.CalWeight(pos);
+									Color4 c3 = MathUtil.ColorInterp(c1, c2, r3);
+									
                                     if (DirectionLight.IsEnable)
                                     {
                                         Vector4 n3 = MathUtil.Vector4Interp(n1, n2, r3);
-
+										n3 = oriVt.GetNormal();
                                         final = DirectionLight.GetFinalLightColor(n3, c3);
                                     }
                                     else
@@ -1191,7 +1195,7 @@ namespace RenderingEngine
                                     if (DirectionLight.IsEnable)
                                     {
 										Vector4 n3 = MathUtil.Vector4Interp(n1, n2, r3);
-
+										n3 = oriVt.GetNormal();
 										Color4 c = device.Tex2D(uv.X, uv.Y, scene.mesh.texture);
 
                                         final = DirectionLight.GetFinalLightColor(n3, c);
@@ -1259,12 +1263,14 @@ namespace RenderingEngine
                                 break;
                             case Scene.RenderState.GouraduShading:
                                 {
-                                    Color4 c3 = MathUtil.ColorInterp(c1, c2, r3);
+									oriVt.CalWeight(pos);
+									Color4 c3 = MathUtil.ColorInterp(c1, c2, r3);
 
                                     if (DirectionLight.IsEnable)
                                     {
                                         Vector4 n3 = MathUtil.Vector4Interp(n1, n2, r3);
-                                        final = DirectionLight.GetFinalLightColor(n3, c3);
+										n3 = oriVt.GetNormal();
+										final = DirectionLight.GetFinalLightColor(n3, c3);
                                     }
                                     else
                                     {
@@ -1277,8 +1283,8 @@ namespace RenderingEngine
                                     oriVt.CalWeight(pos);
 
                                     Vector4 n3 = MathUtil.Vector4Interp(n1, n2, r3);
-
-                                    Vector4 uv = oriVt.GetInterUV();
+									n3 = oriVt.GetNormal();
+									Vector4 uv = oriVt.GetInterUV();
 
                                     if (DirectionLight.IsEnable)
                                     {
@@ -1349,12 +1355,14 @@ namespace RenderingEngine
                                 break;
                             case Scene.RenderState.GouraduShading:
                                 {
+									oriVt.CalWeight(pos);
                                     Color4 c3 = MathUtil.ColorInterp(c1, c2, r3);
 
                                     if (DirectionLight.IsEnable)
                                     {
                                         Vector4 n3 = MathUtil.Vector4Interp(n1, n2, r3);
-                                        final = DirectionLight.GetFinalLightColor(n3, c3);
+										n3 = oriVt.GetNormal();
+										final = DirectionLight.GetFinalLightColor(n3, c3);
                                     }
                                     else
                                     {
@@ -1367,8 +1375,8 @@ namespace RenderingEngine
                                     oriVt.CalWeight(pos);
 
                                     Vector4 n3 = MathUtil.Vector4Interp(n1, n2, r3);
-
-                                    Vector4 uv = oriVt.GetInterUV();
+									n3 = oriVt.GetNormal();
+									Vector4 uv = oriVt.GetInterUV();
 
                                     if (DirectionLight.IsEnable)
                                     {

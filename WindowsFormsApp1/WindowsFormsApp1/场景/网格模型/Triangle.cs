@@ -297,7 +297,20 @@ namespace RenderingEngine
             return new Vector4(u * tmp, v * tmp, 0, 0);
         }
 
-        public Color4 GetInterColor()
+		public Vector4 GetNormal()
+		{
+			Vector4 t1 = Vertices[0].nowNormal;
+			Vector4 t2 = Vertices[1].nowNormal;
+			Vector4 t3 = Vertices[2].nowNormal;
+
+			float x = GetInterValue(t1.X, t2.X, t3.X);
+			float y = GetInterValue(t1.Y, t2.Y, t3.Y);
+			float z = GetInterValue(t1.Z, t2.Z, t3.Z);
+			//float w = GetInterValue(t1.W, t2.W, t3.W);
+			Vector4 v = new Vector4(x, y, z,1).Normalized;
+			return v;
+		}
+		public Color4 GetInterColor()
         {
             //Vector4 p1 = Vertices[0].ScreenSpacePosition;
             //Vector4 p2 = Vertices[1].ScreenSpacePosition;
